@@ -10,7 +10,7 @@
         "lint:js": "eslint .",
         "lint:md": "remark -r .remarkrc.js .",
         "fix": "eslint --fix .",
-        "test": "jest",
+        "start": "ts-node src/index.ts",
         "typedoc": "typedoc --out typedoc src"
     },
     "bin": {
