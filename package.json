@@ -1,0 +1,82 @@
+{
+    "name": "ban-client",
+    "version": "0.1.0",
+    "description": "A client to manage Minecraft's ban records",
+    "main": "dist/src",
+    "private": true,
+    "scripts": {
+        "build": "tsc -p .",
+        "lint": "npm-run-all -p lint:*",
+        "lint:js": "eslint .",
+        "lint:md": "remark -r .remarkrc.js .",
+        "fix": "eslint --fix .",
+        "test": "jest",
+        "typedoc": "typedoc --out typedoc src"
+    },
+    "bin": {
+        "psac": "dist/src/index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/psac-serve/cli.git"
+    },
+    "keywords": [
+        "client",
+        "ban-manager",
+        "minecraft"
+    ],
+    "author": "P2P-Develop",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/psac-serve/cli/issues"
+    },
+    "homepage": "https://github.com/psac-serve/cli#readme",
+    "dependencies": {
+        "@ptkdev/logger": "^1.7.2",
+        "@types/sprintf-js": "^1.1.2",
+        "axios": "^0.21.1",
+        "chalk": "^4.1.0",
+        "command-line-args": "^5.1.1",
+        "command-line-usage": "^6.1.1",
+        "enquirer": "^2.3.6",
+        "figures": "^3.2.0",
+        "fs-extra": "^9.0.1",
+        "i18n": "^0.13.2",
+        "msgpack": "^1.0.3",
+        "pretty-error": "^3.0.3",
+        "readline-sync": "^1.4.10",
+        "sprintf-js": "^1.1.2",
+        "terminal-link": "^2.1.1"
+    },
+    "devDependencies": {
+        "@types/command-line-args": "^5.0.0",
+        "@types/command-line-usage": "^5.0.1",
+        "@types/fs-extra": "^9.0.6",
+        "@types/i18n": "^0.12.0",
+        "@types/msgpack": "^0.0.30",
+        "@types/node": "^14.14.20",
+        "@types/readline-sync": "^1.4.3",
+        "@typescript-eslint/eslint-plugin": "^4.12.0",
+        "@typescript-eslint/parser": "^4.12.0",
+        "eslint": "^7.17.0",
+        "eslint-plugin-import": "^2.22.1",
+        "eslint-plugin-json": "^2.1.2",
+        "eslint-plugin-node": "^11.1.0",
+        "eslint-plugin-unicorn": "^25.0.1",
+        "npm-run-all": "^4.1.5",
+        "remark-cli": "^9.0.0",
+        "remark-lint": "^8.0.0",
+        "remark-lint-heading-whitespace": "^1.0.0",
+        "remark-lint-match-punctuation": "^0.2.0",
+        "remark-lint-mdash-style": "^1.1.1",
+        "remark-lint-no-chinese-punctuation-in-number": "^0.1.1",
+        "remark-lint-no-dead-urls": "^1.1.0",
+        "remark-lint-no-empty-sections": "^4.0.0",
+        "remark-lint-no-url-trailing-slash": "^3.0.1",
+        "remark-lint-spaces-around-word": "^0.1.1",
+        "remark-preset-lint-recommended": "^5.0.0",
+        "ts-node": "^9.1.1",
+        "typedoc": "^0.20.14",
+        "typescript": "^4.1.3"
+    }
+}
