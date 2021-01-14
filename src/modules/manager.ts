@@ -55,7 +55,7 @@ export default class ModuleManager {
 
         while (!this.modules[index].enabled) {
             if (process.env.DEBUG === "1") {
-                console.log("Enabling " + this.modules[index].name);
+                //console.log("Enabling " + this.modules[index].name);
             }
         }
 
@@ -68,7 +68,7 @@ export default class ModuleManager {
      * @returns Promise class to use await / .then().
      */
     async initAllModules(): Promise<void> {
-        await Promise.all(this.modules.map(module => module.init));
+        await Promise.all(this.modules.map(module => module.init()));
     }
 
     /**
