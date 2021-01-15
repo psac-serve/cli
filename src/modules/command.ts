@@ -1,31 +1,33 @@
-import {__} from "i18n";
+import { Command as AnotherCommand } from "../commands/base";
+import Exit from "../commands/exit";
 
 import Module from "./base";
 
 export default class Command extends Module {
-    constructor(private _execute: Record<string, (options: string) => number> = {}) {
-        super("Command", __("Parse / Run the commands."));
+    constructor(private _commands: AnotherCommand[] = [], public execute: Record<string, (options: string) => number>[] = [{}]) {
+        super("Command", "Parse / Run the commands.");
     }
 
-    get execute(): Record<string, (options: string) => number> {
-        return this._execute;
-    }
-
-    set execute(value: Record<string, (options: string) => number>) {
-        this._execute = value;
+    get commands(): string[] {
+        return this._commands.map(command => command.name);
     }
 
     init(): Promise<void> {
         this.enabled = true;
+        this._commands = [ new Exit() ];
 
         return Promise.resolve();
     }
 
-    use(): { execute: (command: string) => number, list: Record<string, (options: string) => number> } {
-        return {execute: (command: string): number => (command.split(" ")[0] in this.execute ? this.execute[command.split(" ")[0]](command.split(" ").slice(1).join()) : -1), list: this.execute };
+    use(): { execute: (command: string) => number, list: Record<string, (options: string) => number>[] } {
+        return {
+            execute: (command: string): number => (command.split(" ")[0] in this.execute[0] ? this.execute[0][command.split(" ")[0]](command.split(" ").slice(1).join()) : -1),
+            list: this.execute
+        };
     }
 
     close(): Promise<void> {
+        this._commands = [];
         this.enabled = false;
 
         return Promise.resolve();

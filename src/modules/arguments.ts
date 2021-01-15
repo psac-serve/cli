@@ -51,12 +51,6 @@ export default class Arguments extends Module {
             type: Boolean,
             defaultValue: false
         }, {
-            name: "save",
-            alias: "s",
-            description: __("Save tokens and other settings to the file / log. If you not specified the directory, they will save to current directory."),
-            type: String,
-            defaultValue: true
-        }, {
             name: "help",
             alias: "?",
             description: __("Show this usage guide.")
@@ -89,11 +83,6 @@ export default class Arguments extends Module {
         type: Boolean,
         defaultValue: false
     }, {
-        name: "save",
-        alias: "s",
-        type: String,
-        defaultValue: ""
-    }, {
         name: "help",
         alias: "?",
         type: Boolean,
@@ -104,10 +93,9 @@ export default class Arguments extends Module {
         token: boolean,
         host: string,
         "ignore-test": boolean,
-        save: string,
         help: boolean
     }) {
-        super("Arguments Manager", __("Manage command-line arguments to show usage, arguments, and parse."));
+        super("Arguments Manager", "Manage command-line arguments to show usage, arguments, and parse.");
     }
 
     init(): Promise<void> {
@@ -125,10 +113,6 @@ export default class Arguments extends Module {
             process.exit(1);
         }
 
-        if (!this._arguments.save) {
-            this._arguments.save = ".";
-        }
-
         this.enabled = true;
 
         return Promise.resolve();
@@ -140,7 +124,7 @@ export default class Arguments extends Module {
         return Promise.resolve();
     }
 
-    use(): { version: boolean, verbose: boolean, token: boolean, host: string, "ignore-test": boolean, save: string, help: boolean } {
+    use(): { version: boolean, verbose: boolean, token: boolean, host: string, "ignore-test": boolean, help: boolean } {
         return this._arguments;
     }
 }

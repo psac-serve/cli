@@ -1,4 +1,3 @@
-import path from "path";
 import axios, {AxiosInstance} from "axios";
 import chalk from "chalk";
 import figures from "figures";
@@ -25,12 +24,14 @@ export default class Client extends Module {
      *
      * @returns The instance of this class.
      */
-    constructor(private client?: AxiosInstance) {
+    constructor(private client?: AxiosInstance, private saveFile: {hosts: [{token?: string, name: string}?]} = {hosts: []}) {
         super("Client", "Core module to using this application.");
     }
 
     async init(): Promise<void> {
         const parsedArguments = manager.use("Arguments Manager");
+
+        const directories = manager.use("Directory Manager");
 
         const [ logger, verboseLogger ] = manager.use("Logger");
 
@@ -56,57 +57,36 @@ export default class Client extends Module {
 
         let token: string | undefined;
 
-        if (parsedArguments.save) {
-            if (!fse.existsSync(path.join(parsedArguments.save, "psac-client.sav"))) {
-                await fse.createFile(path.join(parsedArguments.save, "psac-client.sav"));
-            }
+        if (!fse.existsSync(directories.config)) {
+            await fse.createFile(directories.config);
+            await fse.appendFile(directories.config, msgpack.pack({hosts: []}, true));
+        }
 
-            const saveFile = msgpack.unpack(await fse.readFile(path.join(parsedArguments.save, "psac-client.sav"))) as {hosts?: [{token?: string, name: string}?]};
+        this.saveFile = msgpack.unpack(await fse.readFile(directories.config));
 
-            if (!saveFile.hosts) {
-                saveFile.hosts = [];
-            }
+        const found = this.saveFile.hosts.find(hostname => hostname && hostname.name === host.hostname);
 
-            const found = saveFile.hosts.find(hostname => hostname && hostname.name === host.hostname);
-
-            if (saveFile.hosts && found && found.token) {
-                token = found.token;
-            } else if (parsedArguments.token && !token) {
+        if (this.saveFile.hosts && found && found.token) {
+            token = found.token;
+        } else if (parsedArguments.token && !token) {
+            try {
                 token = (await prompt({
                     type: "password",
                     name: "token",
                     message: __("Enter token to connect")
                 }) as {token: string}).token;
-
-                saveFile.hosts.push({token, name: host.hostname});
+            } catch {
+                logger.error("Interrupted the question!");
+                throw new Error("KEYBOARD_INTERRUPT");
             }
+
+            this.saveFile.hosts.push({token, name: host.hostname});
         }
 
         Timer.time();
 
         this.client = axios.create({
-            baseURL: parsedArguments.host ? (() => {
-                let host;
-                try {
-                    host = new URL(parsedArguments.host);
-                } catch {
-                    host = new URL("http://" + parsedArguments.host);
-                }
-                if (!host.port) {
-                    host.port = "810";
-                    verboseLogger.info(sprintf(__("The port didn't specify in hostname, using the default port %s."), chalk.yellowBright(810)));
-                }
-                if (host.protocol === "https:") {
-                    host.protocol = "http:";
-                    verboseLogger.warning(__("HTTPS protocol doesn't support, using HTTP protocol instead."));
-                }
-                if (host.pathname !== "/") {
-                    host.pathname = "/";
-                    verboseLogger.warning(__("The hostname doesn't support paths, using the root path."));
-                }
-
-                return host.toString().slice(0, -1);
-            })() : "http://127.0.0.1:810",
+            baseURL: host.toString(),
             headers: token ? {
                 token,
                 "access-control-allow-origin": "*"
@@ -165,12 +145,15 @@ export default class Client extends Module {
                 logger.info(__("Response logger created. ") + Timer.prettyTime());
             }
         }
+
+        this.enabled = true;
     }
 
-    close(): Promise<void> {
+    async close(): Promise<void> {
         this.client = undefined;
+        this.enabled = false;
 
-        return Promise.resolve();
+        await fse.writeFile(manager.use("Directory Manager").config, msgpack.pack(this.saveFile, true));
     }
 
     use(): AxiosInstance {

@@ -1,15 +1,17 @@
-import chalk from "chalk";
 import figures from "figures";
+import chalk from "chalk";
 import prettyError from "pretty-error";
 import i18n, {__} from "i18n";
 import {sprintf} from "sprintf-js";
 
 import ModuleManager from "./modules/manager";
 import Arguments from "./modules/arguments";
+import Directory from "./modules/directory";
 import Logger from "./modules/logger";
 import Client from "./modules/client";
 import Command from "./modules/command";
 import Prompt from "./modules/prompt";
+
 import Timer from "./utils/timer";
 
 prettyError.start();
@@ -20,7 +22,14 @@ i18n.configure({
     //defaultLocale: Intl.DateTimeFormat().resolvedOptions().locale === "ja-JP" ? "ja" : "en"
 });
 
-const manager = new ModuleManager([ new Arguments("", undefined), new Logger(), new Client(), new Command(), new Prompt() ]);
+const manager = new ModuleManager([
+    new Arguments(),
+    new Directory(),
+    new Logger(),
+    new Client(),
+    new Command(),
+    new Prompt()
+]);
 
 export default manager;
 
@@ -33,8 +42,8 @@ const main = async () => {
 
     const [ , verboseLogger ] = manager.use("Logger");
 
-    verboseLogger.info("Modules loaded." + Timer.prettyTime());
-    console.info(chalk`\n{magentaBright ${figures.pointer}} {bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(new URL(parsedArguments.host).host))}}`);
+    verboseLogger.info(__("Modules loaded. ") + Timer.prettyTime());
+    console.info(chalk`\n{magentaBright ${figures.pointer}} {bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(parsedArguments.host))}}`);
     console.info(chalk`\n{dim.italic ${(() => {
         const items = [
             "ほーん、で？どうしたいの？",

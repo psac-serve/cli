@@ -1,17 +1,18 @@
-import { BaseCommand, Command } from "./base";
+import { Command } from "./base";
 
-export default class Exit extends BaseCommand {
-    evaluate(tokens: string): { code: number } {
-        if (tokens.split(" ").length !== 1) {
-            throw new Error("Invalid arguments");
-        }
-
-        // 今回はこうしてるけど関数の中でしかオブジェクトは管理しないから中身なんでもおｋ
-        return { code: +tokens.split(" ")[0] };
+export default class Exit extends Command {
+    constructor() {
+        // 第一引数にコマンド名、第二引数に説明を入れる
+        super("exit", "Exit the session.");
     }
 
-    @Command("exit")
-    public execute(commands: string): number {
-        return this.evaluate(commands).code + 9684;
+    public execute(options: string): number {
+        const tokens = options.split(" ");
+
+        if (tokens.length !== 1 || tokens[0] === "") {
+            throw new Error("Invalid arguments.");
+        }
+
+        return +tokens[0] + 9684;
     }
 }

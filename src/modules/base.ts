@@ -1,3 +1,5 @@
+import { __ } from "i18n";
+
 /**
  * The abstract base class to implement module operations and necessary informations.
  */
@@ -16,20 +18,15 @@ export default abstract class Module {
      *
      * @returns The instance of this class.
      */
-    constructor(private _name: string, private _description: string) {}
-
-    /**
-     * Encapsulated _name value.
-     */
-    get name(): string {
-        return this._name;
-    }
+    constructor(public name: string, private _description: string) {}
 
     /**
      * Encapsulated _description value.
+     *
+     * @returns Translated description.
      */
     get description(): string {
-        return this._description;
+        return __(this._description);
     }
 
     /**

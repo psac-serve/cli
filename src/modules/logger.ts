@@ -1,6 +1,6 @@
 import path from "path";
-import fse from "fs-extra";
 import { default as AnotherLogger, LoggerOptions } from "@ptkdev/logger";
+import { __ } from "i18n";
 
 import manager from "..";
 
@@ -51,33 +51,32 @@ export default class Logger extends Module {
         super("Logger", "A logging / debugging / beautify output module to manage log file, stdout, and so on");
     }
 
-    async init(): Promise<void> {
-        const parsedArguments = manager.use("Arguments Manager");
+    init(): Promise<void> {
+        const directories = manager.use("Directory Manager");
 
-        if (parsedArguments.save) {
-            await fse.mkdirp(path.join(parsedArguments.save, "logs"));
-        }
+        directories.mkdirs();
 
         const loggerOptions = {
-            ...{
-                debug: process.env.DEBUG === "1",
-                sponsor: false
-            }, ...(parsedArguments.save ? {
-                write: true,
-                rotate: {
-                    size: "10K",
-                    encoding: "utf8"
-                },
-                path: {
-                    debug_log: path.join(parsedArguments.save, "logs", "debug.log"),
-                    error_log: path.join(parsedArguments.save, "logs", "errors.log")
-                }
-            } : {})
+            debug: process.env.DEBUG === "1",
+            sponsor: false,
+            write: true,
+            rotate: {
+                size: "10K",
+                encoding: "utf8"
+            },
+            path: {
+                debug_log: path.join(directories.log, "debug.log"),
+                error_log: path.join(directories.log, "errors.log")
+            }
         } as LoggerOptions;
 
         [ this.logger, this.verboseLogger ] = [ new AnotherLogger(loggerOptions), new VerboseAnotherLogger(manager.use("Arguments Manager").verbose, loggerOptions) ];
 
         this.enabled = true;
+
+        this.verboseLogger.info(__("Logger successfly created."));
+
+        return Promise.resolve();
     }
 
     close(): Promise<void> {

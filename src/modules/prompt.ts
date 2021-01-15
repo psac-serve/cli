@@ -9,10 +9,12 @@ import Module from "./base";
 
 export default class Prompt extends Module {
     constructor() {
-        super("Prompt", __("Show beauty prompts."));
+        super("Prompt", "Show beauty prompts.");
     }
 
     init(): Promise<void> {
+        this.enabled = true;
+
         return Promise.resolve();
     }
 
@@ -20,14 +22,14 @@ export default class Prompt extends Module {
         return (code: number) => {
             const parsedArguments = manager.use("Arguments Manager");
 
-            process.stdout.write(chalk`{bold {blueBright.underline ${new URL(parsedArguments.host).host}} as {cyanBright ban-server}}\n {magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer) : chalk.blueBright(figures.pointer)}${figures.pointer}} `);
+            process.stdout.write(chalk`{bold {blueBright.underline ${parsedArguments.host}} as {cyanBright ban-server}${code !== 0 ? chalk.bold(" stopped with " + chalk.redBright(code)) : ""}}\n {magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer) : chalk.blueBright(figures.pointer)}${figures.pointer}} `);
 
             let command = "";
 
             command = readlineSync.question("").trim();
 
             while (!command.endsWith(";")) {
-                process.stdout.write(chalk`   {greenBright ${figures.pointer}}    `);
+                process.stdout.write(chalk`   {greenBright ${figures.pointer}}     `);
                 command += " " + readlineSync.question("").trim();
             }
 
@@ -35,11 +37,22 @@ export default class Prompt extends Module {
                 command = command.slice(0, -1);
             } while (command.endsWith(";"));
 
-            const stopCode = manager.use("Command").execute(command);
+            let stopCode;
+
+            try {
+                stopCode = manager.use("Command").execute(command.trim());
+            } catch (error) {
+                console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__(error.message)));
+
+                stopCode = 1;
+            }
 
             if (stopCode >= 9684) {
-                console.log(chalk`{greenBright Good bye.}`);
-                process.exit(stopCode - 9684);
+                manager.exit(stopCode - 9684);
+            }
+
+            if (stopCode == -1) {
+                console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__("Command not found.")));
             }
 
             return this.use()(stopCode);
@@ -47,6 +60,8 @@ export default class Prompt extends Module {
     }
 
     close(): Promise<void> {
+        this.enabled = false;
+
         return Promise.resolve();
     }
 }

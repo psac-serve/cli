@@ -1,9 +1,16 @@
+import {__} from "i18n";
+
 import manager from "..";
 
-export abstract class BaseCommand {
-    abstract evaluate(tokens: string): Record<string, unknown>
+export abstract class Command {
+    constructor(public name: string, private _description: string) {
+        manager.use("Command").list[0] = { ...manager.use("Command").list[0], [this.name]: this.execute };
+    }
 
-    abstract execute(commands: string): number
+    public get description(): string {
+        return __(this._description);
+    }
+
+    abstract execute(options: string): number
 }
 
-export const Command = (commandName: string) => (target: any, propertyKey: string, descriptor: PropertyDescriptor): void => manager.use("Command").list = { ...manager.use("Command").list, [commandName]: descriptor.value };
