@@ -113,6 +113,10 @@ export default class Client extends Module {
             try {
                 await this.client.get("/teapot");
             } catch (error) {
+                if (!error.response.status) {
+                    throw new Error(error);
+                }
+
                 switch (error.response.status) {
                 case 403:
                     logger.error(__("Incorrect token."));
