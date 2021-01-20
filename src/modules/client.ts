@@ -36,9 +36,9 @@ export default class Client extends Module {
         let host = new URL("http://127.0.0.1");
 
         try {
-            host = new URL(parsedArguments.host);
+            host = new URL(parsedArguments.host.replace("localhost", "127.0.0.1"));
         } catch {
-            host = new URL("http://" + parsedArguments.host);
+            host = new URL("http://" + parsedArguments.host.replace("localhost", "127.0.0.1"));
         }
 
         if (!host.port) {
