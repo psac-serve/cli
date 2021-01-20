@@ -120,18 +120,18 @@ export default class Client extends Module {
                 }
 
                 switch (error.response.status) {
-                case 403:
-                    logger.error(__("Incorrect token."));
+                    case 403:
+                        logger.error(__("Incorrect token."));
 
-                    throw new Error("INCORRECT_TOKEN");
+                        throw new Error("INCORRECT_TOKEN");
 
-                case 418:
-                    break;
+                    case 418:
+                        break;
 
-                default:
-                    logger.error(__("Received invalid response."));
+                    default:
+                        logger.error(__("Received invalid response."));
 
-                    throw new Error("INVALID_RESPONSE");
+                        throw new Error("INVALID_RESPONSE");
                 }
             }
 

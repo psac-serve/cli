@@ -37,7 +37,7 @@ module.exports = {
         sourceType: "module"
     },
     rules: {
-        "indent": [ "error", 4 ],
+        "indent": [ "error", 4, { SwitchCase: 1 }],
         "quotes": [ "error", "double" ],
         "semi": [ "error" ],
         "array-bracket-spacing": [ "error", "always", {
