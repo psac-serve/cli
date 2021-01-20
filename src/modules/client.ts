@@ -1,4 +1,5 @@
 import fs from "fs";
+import zlib from "zlib";
 import axios, { AxiosInstance } from "axios";
 import chalk from "chalk";
 import figures from "figures";
@@ -64,10 +65,10 @@ export default class Client extends Module {
 
         if (!fse.existsSync(this.paths.config)) {
             await fse.createFile(this.paths.config);
-            await fse.appendFile(this.paths.config, msgpack.pack({ hosts: []}, true));
+            await fse.appendFile(this.paths.config, zlib.brotliCompressSync(msgpack.pack({ hosts: []}, true)));
         }
 
-        this.saveFile = msgpack.unpack(await fse.readFile(this.paths.config));
+        this.saveFile = msgpack.unpack(zlib.brotliDecompressSync(Buffer.from(await fse.readFile(this.paths.config))));
 
         if (this.saveFile.hosts && this.saveFile.hosts.some(hostname => hostname && hostname.name === host.hostname)) {
             const found = this.saveFile.hosts.find(hostname => hostname && hostname.name === host.hostname);
@@ -181,7 +182,7 @@ export default class Client extends Module {
         this.client = undefined;
         this.enabled = false;
 
-        fs.writeFileSync(this.paths.config, msgpack.pack(this.saveFile, true));
+        fs.writeFileSync(this.paths.config, zlib.brotliCompressSync(msgpack.pack(this.saveFile, true)));
 
         return Promise.resolve();
     }
