@@ -33,7 +33,8 @@ const manager = new ModuleManager([
 
 export default manager;
 
-const main = async () => {
+const main = async () => 
+{
     await manager.initAllModules();
 
     Timer.time();
@@ -43,7 +44,8 @@ const main = async () => {
 
     verboseLogger.info(__("Modules loaded. ") + Timer.prettyTime());
     console.info(chalk`\n{magentaBright ${figures.pointer}} {bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(parsedArguments.host))}}`);
-    console.info(chalk`\n{dim.italic ${(() => {
+    console.info(chalk`\n{dim.italic ${(() => 
+    {
         const items = [
             "ほーん、で？どうしたいの？",
             "一切手をつけないのも、過ぎた最適化を行うのもよろしくない行為である。間を貫き通せ。",
@@ -61,7 +63,8 @@ const main = async () => {
     manager.use("Prompt")(0);
 };
 
-main().then(() => {
+main().then(() => 
+{
     console.log(chalk`{greenBright Good bye.}`);
 
     manager.closeAllModules();

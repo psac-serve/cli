@@ -52,8 +52,8 @@ module.exports = {
             requireForBlockBody: true
         }],
         "block-spacing": "error",
-        "brace-style": [ "error", "1tbs", {
-            allowSingleLine: true
+        "brace-style": [ "error", "allman", {
+            allowSingleLine: false
         }],
         "comma-dangle": [ "error", "never" ],
         "comma-spacing": [ "error", {
@@ -65,7 +65,7 @@ module.exports = {
             enforceForClassMembers: true
         }],
         "constructor-super": "error",
-        "curly": [ "error" ],
+        "curly": [ "error", "multi" ],
         "default-case-last": "error",
         "default-param-last": [ "error" ],
         "dot-notation": [ "error", {

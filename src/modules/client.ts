@@ -16,7 +16,8 @@ import Module from "./base";
 /**
  * The core module to using this application.
  */
-export default class Client extends Module {
+export default class Client extends Module 
+{
     /**
      * Constructor.
      *
@@ -24,41 +25,50 @@ export default class Client extends Module {
      *
      * @returns The instance of this class.
      */
-    constructor(private client?: AxiosInstance, private saveFile: {hosts: [{token?: string, name: string}?]} = { hosts: []}) {
+    constructor(private client?: AxiosInstance, private saveFile: {hosts: [{token?: string, name: string}?]} = { hosts: []}) 
+    {
         super("Client", "Core module to using this application.");
     }
 
-    async init(): Promise<void> {
+    async init(): Promise<void> 
+    {
         const parsedArguments = manager.use("Arguments Manager");
         const directories = manager.use("Directory Manager");
         const [ logger, verboseLogger ] = manager.use("Logger");
 
         let host = new URL("http://127.0.0.1");
 
-        try {
+        try 
+        {
             host = new URL(parsedArguments.host.replace("localhost", "127.0.0.1"));
-        } catch {
+        }
+        catch 
+        {
             host = new URL("http://" + parsedArguments.host.replace("localhost", "127.0.0.1"));
         }
 
-        if (!host.port) {
+        if (!host.port) 
+        {
             host.port = "810";
             verboseLogger.info(sprintf(__("The port didn't specify in hostname, using the default port %s."), chalk.yellowBright(810)));
         }
 
-        if (host.protocol === "https:") {
+        if (host.protocol === "https:") 
+        {
             host.protocol = "http:";
             verboseLogger.warning(__("HTTPS protocol doesn't support, using HTTP protocol instead."));
         }
 
-        if (host.pathname !== "/") {
+        if (host.pathname !== "/") 
+        {
             host.pathname = "/";
             verboseLogger.warning(__("The hostname doesn't support paths, using the root path."));
         }
 
         let token: string | undefined;
 
-        if (!fse.existsSync(directories.config)) {
+        if (!fse.existsSync(directories.config)) 
+        {
             await fse.createFile(directories.config);
             await fse.appendFile(directories.config, msgpack.pack({ hosts: []}, true));
         }
@@ -67,16 +77,22 @@ export default class Client extends Module {
 
         const found = this.saveFile.hosts.find(hostname => hostname && hostname.name === host.hostname);
 
-        if (this.saveFile.hosts && found && found.token) {
+        if (this.saveFile.hosts && found && found.token) 
+        
             token = found.token;
-        } else if (parsedArguments.token && !token) {
-            try {
+        
+        else if (parsedArguments.token && !token) 
+        {
+            try 
+            {
                 token = (await prompt({
                     type: "password",
                     name: "token",
                     message: __("Enter token to connect")
                 }) as {token: string}).token;
-            } catch {
+            }
+            catch 
+            {
                 logger.error("Interrupted the question!");
 
                 throw new Error("KEYBOARD_INTERRUPT");
@@ -95,13 +111,16 @@ export default class Client extends Module {
             } : { "access-control-allow-origin": "*" }
         });
 
-        if (parsedArguments.verbose) {
+        if (parsedArguments.verbose) 
+        {
             Timer.time();
-            this.client.interceptors.request.use((request) => {
+            this.client.interceptors.request.use((request) => 
+            {
                 logger.info(chalk`{greenBright.underline ${__("REQUEST")}} - {yellowBright ${request.method}} ${figures.arrowRight} {blueBright.underline ${request.url}}${request.data ? chalk`\n{white ${msgpack.unpack(request.data)}}` : ""}`);
 
                 return request;
-            }, (error) => {
+            }, (error) => 
+            {
                 logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}${error.data ? chalk`\n{white ${msgpack.unpack(error.data)}}` : ""}`);
 
                 return Promise.reject(error);
@@ -109,17 +128,23 @@ export default class Client extends Module {
             logger.info(__("Request logger created. ") + Timer.prettyTime());
         }
 
-        if (!parsedArguments["ignore-test"]) {
+        if (!parsedArguments["ignore-test"]) 
+        {
             verboseLogger.info(__("Testing connection using /teapot."));
 
-            try {
+            try 
+            {
                 await this.client.get("/teapot");
-            } catch (error) {
-                if (!error.response.status) {
+            }
+            catch (error) 
+            {
+                if (!error.response.status) 
+                
                     throw new Error(error);
-                }
+                
 
-                switch (error.response.status) {
+                switch (error.response.status) 
+                {
                     case 403:
                         logger.error(__("Incorrect token."));
 
@@ -137,14 +162,17 @@ export default class Client extends Module {
 
             verboseLogger.info(__("Connection and authentication tests finished."));
 
-            if (parsedArguments.verbose) {
+            if (parsedArguments.verbose) 
+            {
                 Timer.time();
 
-                this.client.interceptors.response.use((response) => {
+                this.client.interceptors.response.use((response) => 
+                {
                     logger.info(chalk`{greenBright.underline ${__("RESPONSE")}} - {greenBright ${response.status}}: {whiteBright ${response.statusText}}\n{white ${response.data}}`);
 
                     return response;
-                }, (error) => {
+                }, (error) => 
+                {
                     logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}\n{white ${error.data}}`);
 
                     return Promise.reject(error);
@@ -157,17 +185,20 @@ export default class Client extends Module {
         this.enabled = true;
     }
 
-    async close(): Promise<void> {
+    async close(): Promise<void> 
+    {
         this.client = undefined;
         this.enabled = false;
 
         await fse.writeFile(manager.use("Directory Manager").config, msgpack.pack(this.saveFile, true));
     }
 
-    use(): AxiosInstance {
-        if (!this.client) {
+    use(): AxiosInstance 
+    {
+        if (!this.client) 
+        
             throw new Error("This module not enabled!");
-        }
+        
 
         return this.client;
     }
