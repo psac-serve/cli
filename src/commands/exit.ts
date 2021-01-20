@@ -1,16 +1,20 @@
+import { __ } from "i18n";
+
+import InvalidArgumentsError from "../errors/invalid-arguments";
 import { Command } from "./base";
 
 export default class Exit extends Command {
     constructor() {
-        // 第一引数にコマンド名、第二引数に説明を入れる
-        super("exit", "Exit the session.");
+        super("exit", __("Exit the session."), [ "quit", "bye" ]);
     }
 
     public execute(options: string): number {
         const tokens = options.split(" ");
 
-        if (tokens.length !== 1 || tokens[0] === "") {
-            throw new Error("Invalid arguments.");
+        if (tokens.length !== 1) {
+            throw new InvalidArgumentsError();
+        } else if (tokens[0] === "") {
+            tokens[0] = "0";
         }
 
         return +tokens[0] + 9684;

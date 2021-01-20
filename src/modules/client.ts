@@ -1,11 +1,11 @@
-import axios, {AxiosInstance} from "axios";
+import axios, { AxiosInstance } from "axios";
 import chalk from "chalk";
 import figures from "figures";
 import fse from "fs-extra";
 import msgpack from "msgpack";
-import {prompt} from "enquirer";
-import {sprintf} from "sprintf-js";
-import {__} from "i18n";
+import { prompt } from "enquirer";
+import { sprintf } from "sprintf-js";
+import { __ } from "i18n";
 
 import Timer from "../utils/timer";
 
@@ -24,32 +24,33 @@ export default class Client extends Module {
      *
      * @returns The instance of this class.
      */
-    constructor(private client?: AxiosInstance, private saveFile: {hosts: [{token?: string, name: string}?]} = {hosts: []}) {
+    constructor(private client?: AxiosInstance, private saveFile: {hosts: [{token?: string, name: string}?]} = { hosts: []}) {
         super("Client", "Core module to using this application.");
     }
 
     async init(): Promise<void> {
         const parsedArguments = manager.use("Arguments Manager");
-
         const directories = manager.use("Directory Manager");
-
         const [ logger, verboseLogger ] = manager.use("Logger");
 
-
         let host = new URL("http://127.0.0.1");
+
         try {
             host = new URL(parsedArguments.host);
         } catch {
             host = new URL("http://" + parsedArguments.host);
         }
+
         if (!host.port) {
             host.port = "810";
             verboseLogger.info(sprintf(__("The port didn't specify in hostname, using the default port %s."), chalk.yellowBright(810)));
         }
+
         if (host.protocol === "https:") {
             host.protocol = "http:";
             verboseLogger.warning(__("HTTPS protocol doesn't support, using HTTP protocol instead."));
         }
+
         if (host.pathname !== "/") {
             host.pathname = "/";
             verboseLogger.warning(__("The hostname doesn't support paths, using the root path."));
@@ -59,7 +60,7 @@ export default class Client extends Module {
 
         if (!fse.existsSync(directories.config)) {
             await fse.createFile(directories.config);
-            await fse.appendFile(directories.config, msgpack.pack({hosts: []}, true));
+            await fse.appendFile(directories.config, msgpack.pack({ hosts: []}, true));
         }
 
         this.saveFile = msgpack.unpack(await fse.readFile(directories.config));
@@ -77,10 +78,11 @@ export default class Client extends Module {
                 }) as {token: string}).token;
             } catch {
                 logger.error("Interrupted the question!");
+
                 throw new Error("KEYBOARD_INTERRUPT");
             }
 
-            this.saveFile.hosts.push({token, name: host.hostname});
+            this.saveFile.hosts.push({ token, name: host.hostname });
         }
 
         Timer.time();
@@ -90,7 +92,7 @@ export default class Client extends Module {
             headers: token ? {
                 token,
                 "access-control-allow-origin": "*"
-            } : {"access-control-allow-origin": "*"}
+            } : { "access-control-allow-origin": "*" }
         });
 
         if (parsedArguments.verbose) {
@@ -120,6 +122,7 @@ export default class Client extends Module {
                 switch (error.response.status) {
                 case 403:
                     logger.error(__("Incorrect token."));
+
                     throw new Error("INCORRECT_TOKEN");
 
                 case 418:
@@ -127,6 +130,7 @@ export default class Client extends Module {
 
                 default:
                     logger.error(__("Received invalid response."));
+
                     throw new Error("INVALID_RESPONSE");
                 }
             }

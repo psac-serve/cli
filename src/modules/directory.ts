@@ -1,6 +1,6 @@
 import path from "path";
 import fse from "fs-extra";
-import {__} from "i18n";
+import { __ } from "i18n";
 
 import Module from "./base";
 

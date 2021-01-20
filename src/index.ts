@@ -1,8 +1,8 @@
 import figures from "figures";
 import chalk from "chalk";
 import prettyError from "pretty-error";
-import i18n, {__} from "i18n";
-import {sprintf} from "sprintf-js";
+import i18n, { __ } from "i18n";
+import { sprintf } from "sprintf-js";
 
 import ModuleManager from "./modules/manager";
 import Arguments from "./modules/arguments";
@@ -39,7 +39,6 @@ const main = async () => {
     Timer.time();
 
     const parsedArguments = manager.use("Arguments Manager");
-
     const [ , verboseLogger ] = manager.use("Logger");
 
     verboseLogger.info(__("Modules loaded. ") + Timer.prettyTime());

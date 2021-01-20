@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import figures from "figures";
 import readlineSync from "readline-sync";
-import {__} from "i18n";
+import { __ } from "i18n";
 
 import manager from "..";
 
@@ -40,7 +40,7 @@ export default class Prompt extends Module {
             let stopCode;
 
             try {
-                stopCode = manager.use("Command").execute(command.trim());
+                stopCode = manager.use("Command").commands(command.trim());
             } catch (error) {
                 console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__(error.message)));
 

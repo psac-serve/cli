@@ -9,6 +9,7 @@ class Timer {
 
     static timeEnd(): [ number, number ] {
         const hrend = process.hrtime(hrstart);
+
         hrstart = undefined;
 
         return hrend;

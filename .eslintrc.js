@@ -83,24 +83,79 @@ module.exports = {
         "no-confusing-arrow": [ "error", {
             allowParens: true
         }],
+        "no-multi-assign": "error",
+        "no-multi-str": "error",
         "no-nested-ternaly": "off",
         "no-process-exit": "off",
+        "no-return-assign": "error",
+        "no-script-url": "error",
+        "no-self-compare": "error",
+        "no-sequences": "error",
+        "no-throw-literal": "error",
+        "no-unmodified-loop-condition": "error",
+        "no-unused-expressions": "error",
+        "no-useless-call": "error",
+        "no-useless-concat": "error",
+        "no-useless-return": "error",
+        "no-warning-comments": "warn",
+        "object-curly-spacing": [ "error", "always", {
+            arraysInObjects: false,
+            objectsInObjects: false
+        }],
         "operator-linebreak": "error",
         "padding-line-between-statements": [ "error", {
             blankLine: "always",
-            prev: "*",
-            next: "return"
+            prev: [
+                "block",
+                "block-like"
+            ],
+            next: "*"
         }, {
             blankLine: "always",
+            prev: "block",
+            next: "export"
+        }, {
+            blankLine: "always",
+            prev: "const",
+            next: "*"
+        }, {
+            blankLine: "never",
+            prev: "singleline-const",
+            next: "singleline-const"
+        }, {
+            blankLine: "always",
+            prev: "let",
+            next: "*"
+        }, {
+            blankLine: "never",
+            prev: "singleline-let",
+            next: "singleline-let"
+        }, {
+            blankLine: "always",
+            prev: "var",
+            next: "*"
+        }, {
+            blankLine: "never",
+            prev: "singleline-var",
+            next: "singleline-var"
+        }, {
+            blankLine: "never",
             prev: [
-                "const",
-                "let",
-                "var"
+                "cjs-export",
+                "cjs-import"
             ],
             next: [
-                "const",
-                "let",
-                "var"
+                "cjs-export",
+                "cjs-import"
+            ]
+        }, {
+            blankLine: "always",
+            prev: "*",
+            next: [
+                "return",
+                "continue",
+                "break",
+                "throw"
             ]
         }, {
             blankLine: "always",
@@ -117,9 +172,13 @@ module.exports = {
         "prefer-arrow-callback": [ "error", {
             allowNamedFunctions: true
         }],
+        "radix": "error",
         "require-await": "error",
         "require-yield": "error",
         "rest-spread-spacing": [ "error", "never" ],
+        "space-in-parens": [ "error", "never" ],
+        "wrap-iife": [ "error", "inside" ],
+        "yoda": "error",
         "import/order": "error",
         "unicorn/no-process-exit": "off"
     }

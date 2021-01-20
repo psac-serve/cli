@@ -1,6 +1,8 @@
 import { Command as AnotherCommand } from "../commands/base";
 import Exit from "../commands/exit";
 
+import CommandNotFoundError from "../errors/command-not-found";
+
 import Module from "./base";
 
 export default class Command extends Module {
@@ -19,9 +21,11 @@ export default class Command extends Module {
         return Promise.resolve();
     }
 
-    use(): { execute: (command: string) => number, list: Record<string, (options: string) => number>[] } {
+    use(): { commands: (command: string) => number, list: Record<string, (options: string) => number>[] } {
         return {
-            execute: (command: string): number => (command.split(" ")[0] in this.execute[0] ? this.execute[0][command.split(" ")[0]](command.split(" ").slice(1).join()) : -1),
+            commands: (command: string): number => (command.split(" ")[0] in this.execute[0]
+                ? this.execute[0][command.split(" ")[0]](command.split(" ").slice(1).join())
+                : (() => { throw new CommandNotFoundError(); })()),
             list: this.execute
         };
     }

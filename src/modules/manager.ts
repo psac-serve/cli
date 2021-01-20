@@ -1,5 +1,7 @@
 import chalk from "chalk";
 
+import ModuleNotFoundError from "../errors/module-not-found";
+
 import Module from "./base";
 
 /**
@@ -52,7 +54,7 @@ export default class ModuleManager {
         const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name) : this.modules.indexOf(name);
 
         if (index == -1) {
-            throw new Error("The module not found in loaded modules");
+            throw new ModuleNotFoundError();
         }
 
         while (!this.modules[index].enabled) {
@@ -96,7 +98,7 @@ export default class ModuleManager {
         const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name) : this.modules.indexOf(name);
 
         if (index == -1) {
-            throw new Error("the module not found in loaded modules");
+            throw new ModuleNotFoundError();
         }
 
         return await this.modules[index].init();
@@ -111,7 +113,7 @@ export default class ModuleManager {
         const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name) : this.modules.indexOf(name);
 
         if (index == -1) {
-            throw new Error("The module not found in loaded modules");
+            throw new ModuleNotFoundError();
         }
 
         return await this.modules[index].close();
