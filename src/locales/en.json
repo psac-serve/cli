@@ -23,5 +23,6 @@
 	"The hostname doesn't support paths, using the root path.": "The hostname doesn't support paths, using the root path.",
 	"Host not found in the arguments!": "Host not found in the arguments!",
 	"Exit the session.": "Exit the session.",
-	"__1.default.use(...).execute is not a function": "__1.default.use(...).execute is not a function"
+	"__1.default.use(...).execute is not a function": "__1.default.use(...).execute is not a function",
+	"Incorrect token.": "Incorrect token."
 }

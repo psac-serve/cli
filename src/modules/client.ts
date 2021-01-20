@@ -98,11 +98,11 @@ export default class Client extends Module {
         if (parsedArguments.verbose) {
             Timer.time();
             this.client.interceptors.request.use((request) => {
-                logger.info(chalk`{greenBright.underline ${__("REQUEST")}} - {yellowBright ${request.method}} ${figures.arrowRight} {blueBright.underline ${request.url}}\n{white ${request.data}}`);
+                logger.info(chalk`{greenBright.underline ${__("REQUEST")}} - {yellowBright ${request.method}} ${figures.arrowRight} {blueBright.underline ${request.url}}${request.data ? chalk`\n{white ${msgpack.unpack(request.data)}}` : ""}`);
 
                 return request;
             }, (error) => {
-                logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}\n{white ${error.data}}`);
+                logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}${error.data ? chalk`\n{white ${msgpack.unpack(error.data)}}` : ""}`);
 
                 return Promise.reject(error);
             });
