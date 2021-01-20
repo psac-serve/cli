@@ -1,5 +1,3 @@
-import chalk from "chalk";
-
 import ModuleNotFoundError from "../errors/module-not-found";
 
 import Module from "./base";
@@ -66,11 +64,6 @@ export default class ModuleManager {
         return this.modules[index].use();
     }
 
-    exit(code: number): void {
-        console.log(chalk`{greenBright Good bye.}`);
-        process.exit(code);
-    }
-
     /**
      * Initialize all loaded modules.
      *
@@ -105,7 +98,7 @@ export default class ModuleManager {
     }
 
     /**
-     * Clsoe specified module.
+     * Close specified module.
      *
      * @returns Promise class to use await / .then().
      */

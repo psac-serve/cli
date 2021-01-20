@@ -58,13 +58,14 @@ const main = async () => {
         return items[Math.floor(Math.random() * items.length)];
     })()}}`);
     console.log("\nType \"help [command];\" for help.\n");
-    manager.use("Prompt")(0);
+
+    const exitCode = manager.use("Prompt")(0);
+
+    console.log(chalk`{greenBright Good bye.}`);
+    await manager.closeAllModules();
+    process.exit(exitCode);
 };
 
-main().then(() => {
-    console.log(chalk`{greenBright Good bye.}`);
-
-    manager.closeAllModules();
-});
+main().then();
 
 

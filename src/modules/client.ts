@@ -1,3 +1,4 @@
+import fs from "fs";
 import axios, { AxiosInstance } from "axios";
 import chalk from "chalk";
 import figures from "figures";
@@ -22,16 +23,19 @@ export default class Client extends Module {
      *
      * @param client The axios instance to use interceptors.
      *
+     * @param saveFile
+     * @param paths
      * @returns The instance of this class.
      */
-    constructor(private client?: AxiosInstance, private saveFile: {hosts: [{token?: string, name: string}?]} = { hosts: []}) {
+    constructor(private client?: AxiosInstance, private saveFile: { hosts: [{ token?: string, name: string }?]} = { hosts: []}, private paths: any = {}) {
         super("Client", "Core module to using this application.");
     }
 
     async init(): Promise<void> {
         const parsedArguments = manager.use("Arguments Manager");
-        const directories = manager.use("Directory Manager");
         const [ logger, verboseLogger ] = manager.use("Logger");
+
+        this.paths = manager.use("Directory Manager");
 
         let host = new URL("http://127.0.0.1");
 
@@ -58,24 +62,40 @@ export default class Client extends Module {
 
         let token: string | undefined;
 
-        if (!fse.existsSync(directories.config)) {
-            await fse.createFile(directories.config);
-            await fse.appendFile(directories.config, msgpack.pack({ hosts: []}, true));
+        if (!fse.existsSync(this.paths.config)) {
+            await fse.createFile(this.paths.config);
+            await fse.appendFile(this.paths.config, msgpack.pack({ hosts: []}, true));
         }
 
-        this.saveFile = msgpack.unpack(await fse.readFile(directories.config));
+        this.saveFile = msgpack.unpack(await fse.readFile(this.paths.config));
 
-        const found = this.saveFile.hosts.find(hostname => hostname && hostname.name === host.hostname);
+        if (this.saveFile.hosts && this.saveFile.hosts.some(hostname => hostname && hostname.name === host.hostname)) {
+            const found = this.saveFile.hosts.find(hostname => hostname && hostname.name === host.hostname);
 
-        if (this.saveFile.hosts && found && found.token) {
-            token = found.token;
+            if (found && "token" in found) {
+                token = found.token;
+            } else if (parsedArguments.token && !token) {
+                try {
+                    token = (await prompt({
+                        type: "password",
+                        name: "token",
+                        message: __("Enter token to connect")
+                    }) as { token: string }).token;
+                } catch {
+                    logger.error("Interrupted the question!");
+
+                    throw new Error("KEYBOARD_INTERRUPT");
+                }
+
+                this.saveFile.hosts.push({ token, name: host.hostname });
+            }
         } else if (parsedArguments.token && !token) {
             try {
                 token = (await prompt({
                     type: "password",
                     name: "token",
                     message: __("Enter token to connect")
-                }) as {token: string}).token;
+                }) as { token: string }).token;
             } catch {
                 logger.error("Interrupted the question!");
 
@@ -157,11 +177,13 @@ export default class Client extends Module {
         this.enabled = true;
     }
 
-    async close(): Promise<void> {
+    close(): Promise<void> {
         this.client = undefined;
         this.enabled = false;
 
-        await fse.writeFile(manager.use("Directory Manager").config, msgpack.pack(this.saveFile, true));
+        fs.writeFileSync(this.paths.config, msgpack.pack(this.saveFile, true));
+
+        return Promise.resolve();
     }
 
     use(): AxiosInstance {
