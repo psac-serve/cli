@@ -1,0 +1,107 @@
+name: PeyangBridge
+
+on:
+  push:
+    paths: ["src/**"]
+
+jobs:
+  peyang2develop:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
+        node: [latest]
+    if: "github.ref == 'refs/heads/peyang'"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: fetch
+        run: git fetch
+      - name: Use Node.js 14
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Change Branch
+        uses: actions/checkout@v2
+        with:
+          ref: develop
+      - name: Configure
+        run: |
+            git config --global user.email "42040068+peyang-Celeron@users.noreply.github.com"
+            git config --global user.name "peyang-Celeron@BOT"
+            echo '[merge "ours"]' >> .git/config
+            echo '  name = "Keep ours merge"' >> .git/config
+            echo '  driver = true' >> .git/config
+      - name: Apply
+        run: git merge --allow-unrelated-histories -Xtheirs "origin/peyang"
+      - name: add
+        run: git add .
+      - name: npm install, eslint
+        run: |
+          npm install -g pnpm
+          pnpm i
+      - name: fix
+        run: "npm run fix"
+      - name: commit
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: "peyang-Celeron@bot"
+          author_email: "42040068+peyang-Celeron@users.noreply.github.com"
+          branch: develop
+          message: "Fix codestyle"
+          signoff: true
+      - name: LogStatus
+        run: git status
+      - name: push
+        run: git push
+  develop2peyang:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
+        node: [latest]
+    if: "github.ref == 'refs/heads/develop'"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: fetch
+        run: git fetch
+      - name: Use Node.js 14
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Change Branch
+        uses: actions/checkout@v2
+        with:
+          ref: peyang
+      - name: dbg
+        run: "ls"
+      - name: Configure
+        run: |
+            git config --global user.email "42040068+peyang-Celeron@users.noreply.github.com"
+            git config --global user.name "peyang-Celeron@BOT"
+            echo '[merge "ours"]' >> .git/config
+            echo '  name = "Keep ours merge"' >> .git/config
+            echo '  driver = true' >> .git/config
+      - name: Apply
+        run: git merge --allow-unrelated-histories -Xtheirs "origin/develop"
+      - name: add
+        run: git add .
+      - name: npm install, eslint
+        run: |
+          npm install -g pnpm
+          pnpm i
+      - name: fix
+        run: "npm run fix"
+      - name: commit
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: "peyang-Celeron@bot"
+          author_email: "42040068+peyang-Celeron@users.noreply.github.com"
+          branch: peyang
+          message: "Fix codestyle"
+          signoff: true
+      - name: LogStatus
+        run: git status
+      - name: push
+        run: git push
