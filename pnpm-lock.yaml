@@ -3,6 +3,7 @@ dependencies:
   '@types/sprintf-js': 1.1.2
   axios: 0.21.1
   chalk: 4.1.0
+  cli-truncate: 2.1.0
   command-line-args: 5.1.1
   command-line-usage: 6.1.1
   enquirer: 2.3.6
@@ -13,6 +14,7 @@ dependencies:
   ora: 5.3.0
   pretty-error: 3.0.3
   readline-sync: 1.4.10
+  repeat-string: 1.6.1
   sprintf-js: 1.1.2
   terminal-link: 2.1.1
 devDependencies:
@@ -23,6 +25,7 @@ devDependencies:
   '@types/msgpack': 0.0.30
   '@types/node': 14.14.22
   '@types/readline-sync': 1.4.3
+  '@types/repeat-string': 1.6.0
   '@typescript-eslint/eslint-plugin': 4.14.0_980e7d90d2d08155204a38366bd3b934
   '@typescript-eslint/parser': 4.14.0_eslint@7.18.0+typescript@4.1.3
   eslint: 7.18.0
@@ -250,6 +253,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-YP9NVli96E+qQLAF2db+VjnAUEeZcFVg4YnMgr8kpDUFwQBnj31rPLOVHmazbKQhaIkJ9cMHsZhpKdzUeL0KTg==
+  /@types/repeat-string/1.6.0:
+    dev: true
+    resolution:
+      integrity: sha512-Nwr4xMZBJKzluvdF9QPKjqFi8EpR63jk0mQPBEXB/+kevUPBftRQrbt24m+NkRh0C9ftrNIqnnsDw9iyQv/j7g==
   /@types/sprintf-js/1.1.2:
     dev: false
     resolution:
@@ -504,7 +511,6 @@ packages:
     resolution:
       integrity: sha512-4470Xi3GAPAjZqFcljX2xzckv1qeKPizoNkiS0+O4IoPR2ZNpcjE0pkhdihlDouK+x6QOast26B4Q/O9DJnwSg==
   /astral-regex/2.0.0:
-    dev: true
     engines:
       node: '>=8'
     resolution:
@@ -722,6 +728,15 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-PC+AmIuK04E6aeSs/pUccSujsTzBhu4HzC2dL+CfJB/Jcc2qTRbEwZQDfIUpt2Xl8BodYBEq8w4fc0kU2I9DjQ==
+  /cli-truncate/2.1.0:
+    dependencies:
+      slice-ansi: 3.0.0
+      string-width: 4.2.0
+    dev: false
+    engines:
+      node: '>=8'
+    resolution:
+      integrity: sha512-n8fOixwDD6b/ObinzTrp1ZKFzbgvKZvuz/TvejnLn1aQfC6r52XEx85FmuC+3HI+JM7coBRXUvNqEU2PHVrHpg==
   /clone-response/1.0.2:
     dependencies:
       mimic-response: 1.0.1
@@ -990,7 +1005,6 @@ packages:
     resolution:
       integrity: sha1-7gHdHKwO08vH/b6jfcCo8c4ALOI=
   /emoji-regex/8.0.0:
-    dev: true
     resolution:
       integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==
   /end-of-stream/1.4.4:
@@ -1763,7 +1777,6 @@ packages:
     resolution:
       integrity: sha1-qIwCU1eR8C7TfHahueqXc8gz+MI=
   /is-fullwidth-code-point/3.0.0:
-    dev: true
     engines:
       node: '>=8'
     resolution:
@@ -3108,7 +3121,6 @@ packages:
     resolution:
       integrity: sha512-ccqoLg+HLOHq1vdfYNm4TBeaCDIi1FLt3wGojTDSvdewUv65oTmI3cnT2E4hRjl1gzKZIPK+KZrXzlUYKnR+vQ==
   /repeat-string/1.6.1:
-    dev: true
     engines:
       node: '>=0.10'
     resolution:
@@ -3284,6 +3296,16 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
+  /slice-ansi/3.0.0:
+    dependencies:
+      ansi-styles: 4.3.0
+      astral-regex: 2.0.0
+      is-fullwidth-code-point: 3.0.0
+    dev: false
+    engines:
+      node: '>=8'
+    resolution:
+      integrity: sha512-pSyv7bSTC7ig9Dcgbw9AuRNUb5k5V6oDudjZoMBSr13qpLBG7tB+zgCkARjq7xIUgdz5P1Qe8u+rSGdouOOIyQ==
   /slice-ansi/4.0.0:
     dependencies:
       ansi-styles: 4.3.0
@@ -3358,7 +3380,6 @@ packages:
       emoji-regex: 8.0.0
       is-fullwidth-code-point: 3.0.0
       strip-ansi: 6.0.0
-    dev: true
     engines:
       node: '>=8'
     resolution:
@@ -3960,11 +3981,13 @@ specifiers:
   '@types/msgpack': ^0.0.30
   '@types/node': ^14.14.22
   '@types/readline-sync': ^1.4.3
+  '@types/repeat-string': ^1.6.0
   '@types/sprintf-js': ^1.1.2
   '@typescript-eslint/eslint-plugin': ^4.14.0
   '@typescript-eslint/parser': ^4.14.0
   axios: ^0.21.1
   chalk: ^4.1.0
+  cli-truncate: ^2.1.0
   command-line-args: ^5.1.1
   command-line-usage: ^6.1.1
   enquirer: ^2.3.6
@@ -3993,6 +4016,7 @@ specifiers:
   remark-lint-no-url-trailing-slash: ^3.0.1
   remark-lint-spaces-around-word: ^0.1.1
   remark-preset-lint-recommended: ^5.0.0
+  repeat-string: ^1.6.1
   sprintf-js: ^1.1.2
   terminal-link: ^2.1.1
   ts-node: ^9.1.1

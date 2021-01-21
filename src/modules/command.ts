@@ -27,8 +27,6 @@ export default class Command extends Module {
             commands: (command: string): number => (command.split(" ")[0] in this.execute[0]
                 ? this.execute[0][command.split(" ")[0]](command.split(" ").slice(1).join())
                 : (() => {
-                    console.log(this.execute);
-
                     throw new CommandNotFoundError();
                 })()),
             list: this.execute

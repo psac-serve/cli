@@ -36,6 +36,7 @@
         "@types/sprintf-js": "^1.1.2",
         "axios": "^0.21.1",
         "chalk": "^4.1.0",
+        "cli-truncate": "^2.1.0",
         "command-line-args": "^5.1.1",
         "command-line-usage": "^6.1.1",
         "enquirer": "^2.3.6",
@@ -46,6 +47,7 @@
         "ora": "^5.3.0",
         "pretty-error": "^3.0.3",
         "readline-sync": "^1.4.10",
+        "repeat-string": "^1.6.1",
         "sprintf-js": "^1.1.2",
         "terminal-link": "^2.1.1"
     },
@@ -57,6 +59,7 @@
         "@types/msgpack": "^0.0.30",
         "@types/node": "^14.14.22",
         "@types/readline-sync": "^1.4.3",
+        "@types/repeat-string": "^1.6.0",
         "@typescript-eslint/eslint-plugin": "^4.14.0",
         "@typescript-eslint/parser": "^4.14.0",
         "eslint": "^7.18.0",

@@ -42,13 +42,16 @@ const manager = new ModuleManager([
     new Prompt()
 ]);
 
-if (hasVerbose && spinner) { spinner.succeed(__("All modules have been resolved successfully. ") + Timer.prettyTime()); }
+if (hasVerbose && spinner) {
+    spinner.succeed(__("All modules have been resolved successfully. ") + Timer.prettyTime());
+}
 
 
 export default manager;
 
-if (hasVerbose) { console.log(chalk.green(figures.tick) + " " + __("Exported Module Manager.")); }
-
+if (hasVerbose) {
+    console.log(chalk.green(figures.tick) + " " + __("Exported Module Manager."));
+}
 
 const main = async () => {
     await manager.initAllModules();

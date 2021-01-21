@@ -28,17 +28,23 @@ export default class Prompt extends Module {
 
             command = readlineSync.question(chalk`{bold {blueBright.underline ${hostname}} as {cyanBright ban-server}${code !== 0 ? chalk.bold(" stopped with " + chalk.redBright(code)) : ""}}\n {magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer) : chalk.blueBright(figures.pointer)}${figures.pointer}} `).trim();
 
-            while (Quotes.check(command)) { command += " " + readlineSync.question(chalk`   {blueBright ${figures.pointer}}     `).trim(); }
-            
+            while (Quotes.check(command)) {
+                command += " " + readlineSync.question(chalk`   {blueBright ${figures.pointer}}     `).trim();
+            }
 
-            if (command.trim() === "" || (command.startsWith("/*") && command.endsWith("*/")) || [ "#", "//", ";" ].some(value => command.trim().startsWith(value))) { return this.use()(0); } else if (command.startsWith("/*") && !command.endsWith("*/")) { console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__("This comment block must be enclosed in */."))); }
-            
+            if (command.trim() === "" || (command.startsWith("/*") && command.endsWith("*/")) || [ "#", "//", ";" ].some(value => command.trim().startsWith(value))) {
+                return this.use()(0);
+            } else if (command.startsWith("/*") && !command.endsWith("*/")) {
+                console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__("This comment block must be enclosed in */.")));
+            }
 
-            while (!command.endsWith(";")) { command += " " + readlineSync.question(chalk`   {greenBright ${figures.pointer}}     `).trim(); }
-            
+            while (!command.endsWith(";")) {
+                command += " " + readlineSync.question(chalk`   {greenBright ${figures.pointer}}     `).trim();
+            }
 
-            do { command = command.slice(0, -1); }
-            while (command.endsWith(";"));
+            do {
+                command = command.slice(0, -1);
+            } while (command.endsWith(";"));
 
             command = command
                 .replace(/\\r/g, "\r")
@@ -58,11 +64,15 @@ export default class Prompt extends Module {
                 stopCode = 1;
             }
 
-            if (stopCode >= 9684) { return stopCode - 9684; }
-            
+            if (stopCode >= 9684) {
+                return stopCode - 9684;
+            }
 
-            if (stopCode == -1) { console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__("Command not found."))); }
-            
+
+            if (stopCode == -1) {
+                console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__("Command not found.")));
+            }
+
 
             return this.use()(stopCode);
         };
