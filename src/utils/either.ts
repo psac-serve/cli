@@ -1,37 +1,29 @@
 export type Result<T, E> = Success<T, E> | Failure<T, E>
 
-export class Success<T, E> 
-{
-    constructor(public readonly value: T) 
-    {}
+export class Success<T, E> {
+    constructor(public readonly value: T) {}
 
     type = "success" as const
 
-    isSuccess(): this is Success<T, E> 
-    {
+    isSuccess(): this is Success<T, E> {
         return true;
     }
 
-    isFailure(): this is Failure<T, E> 
-    {
+    isFailure(): this is Failure<T, E> {
         return false;
     }
 }
 
-export class Failure<T, E> 
-{
-    constructor(public readonly value: E) 
-    {}
+export class Failure<T, E> {
+    constructor(public readonly value: E) {}
 
     type = "failure" as const
 
-    isSuccess(): this is Success<T, E> 
-    {
+    isSuccess(): this is Success<T, E> {
         return false;
     }
 
-    isFailure(): this is Failure<T, E> 
-    {
+    isFailure(): this is Failure<T, E> {
         return true;
     }
 }
