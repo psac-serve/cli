@@ -5,8 +5,9 @@ import { __ } from "i18n";
 
 import manager from "..";
 
-import Module from "./base";
 import Quotes from "../utils/quotes";
+
+import Module from "./base";
 
 export default class Prompt extends Module {
     constructor() {
