@@ -1,5 +1,6 @@
 import { Command as AnotherCommand } from "../commands/base";
 import Exit from "../commands/exit";
+import Modules from "../commands/modules";
 
 import CommandNotFoundError from "../errors/command-not-found";
 
@@ -16,7 +17,7 @@ export default class Command extends Module {
 
     init(): Promise<void> {
         this.enabled = true;
-        this._commands = [ new Exit() ];
+        this._commands = [ new Exit(), new Modules() ];
 
         return Promise.resolve();
     }
@@ -26,6 +27,8 @@ export default class Command extends Module {
             commands: (command: string): number => (command.split(" ")[0] in this.execute[0]
                 ? this.execute[0][command.split(" ")[0]](command.split(" ").slice(1).join())
                 : (() => {
+                    console.log(this.execute);
+
                     throw new CommandNotFoundError();
                 })()),
             list: this.execute

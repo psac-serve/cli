@@ -16,21 +16,21 @@ class VerboseAnotherLogger extends AnotherLogger {
 
     info(message: string, tag?: string) {
         if (!this.verbose) { return; }
-        
+
 
         super.info(message, tag);
     }
 
     warning(message: string, tag?: string) {
         if (!this.verbose) { return; }
-        
+
 
         super.warning(message, tag);
     }
 
     error(message: string, tag?: string) {
         if (!this.verbose) { return; }
-        
+
 
         super.error(message, tag);
     }
@@ -48,7 +48,7 @@ export default class Logger extends Module {
      * @returns The instance of this class.
      */
     constructor(private logger?: AnotherLogger, private verboseLogger?: VerboseAnotherLogger) {
-        super("Logger", "A logging / debugging / beautify output module to manage log file, stdout, and so on");
+        super("Logger", "A logging / debugging / beautify output module to manage log file, stdout, and so on.");
     }
 
     init(): Promise<void> {
@@ -88,7 +88,7 @@ export default class Logger extends Module {
 
     use(): [ AnotherLogger, VerboseAnotherLogger ] {
         if (this.logger instanceof AnotherLogger && this.verboseLogger instanceof VerboseAnotherLogger) { return [ this.logger, this.verboseLogger ]; } else { throw new ModuleNotEnabledError(); }
-        
+
     }
 }
 
