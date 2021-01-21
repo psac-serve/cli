@@ -1,11 +1,9 @@
-import { __ } from "i18n";
-
 import InvalidArgumentsError from "../errors/invalid-arguments";
 import { Command } from "./base";
 
-export default class Exit extends Command {
+export default class Exit extends Command<string> {
     constructor() {
-        super("exit", __("Exit the session."), [ "quit", "bye" ]);
+        super("exit", "Exit the session.", [ "quit", "bye" ]);
     }
 
     public execute(options: string): number {

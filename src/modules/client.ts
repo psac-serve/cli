@@ -26,9 +26,10 @@ export default class Client extends Module {
      * Constructor.
      *
      * @param client The axios instance to use interceptors.
-     *
      * @param saveFile
      * @param paths
+     * @param hostname
+     *
      * @returns The instance of this class.
      */
     constructor(private client?: AxiosInstance, private saveFile: { hosts: [{ token?: string, name: string }?]} = { hosts: []}, private paths: any = {}, private hostname: string = "") {
