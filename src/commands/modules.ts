@@ -6,14 +6,18 @@ import manager from "..";
 
 import { Command } from "./base";
 
-export default class Modules extends Command<undefined> {
-    constructor() {
+export default class Modules extends Command<undefined> 
+{
+    constructor() 
+    {
         super("modules", "Show all loaded modules.", [ "module" ]);
     }
 
-    execute(): number {
+    execute(): number 
+    {
         console.log(chalk`{magentaBright ${figures.pointer} }${__("Loaded modules:")}`);
-        manager.modules.forEach((module) => {
+        manager.modules.forEach((module) => 
+        {
             console.log(`  ${module.enabled ? chalk.green(figures.tick) : chalk.redBright(figures.cross)} ${chalk.cyanBright(module.name)} - ${module.description}`);
         });
 
