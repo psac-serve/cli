@@ -5,74 +5,78 @@ import { __ } from "i18n";
 
 import manager from "..";
 
+import Quotes from "../lib/quotes";
+
 import Module from "./base";
 
-export default class Prompt extends Module 
-{
-    constructor() 
-    {
+export default class Prompt extends Module {
+    constructor() {
         super("Prompt", "Show beauty prompts.");
     }
 
-    init(): Promise<void> 
-    {
+    init(): Promise<void> {
         this.enabled = true;
 
         return Promise.resolve();
     }
 
-    use(): (code: number) => void 
-    {
-        return (code: number) => 
-        {
-            const parsedArguments = manager.use("Arguments Manager");
+    use(): (code: number) => void {
+        const { hostname } = manager.use("Client");
 
-            process.stdout.write(chalk`{bold {blueBright.underline ${parsedArguments.host}} as {cyanBright ban-server}${code !== 0 ? chalk.bold(" stopped with " + chalk.redBright(code)) : ""}}\n {magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer) : chalk.blueBright(figures.pointer)}${figures.pointer}} `);
-
+        return (code: number) => {
             let command = "";
 
-            command = readlineSync.question("").trim();
+            command = readlineSync.question(chalk`{bold {blueBright.underline ${hostname}} as {cyanBright ban-server}${code !== 0 ? chalk.bold(" stopped with " + chalk.redBright(code)) : ""}}\n {magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer) : chalk.blueBright(figures.pointer)}${figures.pointer}} `).trim();
 
-            while (!command.endsWith(";")) 
-            {
-                process.stdout.write(chalk`   {greenBright ${figures.pointer}}     `);
-                command += " " + readlineSync.question("").trim();
+            while (Quotes.check(command)) {
+                command += " " + readlineSync.question(chalk`   {blueBright ${figures.pointer}}     `).trim();
             }
 
-            do 
-            
+            if (command.trim() === "" || (command.startsWith("/*") && command.endsWith("*/")) || [ "#", "//", ";" ].some(value => command.trim().startsWith(value))) {
+                return this.use()(0);
+            } else if (command.startsWith("/*") && !command.endsWith("*/")) {
+                console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__("This comment block must be enclosed in */.")));
+            }
+
+            while (!command.endsWith(";")) {
+                command += " " + readlineSync.question(chalk`   {greenBright ${figures.pointer}}     `).trim();
+            }
+
+            do {
                 command = command.slice(0, -1);
-            while (command.endsWith(";"));
+            } while (command.endsWith(";"));
+
+            command = command
+                .replace(/\\r/g, "\r")
+                .replace(/\\n/g, "\n")
+                .replace(/\\"/g, "\"")
+                .replace(/\\'/g, "'")
+                .replace(/\\`/g, "`")
+                .replace(/(["'`])/g, "");
 
             let stopCode;
 
-            try 
-            {
+            try {
                 stopCode = manager.use("Command").commands(command.trim());
-            }
-            catch (error) 
-            {
+            } catch (error) {
                 console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__(error.message)));
 
                 stopCode = 1;
             }
 
-            if (stopCode >= 9684) 
-            
-                manager.exit(stopCode - 9684);
-            
+            if (stopCode >= 9684) {
+                return stopCode - 9684;
+            }
 
-            if (stopCode == -1) 
-            
+            if (stopCode == -1) {
                 console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__("Command not found.")));
-            
+            }
 
             return this.use()(stopCode);
         };
     }
 
-    close(): Promise<void> 
-    {
+    close(): Promise<void> {
         this.enabled = false;
 
         return Promise.resolve();

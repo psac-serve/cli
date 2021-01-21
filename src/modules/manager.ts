@@ -1,5 +1,3 @@
-import chalk from "chalk";
-
 import ModuleNotFoundError from "../errors/module-not-found";
 
 import Module from "./base";
@@ -7,8 +5,7 @@ import Module from "./base";
 /**
  * The module manager to manage cli modules.
  */
-export default class ModuleManager 
-{
+export default class ModuleManager {
     /**
      * Constructor.
      *
@@ -16,14 +13,12 @@ export default class ModuleManager
      *
      * @returns The instance of this class.
      */
-    constructor(private _modules: Module[]) 
-    {}
+    constructor(private _modules: Module[]) {}
 
     /**
      * Encapsulated _modules value.
      */
-    get modules(): Module[] 
-    {
+    get modules(): Module[] {
         return this._modules;
     }
 
@@ -34,18 +29,14 @@ export default class ModuleManager
      *
      * @returns This method is able to chain.
      */
-    load(module: Module | Module[]): ModuleManager 
-    {
-        if (module instanceof Module) 
-        
+    load(module: Module | Module[]): ModuleManager {
+        if (module instanceof Module) {
             this._modules.push(module);
-        
-        else 
-        
+            this.initModule(module).then();
+        } else {
             this.modules.push(...module);
-        
-
-        this.load(module);
+            module.forEach(element => this.initModule(element));
+        }
 
         return this;
     }
@@ -57,30 +48,20 @@ export default class ModuleManager
      *
      * @returns Result of specified module's use().
      */
-    use(name: string | Module): any 
-    {
+    use(name: string | Module): any {
         const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name) : this.modules.indexOf(name);
 
-        if (index == -1) 
-        
+        if (index == -1) {
             throw new ModuleNotFoundError();
-        
+        }
 
-        while (!this.modules[index].enabled) 
-        
-            if (process.env.DEBUG === "1") 
-            
+        while (!this.modules[index].enabled) {
+            if (process.env.DEBUG === "1") {
                 console.log("Enabling " + this.modules[index].name);
-            
-        
+            }
+        }
 
         return this.modules[index].use();
-    }
-
-    exit(code: number): void 
-    {
-        console.log(chalk`{greenBright Good bye.}`);
-        process.exit(code);
     }
 
     /**
@@ -88,8 +69,7 @@ export default class ModuleManager
      *
      * @returns Promise class to use await / .then().
      */
-    async initAllModules(): Promise<void> 
-    {
+    async initAllModules(): Promise<void> {
         await Promise.all(this.modules.map(module => module.init()));
     }
 
@@ -98,8 +78,7 @@ export default class ModuleManager
      *
      * @returns Promise class to use await / .then().
      */
-    async closeAllModules(): Promise<void> 
-    {
+    async closeAllModules(): Promise<void> {
         await Promise.all(this.modules.map(module => module.close()));
     }
 
@@ -108,31 +87,27 @@ export default class ModuleManager
      *
      * @returns Promise class to use await / .then().
      */
-    async initModule(name: string | Module): Promise<void> 
-    {
+    async initModule(name: string | Module): Promise<void> {
         const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name) : this.modules.indexOf(name);
 
-        if (index == -1) 
-        
+        if (index == -1) {
             throw new ModuleNotFoundError();
-        
+        }
 
         return await this.modules[index].init();
     }
 
     /**
-     * Clsoe specified module.
+     * Close specified module.
      *
      * @returns Promise class to use await / .then().
      */
-    async closeModule(name: string | Module): Promise<void> 
-    {
+    async closeModule(name: string | Module): Promise<void> {
         const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name) : this.modules.indexOf(name);
 
-        if (index == -1) 
-        
+        if (index == -1) {
             throw new ModuleNotFoundError();
-        
+        }
 
         return await this.modules[index].close();
     }

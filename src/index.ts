@@ -2,6 +2,7 @@ import figures from "figures";
 import chalk from "chalk";
 import prettyError from "pretty-error";
 import i18n, { __ } from "i18n";
+import ora from "ora";
 import { sprintf } from "sprintf-js";
 
 import ModuleManager from "./modules/manager";
@@ -12,7 +13,7 @@ import Client from "./modules/client";
 import Command from "./modules/command";
 import Prompt from "./modules/prompt";
 
-import Timer from "./utils/timer";
+import Timer from "./lib/timer";
 
 prettyError.start();
 i18n.configure({
@@ -21,6 +22,16 @@ i18n.configure({
     defaultLocale: "en"
     //defaultLocale: Intl.DateTimeFormat().resolvedOptions().locale === "ja-JP" ? "ja" : "en"
 });
+
+const hasVerbose = /(-v|--verbose)/.test(process.argv.join());
+
+let spinner;
+
+if (hasVerbose) {
+    Timer.time();
+
+    spinner = ora(chalk.magentaBright(figures.pointer) + " " + __("Resolving modules...")).start();
+}
 
 const manager = new ModuleManager([
     new Arguments(),
@@ -31,21 +42,26 @@ const manager = new ModuleManager([
     new Prompt()
 ]);
 
+if (hasVerbose && spinner) {
+    spinner.succeed(__("All modules have been resolved successfully. ") + Timer.prettyTime());
+}
+
 export default manager;
 
-const main = async () => 
-{
+if (hasVerbose) {
+    console.log(chalk.green(figures.tick) + " " + __("Exported Module Manager."));
+}
+
+const main = async () => {
     await manager.initAllModules();
 
     Timer.time();
 
-    const parsedArguments = manager.use("Arguments Manager");
     const [ , verboseLogger ] = manager.use("Logger");
 
     verboseLogger.info(__("Modules loaded. ") + Timer.prettyTime());
-    console.info(chalk`\n{magentaBright ${figures.pointer}} {bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(parsedArguments.host))}}`);
-    console.info(chalk`\n{dim.italic ${(() => 
-    {
+    console.info(chalk`\n{magentaBright ${figures.pointer}} {bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(manager.use("Client").hostname))}}`);
+    console.info(chalk`\n{dim.italic ${(() => {
         const items = [
             "ほーん、で？どうしたいの？",
             "一切手をつけないのも、過ぎた最適化を行うのもよろしくない行為である。間を貫き通せ。",
@@ -60,14 +76,14 @@ const main = async () =>
         return items[Math.floor(Math.random() * items.length)];
     })()}}`);
     console.log("\nType \"help [command];\" for help.\n");
-    manager.use("Prompt")(0);
+
+    const exitCode = manager.use("Prompt")(0);
+
+    console.log(chalk`{greenBright Good bye.}`);
+    await manager.closeAllModules();
+    process.exit(exitCode);
 };
 
-main().then(() => 
-{
-    console.log(chalk`{greenBright Good bye.}`);
-
-    manager.closeAllModules();
-});
+main().then();
 
 
