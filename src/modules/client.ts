@@ -13,7 +13,10 @@ import Timer from "../utils/timer";
 
 import manager from "..";
 
+import ModuleNotEnabledError from "../errors/module-not-enabled";
+
 import Module from "./base";
+
 
 /**
  * The core module to using this application.
@@ -64,6 +67,7 @@ export default class Client extends Module {
         let token: string | undefined;
 
         if (!fse.existsSync(this.paths.config)) {
+            verboseLogger.info(__("Hosts configuration not found, creating new file."));
             await fse.createFile(this.paths.config);
             await fse.appendFile(this.paths.config, zlib.brotliCompressSync(msgpack.pack({ hosts: []}, true)));
         }
@@ -74,9 +78,12 @@ export default class Client extends Module {
             const found = this.saveFile.hosts.find(hostname => hostname && hostname.name === host.hostname);
 
             if (found && "token" in found) {
+                verboseLogger.info(__("Found token in specified host."));
                 token = found.token;
             } else if (parsedArguments.token && !token) {
                 try {
+                    verboseLogger.info(__("No token found, asking the user."));
+
                     token = (await prompt({
                         type: "password",
                         name: "token",
@@ -92,6 +99,8 @@ export default class Client extends Module {
             }
         } else if (parsedArguments.token && !token) {
             try {
+                verboseLogger.info(__("No token found, asking the user."));
+
                 token = (await prompt({
                     type: "password",
                     name: "token",
@@ -116,6 +125,8 @@ export default class Client extends Module {
             } : { "access-control-allow-origin": "*" }
         });
 
+        verboseLogger.info(sprintf(__("Created new client %s. "), chalk.cyan("main")) + Timer.prettyTime());
+
         if (parsedArguments.verbose) {
             Timer.time();
             this.client.interceptors.request.use((request) => {
@@ -131,6 +142,8 @@ export default class Client extends Module {
         }
 
         if (!parsedArguments["ignore-test"]) {
+            Timer.time();
+
             verboseLogger.info(__("Testing connection using /teapot."));
 
             try {
@@ -156,7 +169,7 @@ export default class Client extends Module {
                 }
             }
 
-            verboseLogger.info(__("Connection and authentication tests finished."));
+            verboseLogger.info(__("Connection and authentication tests finished. ") + Timer.prettyTime());
 
             if (parsedArguments.verbose) {
                 Timer.time();
@@ -189,7 +202,7 @@ export default class Client extends Module {
 
     use(): AxiosInstance {
         if (!this.client) {
-            throw new Error("This module not enabled!");
+            throw new ModuleNotEnabledError();
         }
 
         return this.client;

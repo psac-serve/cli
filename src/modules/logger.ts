@@ -4,7 +4,10 @@ import { __ } from "i18n";
 
 import manager from "..";
 
+import ModuleNotEnabledError from "../errors/module-not-enabled";
+
 import Module from "./base";
+
 
 class VerboseAnotherLogger extends AnotherLogger {
     constructor(public verbose: boolean, public options: LoggerOptions) {
@@ -74,7 +77,7 @@ export default class Logger extends Module {
 
         this.enabled = true;
 
-        this.verboseLogger.info(__("Logger successfly created."));
+        this.verboseLogger.info(__("Logger successfully created."));
 
         return Promise.resolve();
     }
@@ -90,7 +93,7 @@ export default class Logger extends Module {
         if (this.logger instanceof AnotherLogger && this.verboseLogger instanceof VerboseAnotherLogger) {
             return [ this.logger, this.verboseLogger ];
         } else {
-            throw new TypeError("This module not enabled!");
+            throw new ModuleNotEnabledError();
         }
     }
 }

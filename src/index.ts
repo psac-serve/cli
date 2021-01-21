@@ -22,6 +22,14 @@ i18n.configure({
     //defaultLocale: Intl.DateTimeFormat().resolvedOptions().locale === "ja-JP" ? "ja" : "en"
 });
 
+const hasVerbose = /(-v|--verbose)/.test(process.argv.join());
+
+if (hasVerbose) {
+    Timer.time();
+
+    console.log(chalk.magentaBright(figures.pointer) + " " + __("Module resolution step:"));
+}
+
 const manager = new ModuleManager([
     new Arguments(),
     new Directory(),
@@ -31,9 +39,21 @@ const manager = new ModuleManager([
     new Prompt()
 ]);
 
+if (hasVerbose) {
+    console.log(chalk.greenBright(figures.tick) + " " + __("All modules have been resolved successfully. " + Timer.prettyTime()));
+}
+
 export default manager;
 
+if (hasVerbose) {
+    console.log("Exported Module Manager.");
+}
+
 const main = async () => {
+    if (hasVerbose) {
+        console.log(chalk.magentaBright(figures.pointer) + " " + __("Module initialize step:"));
+    }
+
     await manager.initAllModules();
 
     Timer.time();

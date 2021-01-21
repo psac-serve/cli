@@ -7,7 +7,7 @@
 	"Ignore connection testing when starts the client.": "Ignore connection testing when starts the client.",
 	"Show this usage guide.": "Show this usage guide.",
 	"Project home: %s": "Project home: %s",
-	"Logger successfly created.": "Logger successfly created.",
+	"Logger successfully created.": "Logger successfully created.",
 	"The port didn't specify in hostname, using the default port %s.": "The port didn't specify in hostname, using the default port %s.",
 	"Enter token to connect": "Enter token to connect",
 	"Request logger created. ": "Request logger created. ",
@@ -23,6 +23,5 @@
 	"The hostname doesn't support paths, using the root path.": "The hostname doesn't support paths, using the root path.",
 	"Host not found in the arguments!": "Host not found in the arguments!",
 	"Exit the session.": "Exit the session.",
-	"__1.default.use(...).execute is not a function": "__1.default.use(...).execute is not a function",
 	"Incorrect token.": "Incorrect token."
 }
