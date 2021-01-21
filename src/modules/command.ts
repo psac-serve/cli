@@ -1,12 +1,13 @@
 import { Command as AnotherCommand } from "../commands/base";
 import Exit from "../commands/exit";
+import Modules from "../commands/modules";
 
 import CommandNotFoundError from "../errors/command-not-found";
 
 import Module from "./base";
 
 export default class Command extends Module {
-    constructor(private _commands: AnotherCommand[] = [], public execute: Record<string, (options: string) => number>[] = [{}]) {
+    constructor(private _commands: AnotherCommand<string | undefined>[] = [], public execute: Record<string, (options: string) => number>[] = [{}]) {
         super("Command", "Parse / Run the commands.");
     }
 
@@ -16,7 +17,7 @@ export default class Command extends Module {
 
     init(): Promise<void> {
         this.enabled = true;
-        this._commands = [ new Exit() ];
+        this._commands = [ new Exit(), new Modules() ];
 
         return Promise.resolve();
     }
