@@ -5,37 +5,54 @@ import { __ } from "i18n";
 
 import manager from "..";
 
+import Quotes from "../utils/quotes";
+
 import Module from "./base";
 
 export default class Prompt extends Module {
-    constructor(private parsedArguments: any = {}) {
+    constructor() {
         super("Prompt", "Show beauty prompts.");
     }
 
     init(): Promise<void> {
         this.enabled = true;
-        this.parsedArguments = manager.use("Arguments Manager");
 
         return Promise.resolve();
     }
 
     use(): (code: number) => void {
+        const { hostname } = manager.use("Client");
+
         return (code: number) => {
-
-            process.stdout.write(chalk`{bold {blueBright.underline ${this.parsedArguments.host}} as {cyanBright ban-server}${code !== 0 ? chalk.bold(" stopped with " + chalk.redBright(code)) : ""}}\n {magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer) : chalk.blueBright(figures.pointer)}${figures.pointer}} `);
-
             let command = "";
 
-            command = readlineSync.question("").trim();
+            command = readlineSync.question(chalk`{bold {blueBright.underline ${hostname}} as {cyanBright ban-server}${code !== 0 ? chalk.bold(" stopped with " + chalk.redBright(code)) : ""}}\n {magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer) : chalk.blueBright(figures.pointer)}${figures.pointer}} `).trim();
+
+            while (Quotes.check(command)) {
+                command += " " + readlineSync.question(chalk`   {blueBright ${figures.pointer}}     `).trim();
+            }
+
+            if (command.trim() === "" || (command.startsWith("/*") && command.endsWith("*/")) || [ "#", "//", ";" ].some(value => command.trim().startsWith(value))) {
+                return this.use()(0);
+            } else if (command.startsWith("/*") && !command.endsWith("*/")) {
+                console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__("This comment block must be enclosed in */.")));
+            }
 
             while (!command.endsWith(";")) {
-                process.stdout.write(chalk`   {greenBright ${figures.pointer}}     `);
-                command += " " + readlineSync.question("").trim();
+                command += " " + readlineSync.question(chalk`   {greenBright ${figures.pointer}}     `).trim();
             }
 
             do {
                 command = command.slice(0, -1);
             } while (command.endsWith(";"));
+
+            command = command
+                .replace(/\\r/g, "\r")
+                .replace(/\\n/g, "\n")
+                .replace(/\\"/g, "\"")
+                .replace(/\\'/g, "'")
+                .replace(/\\`/g, "`")
+                .replace(/(["'`])/g, "");
 
             let stopCode;
 
