@@ -13,7 +13,7 @@ import Client from "./modules/client";
 import Command from "./modules/command";
 import Prompt from "./modules/prompt";
 
-import Timer from "./utils/timer";
+import Timer from "./lib/timer";
 
 prettyError.start();
 i18n.configure({

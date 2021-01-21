@@ -9,7 +9,7 @@ import { prompt } from "enquirer";
 import { sprintf } from "sprintf-js";
 import { __ } from "i18n";
 
-import Timer from "../utils/timer";
+import Timer from "../lib/timer";
 
 import manager from "..";
 

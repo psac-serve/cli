@@ -5,7 +5,7 @@ import { __ } from "i18n";
 
 import manager from "..";
 
-import Quotes from "../utils/quotes";
+import Quotes from "../lib/quotes";
 
 import Module from "./base";
 
