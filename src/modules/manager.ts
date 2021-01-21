@@ -32,11 +32,11 @@ export default class ModuleManager {
     load(module: Module | Module[]): ModuleManager {
         if (module instanceof Module) {
             this._modules.push(module);
+            this.initModule(module).then();
         } else {
             this.modules.push(...module);
+            module.forEach(element => this.initModule(element));
         }
-
-        this.load(module);
 
         return this;
     }

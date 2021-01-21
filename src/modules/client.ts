@@ -31,7 +31,7 @@ export default class Client extends Module {
      * @param paths
      * @returns The instance of this class.
      */
-    constructor(private client?: AxiosInstance, private saveFile: { hosts: [{ token?: string, name: string }?]} = { hosts: []}, private paths: any = {}) {
+    constructor(private client?: AxiosInstance, private saveFile: { hosts: [{ token?: string, name: string }?]} = { hosts: []}, private paths: any = {}, private hostname: string = "") {
         super("Client", "Core module to using this application.");
     }
 
@@ -56,13 +56,15 @@ export default class Client extends Module {
 
         if (host.protocol === "https:") {
             host.protocol = "http:";
-            verboseLogger.warning(__("HTTPS protocol doesn't support, using HTTP protocol instead."));
+            verboseLogger.warning(__("The server doesn't support HTTPS protocol, using HTTP protocol instead."));
         }
 
         if (host.pathname !== "/") {
             host.pathname = "/";
             verboseLogger.warning(__("The hostname doesn't support paths, using the root path."));
         }
+
+        this.hostname = host.hostname;
 
         let token: string | undefined;
 
@@ -96,6 +98,7 @@ export default class Client extends Module {
                 }
 
                 this.saveFile.hosts.push({ token, name: host.hostname });
+                verboseLogger.info(__("Hostname has been pushed."));
             }
         } else if (parsedArguments.token && !token) {
             try {
@@ -113,6 +116,7 @@ export default class Client extends Module {
             }
 
             this.saveFile.hosts.push({ token, name: host.hostname });
+            verboseLogger.info(__("Hostname has been pushed."));
         }
 
         Timer.time();
@@ -150,7 +154,7 @@ export default class Client extends Module {
                 await this.client.get("/teapot");
             } catch (error) {
                 if (!error.response.status) {
-                    throw new Error(error);
+                    throw new Error(__("Cannot connect to the server."));
                 }
 
                 switch (error.response.status) {
@@ -200,11 +204,11 @@ export default class Client extends Module {
         return Promise.resolve();
     }
 
-    use(): AxiosInstance {
+    use(): { instance: AxiosInstance, hostname: string } {
         if (!this.client) {
             throw new ModuleNotEnabledError();
         }
 
-        return this.client;
+        return { instance: this.client, hostname: this.hostname };
     }
 }

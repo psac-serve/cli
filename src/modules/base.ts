@@ -1,11 +1,11 @@
 import { __ } from "i18n";
 
 /**
- * The abstract base class to implement module operations and necessary informations.
+ * The abstract base class to implement module operations and necessary information.
  */
 export default abstract class Module {
     /**
-     * The boolean value whether this module is runnning / enabled.
+     * The boolean value whether this module is running / enabled.
      */
     public enabled = false
 
