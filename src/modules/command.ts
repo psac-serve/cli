@@ -6,7 +6,7 @@ import CommandNotFoundError from "../errors/command-not-found";
 import Module from "./base";
 
 export default class Command extends Module {
-    constructor(private _commands: AnotherCommand[] = [], public execute: Record<string, (options: string) => number>[] = [{}]) {
+    constructor(private _commands: AnotherCommand<string | undefined>[] = [], public execute: Record<string, (options: string) => number>[] = [{}]) {
         super("Command", "Parse / Run the commands.");
     }
 
@@ -26,7 +26,7 @@ export default class Command extends Module {
             commands: (command: string): number => (command.split(" ")[0] in this.execute[0]
                 ? this.execute[0][command.split(" ")[0]](command.split(" ").slice(1).join())
                 : (() => {
-                    throw new CommandNotFoundError(); 
+                    throw new CommandNotFoundError();
                 })()),
             list: this.execute
         };
