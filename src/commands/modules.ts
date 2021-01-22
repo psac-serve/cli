@@ -23,7 +23,7 @@ export default class Modules extends Command<string> {
             const max = Math.max(...manager.modules.map(module => module.name.length));
 
             console.log(chalk`{magentaBright ${figures.pointer} }${__("Loaded modules:")}`);
-            manager.modules.forEach(module => console.log(cliTruncate(`  ${module.enabled ? chalk.green(figures.tick) : chalk.redBright(figures.cross)} ${chalk.cyanBright(module.name)}${repeat(" ", max - module.name.length)} - ${chalk.whiteBright(module.description)}`, process.stdout.columns)));
+            manager.modules.forEach(module => console.log(cliTruncate(`  ${module.enabled ? chalk.green(figures.tick) : chalk.redBright(figures.cross)} ${chalk.cyanBright(module.name)}${repeat(" ", max - module.name.length)} - ${chalk.whiteBright(module.description)}`, process.stdout.columns, { space: true })));
 
             return 0;
         } else {
