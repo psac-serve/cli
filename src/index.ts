@@ -4,6 +4,7 @@ import prettyError from "pretty-error";
 import i18n, { __ } from "i18n";
 import ora from "ora";
 import { sprintf } from "sprintf-js";
+import sudoBlock from "sudo-block";
 
 import cliCursor from "cli-cursor";
 
@@ -17,6 +18,11 @@ import Prompt from "./modules/prompt";
 
 import Timer from "./lib/timer";
 
+sudoBlock(chalk`{redBright ${figures.cross} {underline error} Do not run this app with root permissions.}\n` +
+          chalk`        If running without sudo doesn't work, you can either fix your permission\n` +
+          chalk`        problems or change where {greenBright npm} stores global packages by putting {magentaBright.underline ~/npm/bin}\n` +
+          chalk`        in your {blueBright PATH} and running:\n` +
+          chalk`          {dim $} {greenBright npm} {yellowBright config} set {blueBright prefix} {magentaBright.underline ~/npm}`);
 prettyError.start();
 cliCursor.hide();
 i18n.configure({
