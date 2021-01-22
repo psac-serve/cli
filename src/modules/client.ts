@@ -69,9 +69,9 @@ export default class Client extends Module {
         let token: string | undefined;
 
         if (!fse.existsSync(this.paths.config)) {
-            verboseLogger.info(__("Hosts configuration not found, creating new file."));
+            verboseLogger.info(sprintf(__("Hosts configuration not found, creating new file with mode %s."), chalk.blueBright("0600")));
             await fse.createFile(this.paths.config);
-            await fse.appendFile(this.paths.config, zlib.brotliCompressSync(msgpack.pack({ hosts: []}, true)));
+            await Promise.all([ fse.chmod(this.paths.config, 0o600), fse.appendFile(this.paths.config, zlib.brotliCompressSync(msgpack.pack({ hosts: []}, true))) ]);
         }
 
         this.saveFile = msgpack.unpack(zlib.brotliDecompressSync(Buffer.from(await fse.readFile(this.paths.config))));

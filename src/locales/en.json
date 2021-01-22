@@ -18,7 +18,7 @@
 	"Found token in specified host.": "Found token in specified host.",
 	"Host not found in the arguments!": "Host not found in the arguments!",
 	"Hostname has been pushed.": "Hostname has been pushed.",
-	"Hosts configuration not found, creating new file.": "Hosts configuration not found, creating new file.",
+	"Hosts configuration not found, creating new file with mode %s.": "Hosts configuration not found, creating new file with mode %s.",
 	"Ignore connection testing when starts the client.": "Ignore connection testing when starts the client.",
 	"Incorrect token.": "Incorrect token.",
 	"Information for %s": "Information for %s",
