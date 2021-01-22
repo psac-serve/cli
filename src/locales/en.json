@@ -43,5 +43,11 @@
 	"The server doesn't support HTTPS protocol, using HTTP protocol instead.": "The server doesn't support HTTPS protocol, using HTTP protocol instead.",
 	"This comment block must be enclosed in */.": "This comment block must be enclosed in */.",
 	"Welcome to the client operator of %s. The commands end with semicolon ';'.": "Welcome to the client operator of %s. The commands end with semicolon ';'.",
-	"texts is not iterable": "texts is not iterable"
+	"texts is not iterable": "texts is not iterable",
+	"Information for %s": "Information for %s",
+	"Status": "Status",
+	"Enabled": "Enabled",
+	"Chalk template literal is missing 1 closing bracket (`}`)": "Chalk template literal is missing 1 closing bracket (`}`)",
+	"Description": "Description",
+	"The module not found in loaded modules.": "The module not found in loaded modules."
 }

@@ -51,14 +51,15 @@ export default class ModuleManager {
     use(name: string | Module): any {
         const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name) : this.modules.indexOf(name);
 
-        if (index == -1) { throw new ModuleNotFoundError(); }
-        
+        if (index == -1) {
+            throw new ModuleNotFoundError();
+        }
 
         while (!this.modules[index].enabled) {
-            if (process.env.DEBUG === "1") { console.log("Enabling " + this.modules[index].name); } 
+            if (process.env.DEBUG === "1") {
+                console.log("Enabling " + this.modules[index].name);
+            }
         }
-            
-        
 
         return this.modules[index].use();
     }
@@ -90,7 +91,7 @@ export default class ModuleManager {
         const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name) : this.modules.indexOf(name);
 
         if (index == -1) { throw new ModuleNotFoundError(); }
-        
+
 
         return await this.modules[index].init();
     }
@@ -104,7 +105,7 @@ export default class ModuleManager {
         const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name) : this.modules.indexOf(name);
 
         if (index == -1) { throw new ModuleNotFoundError(); }
-        
+
 
         return await this.modules[index].close();
     }
