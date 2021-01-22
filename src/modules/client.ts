@@ -211,6 +211,6 @@ export default class Client extends Module {
             throw new ModuleNotEnabledError();
         }
 
-        return { instance: this.client, hostname: this.hostname };
+        return { instance: this.client, hostname: this.hostname === "127.0.0.1" ? "localhost" : this.hostname };
     }
 }
