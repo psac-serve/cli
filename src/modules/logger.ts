@@ -8,28 +8,33 @@ import ModuleNotEnabledError from "../errors/module-not-enabled";
 
 import Module from "./base";
 
-
 class VerboseAnotherLogger extends AnotherLogger {
     constructor(public verbose: boolean, public options: LoggerOptions) {
         super(options);
     }
 
     info(message: string, tag?: string) {
-        if (!this.verbose) { return; }
+        if (!this.verbose) {
+            return;
+        }
 
 
         super.info(message, tag);
     }
 
     warning(message: string, tag?: string) {
-        if (!this.verbose) { return; }
+        if (!this.verbose) {
+            return;
+        }
 
 
         super.warning(message, tag);
     }
 
     error(message: string, tag?: string) {
-        if (!this.verbose) { return; }
+        if (!this.verbose) {
+            return;
+        }
 
 
         super.error(message, tag);
@@ -87,7 +92,11 @@ export default class Logger extends Module {
     }
 
     use(): [ AnotherLogger, VerboseAnotherLogger ] {
-        if (this.logger instanceof AnotherLogger && this.verboseLogger instanceof VerboseAnotherLogger) { return [ this.logger, this.verboseLogger ]; } else { throw new ModuleNotEnabledError(); }
+        if (this.logger instanceof AnotherLogger && this.verboseLogger instanceof VerboseAnotherLogger) {
+            return [ this.logger, this.verboseLogger ];
+        } else {
+            throw new ModuleNotEnabledError();
+        }
 
     }
 }

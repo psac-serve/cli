@@ -17,7 +17,6 @@ import ModuleNotEnabledError from "../errors/module-not-enabled";
 
 import Module from "./base";
 
-
 /**
  * The core module to using this application.
  */
@@ -154,8 +153,10 @@ export default class Client extends Module {
             try {
                 await this.client.get("/teapot");
             } catch (error) {
-                if (!error.response.status) { throw new Error(__("Cannot connect to the server.")); }
-                
+                if (!error.response.status) {
+                    throw new Error(__("Cannot connect to the server."));
+                }
+
 
                 switch (error.response.status) {
                     case 403:
@@ -205,8 +206,10 @@ export default class Client extends Module {
     }
 
     use(): { instance: AxiosInstance, hostname: string } {
-        if (!this.client) { throw new ModuleNotEnabledError(); }
-        
+        if (!this.client) {
+            throw new ModuleNotEnabledError();
+        }
+
 
         return { instance: this.client, hostname: this.hostname };
     }

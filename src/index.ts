@@ -5,6 +5,8 @@ import i18n, { __ } from "i18n";
 import ora from "ora";
 import { sprintf } from "sprintf-js";
 
+import cliCursor from "cli-cursor";
+
 import ModuleManager from "./modules/manager";
 import Arguments from "./modules/arguments";
 import Directory from "./modules/directory";
@@ -16,6 +18,7 @@ import Prompt from "./modules/prompt";
 import Timer from "./lib/timer";
 
 prettyError.start();
+cliCursor.hide();
 i18n.configure({
     locales: [ "en" ],
     directory: `${__dirname}/locales`,
@@ -45,7 +48,6 @@ const manager = new ModuleManager([
 if (hasVerbose && spinner) {
     spinner.succeed(__("All modules have been resolved successfully. ") + Timer.prettyTime());
 }
-
 
 export default manager;
 

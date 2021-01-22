@@ -3,6 +3,8 @@ import figures from "figures";
 import readlineSync from "readline-sync";
 import { __ } from "i18n";
 
+import cliCursor from "cli-cursor";
+
 import manager from "..";
 
 import Quotes from "../lib/quotes";
@@ -24,6 +26,8 @@ export default class Prompt extends Module {
         const { hostname } = manager.use("Client");
 
         return (code: number) => {
+            cliCursor.show();
+
             let command = "";
 
             command = readlineSync.question(chalk`{bold {blueBright.underline ${hostname}} as {cyanBright ban-server}${code !== 0 ? chalk.bold(" stopped with " + chalk.redBright(code)) : ""}}\n {magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer) : chalk.blueBright(figures.pointer)}${figures.pointer}} `).trim();
@@ -41,6 +45,8 @@ export default class Prompt extends Module {
             while (!command.endsWith(";")) {
                 command += " " + readlineSync.question(chalk`   {greenBright ${figures.pointer}}     `).trim();
             }
+
+            cliCursor.hide();
 
             do {
                 command = command.slice(0, -1);
@@ -68,11 +74,9 @@ export default class Prompt extends Module {
                 return stopCode - 9684;
             }
 
-
             if (stopCode == -1) {
                 console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__("Command not found.")));
             }
-
 
             return this.use()(stopCode);
         };

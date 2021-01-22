@@ -15,9 +15,8 @@ declare global {
 
 Array.prototype.alignWith = (key: string): string[] => {
     const lines = this as unknown as string[];
-    const max   = Math.max(...lines.map(line => line.split(key)[0].length));
 
-    return lines.map(line => line.split(key)[0] + repeat(" ", max - line.split(key)[0].length) + " " + key + " " + line.split(key)[1]);
+    return lines.map(line => line.split(key)[0] + repeat(" ", Math.max(...lines.map(line => line.split(key)[0].length)) - line.split(key)[0].length) + " " + key + " " + line.split(key)[1]);
 };
 
 String.prototype.wrapIn = (columns: number): string => wrapAnsi(this as unknown as string, columns);
