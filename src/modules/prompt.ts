@@ -7,7 +7,7 @@ import cliCursor from "cli-cursor";
 
 import manager from "..";
 
-import Quotes from "../lib/quotes";
+import Quotes from "../utils/quotes";
 
 import Module from "./base";
 

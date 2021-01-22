@@ -16,7 +16,7 @@ import Client from "./modules/client";
 import Command from "./modules/command";
 import Prompt from "./modules/prompt";
 
-import Timer from "./lib/timer";
+import Timer from "./utils/timer";
 
 sudoBlock(chalk`{redBright ${figures.cross} {underline error} Do not run this app with root permissions.}\n` +
           chalk`        If running without sudo doesn't work, you can either fix your permission\n` +
