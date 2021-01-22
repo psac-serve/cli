@@ -5,6 +5,8 @@ import i18n, { __ } from "i18n";
 import ora from "ora";
 import { sprintf } from "sprintf-js";
 
+import cliCursor from "cli-cursor";
+
 import ModuleManager from "./modules/manager";
 import Arguments from "./modules/arguments";
 import Directory from "./modules/directory";
@@ -16,6 +18,7 @@ import Prompt from "./modules/prompt";
 import Timer from "./lib/timer";
 
 prettyError.start();
+cliCursor.hide();
 i18n.configure({
     locales: [ "en" ],
     directory: `${__dirname}/locales`,
@@ -27,8 +30,7 @@ const hasVerbose = /(-v|--verbose)/.test(process.argv.join());
 
 let spinner;
 
-if (hasVerbose) 
-{
+if (hasVerbose) {
     Timer.time();
 
     spinner = ora(chalk.magentaBright(figures.pointer) + " " + __("Resolving modules...")).start();
@@ -43,22 +45,17 @@ const manager = new ModuleManager([
     new Prompt()
 ]);
 
-if (hasVerbose && spinner) 
-
-    spinner.succeed(__("All modules have been resolved successfully. ") + Timer.prettyTime()); 
-
-
+if (hasVerbose && spinner) {
+    spinner.succeed(__("All modules have been resolved successfully. ") + Timer.prettyTime());
+}
 
 export default manager;
 
-if (hasVerbose) 
+if (hasVerbose) {
+    console.log(chalk.green(figures.tick) + " " + __("Exported Module Manager."));
+}
 
-    console.log(chalk.green(figures.tick) + " " + __("Exported Module Manager.")); 
-
-
-
-const main = async () => 
-{
+const main = async () => {
     await manager.initAllModules();
 
     Timer.time();
@@ -67,8 +64,7 @@ const main = async () =>
 
     verboseLogger.info(__("Modules loaded. ") + Timer.prettyTime());
     console.info(chalk`\n{magentaBright ${figures.pointer}} {bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(manager.use("Client").hostname))}}`);
-    console.info(chalk`\n{dim.italic ${(() => 
-    {
+    console.info(chalk`\n{dim.italic ${(() => {
         const items = [
             "ほーん、で？どうしたいの？",
             "一切手をつけないのも、過ぎた最適化を行うのもよろしくない行為である。間を貫き通せ。",
