@@ -40,7 +40,7 @@ jobs:
                 run: |
                     npx pnpm i
             -   name: Fix code using ESLint
-                run: "npm run fix"
+                run: "npm run fix || true"
             -   name: Commit changes
                 uses: EndBug/add-and-commit@v7
                 with:
@@ -89,7 +89,7 @@ jobs:
             -   name: Install dependencies using pnpm
                 run: npx pnpm i
             -   name: Fix code using ESLint
-                run: "npm run fix"
+                run: "npm run fix || true"
             -   name: Commit changes
                 uses: EndBug/add-and-commit@v7
                 with:
