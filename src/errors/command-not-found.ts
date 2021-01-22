@@ -5,4 +5,3 @@ export default class CommandNotFoundError extends Error {
         super(__("Command not found."));
     }
 }
-

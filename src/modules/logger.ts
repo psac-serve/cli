@@ -18,7 +18,6 @@ class VerboseAnotherLogger extends AnotherLogger {
             return;
         }
 
-
         super.info(message, tag);
     }
 
@@ -27,7 +26,6 @@ class VerboseAnotherLogger extends AnotherLogger {
             return;
         }
 
-
         super.warning(message, tag);
     }
 
@@ -35,7 +33,6 @@ class VerboseAnotherLogger extends AnotherLogger {
         if (!this.verbose) {
             return;
         }
-
 
         super.error(message, tag);
     }

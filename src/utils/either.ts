@@ -1,9 +1,9 @@
 export type Result<T, E> = Success<T, E> | Failure<T, E>
 
 export class Success<T, E> {
-    constructor(public readonly value: T) {}
+    type = "success" as const;
 
-    type = "success" as const
+    constructor(public readonly value: T) {}
 
     isSuccess(): this is Success<T, E> {
         return true;
@@ -15,9 +15,9 @@ export class Success<T, E> {
 }
 
 export class Failure<T, E> {
-    constructor(public readonly value: E) {}
+    type = "failure" as const;
 
-    type = "failure" as const
+    constructor(public readonly value: E) {}
 
     isSuccess(): this is Success<T, E> {
         return false;

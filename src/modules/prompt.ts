@@ -30,13 +30,17 @@ export default class Prompt extends Module {
 
             let command = "";
 
-            command = readlineSync.question(chalk`{bold {blueBright.underline ${hostname}} as {cyanBright ban-server}${code !== 0 ? chalk.bold(" stopped with " + chalk.redBright(code)) : ""}}\n {magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer) : chalk.blueBright(figures.pointer)}${figures.pointer}} `).trim();
+            command = readlineSync.question(chalk`{bold {blueBright.underline ${hostname}} as {cyanBright ban-server}${code !== 0
+                ? chalk.bold(" stopped with " + chalk.redBright(code))
+                : ""}}\n {magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer)
+                : chalk.blueBright(figures.pointer)}${figures.pointer}} `).trim();
 
             while (Quotes.check(command)) {
                 command += " " + readlineSync.question(chalk`   {blueBright ${figures.pointer}}     `).trim();
             }
 
-            if (command.trim() === "" || (command.startsWith("/*") && command.endsWith("*/")) || [ "#", "//", ";" ].some(value => command.trim().startsWith(value))) {
+            if (command.trim() === "" || (command.startsWith("/*") && command.endsWith("*/")) || [ "#", "//", ";" ].some(value => command.trim()
+                .startsWith(value))) {
                 return this.use()(0);
             } else if (command.startsWith("/*") && !command.endsWith("*/")) {
                 console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__("This comment block must be enclosed in */.")));

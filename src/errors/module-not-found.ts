@@ -5,4 +5,3 @@ export default class ModuleNotFoundError extends Error {
         super(__("The module not found in loaded modules."));
     }
 }
-

@@ -31,7 +31,7 @@ export default class Client extends Module {
      *
      * @returns The instance of this class.
      */
-    constructor(private client?: AxiosInstance, private saveFile: { hosts: [{ token?: string, name: string }?]} = { hosts: []}, private paths: any = {}, private hostname: string = "") {
+    constructor(private client?: AxiosInstance, private saveFile: { hosts: [ { token?: string, name: string }? ] } = { hosts: []}, private paths: any = {}, private hostname: string = "") {
         super("Client", "Core module to using this application.");
     }
 
@@ -134,11 +134,13 @@ export default class Client extends Module {
         if (parsedArguments.verbose) {
             Timer.time();
             this.client.interceptors.request.use((request) => {
-                logger.info(chalk`{greenBright.underline ${__("REQUEST")}} - {yellowBright ${request.method}} ${figures.arrowRight} {blueBright.underline ${request.url}}${request.data ? chalk`\n{white ${msgpack.unpack(request.data)}}` : ""}`);
+                logger.info(chalk`{greenBright.underline ${__("REQUEST")}} - {yellowBright ${request.method}} ${figures.arrowRight} {blueBright.underline ${request.url}}${request.data
+                    ? chalk`\n{white ${msgpack.unpack(request.data)}}` : ""}`);
 
                 return request;
             }, (error) => {
-                logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}${error.data ? chalk`\n{white ${msgpack.unpack(error.data)}}` : ""}`);
+                logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}${error.data
+                    ? chalk`\n{white ${msgpack.unpack(error.data)}}` : ""}`);
 
                 return Promise.reject(error);
             });
@@ -156,7 +158,6 @@ export default class Client extends Module {
                 if (!error.response.status) {
                     throw new Error(__("Cannot connect to the server."));
                 }
-
 
                 switch (error.response.status) {
                     case 403:
@@ -209,7 +210,6 @@ export default class Client extends Module {
         if (!this.client) {
             throw new ModuleNotEnabledError();
         }
-
 
         return { instance: this.client, hostname: this.hostname };
     }

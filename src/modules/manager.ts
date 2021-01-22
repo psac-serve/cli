@@ -49,7 +49,8 @@ export default class ModuleManager {
      * @returns Result of specified module's use().
      */
     use(name: string | Module): any {
-        const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name) : this.modules.indexOf(name);
+        const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name)
+            : this.modules.indexOf(name);
 
         if (index == -1) {
             throw new ModuleNotFoundError();
@@ -88,7 +89,8 @@ export default class ModuleManager {
      * @returns Promise class to use await / .then().
      */
     async initModule(name: string | Module): Promise<void> {
-        const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name) : this.modules.indexOf(name);
+        const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name)
+            : this.modules.indexOf(name);
 
         if (index == -1) {
             throw new ModuleNotFoundError();
@@ -103,7 +105,8 @@ export default class ModuleManager {
      * @returns Promise class to use await / .then().
      */
     async closeModule(name: string | Module): Promise<void> {
-        const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name) : this.modules.indexOf(name);
+        const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name)
+            : this.modules.indexOf(name);
 
         if (index == -1) {
             throw new ModuleNotFoundError();

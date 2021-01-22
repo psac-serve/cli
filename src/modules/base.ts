@@ -7,7 +7,7 @@ export default abstract class Module {
     /**
      * The boolean value whether this module is running / enabled.
      */
-    public enabled = false
+    public enabled = false;
 
     /**
      * Constructor.
