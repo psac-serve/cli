@@ -19,8 +19,8 @@ export default class CliComponents {
 
         return contents.map((content) => {
             const
-                titleText   = chalk`{blueBright ${Object.keys(content)[0].trim()}}${repeat(" ", max - stringWidth(Object.keys(content)[0].trim()))} `,
-                merged      = titleText + Object.values(content)[0].split("\n").map((line, index) => (index === 0 ? line.trim() : repeat(" ", stringWidth(titleText)) + line.trim())).join("\n");
+                titleText = chalk`{blueBright ${Object.keys(content)[0].trim()}}${repeat(" ", max - stringWidth(Object.keys(content)[0].trim()))} `,
+                merged    = titleText + Object.values(content)[0].split("\n").map((line, index) => (index === 0 ? line.trim() : repeat(" ", stringWidth(titleText)) + line.trim())).join("\n");
 
             return truncate ? cliTruncate(merged, process.stdout.columns, { space: true }) : merged;
         }).join("\n");

@@ -17,14 +17,21 @@ export default class Modules extends Command<string> {
     }
 
     execute(options: string): number {
-        if (options.trim() === "") {
+        let subCmd: "show" | "list";
 
+        if (options.trim() === "" || options.trim().split(" ")[0]) {
+            subCmd = "list";
+        } else {
+            subCmd = "show";
+        }
+
+        return { "list": () => {
             console.log(CliComponents.heading(__("Loaded modules")));
             console.log(CliComponents.keyValueContent(manager.modules.map(module => ({ [(module.enabled ? chalk.green(figures.tick) : chalk.redBright(figures.cross)) + " " + chalk.blueBright(module.name)]: module.description })), { truncate: true }));
 
             return 0;
-        } else {
-            const index = manager.modules.map(module => module.name).indexOf(options);
+        }, "show": () => {
+            const index = manager.modules.map(module => module.name.toLowerCase()).indexOf(options.trim().split(" ")[1].toLowerCase());
 
             if (index == -1) {
                 throw new ModuleNotFoundError();
@@ -37,6 +44,6 @@ export default class Modules extends Command<string> {
             console.log(`    ${chalk.cyanBright(__("Description"))} ${chalk.whiteBright(foundModule.description)}`);
 
             return 0;
-        }
+        } }[subCmd]();
     }
 }

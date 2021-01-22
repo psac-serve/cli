@@ -25,7 +25,7 @@ export default class Command extends Module {
     use(): { commands: (command: string) => number, list: Record<string, (options: string) => number>[] } {
         return {
             commands: (command: string): number => (command.split(" ")[0] in this.execute[0]
-                ? this.execute[0][command.split(" ")[0]](command.split(" ").slice(1).join())
+                ? this.execute[0][command.split(" ")[0]](command.split(" ").slice(1).join(" "))
                 : (() => {
                     throw new CommandNotFoundError();
                 })()),

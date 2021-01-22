@@ -23,6 +23,7 @@
 	"Incorrect token.": "Incorrect token.",
 	"Information for %s": "Information for %s",
 	"Invalid arguments.": "Invalid arguments.",
+	"Loaded modules": "Loaded modules",
 	"Logger successfully created.": "Logger successfully created.",
 	"Manage command-line arguments to show usage, arguments, and parse.": "Manage command-line arguments to show usage, arguments, and parse.",
 	"Manage settings / logs dir.": "Manage settings / logs dir.",
@@ -48,6 +49,5 @@
 	"The server doesn't support HTTPS protocol, using HTTP protocol instead.": "The server doesn't support HTTPS protocol, using HTTP protocol instead.",
 	"This comment block must be enclosed in */.": "This comment block must be enclosed in */.",
 	"Welcome to the client operator of %s. The commands end with semicolon ';'.": "Welcome to the client operator of %s. The commands end with semicolon ';'.",
-	"texts is not iterable": "texts is not iterable",
-	"Loaded modules": "Loaded modules"
+	"Subcommand not found.": "Subcommand not found."
 }

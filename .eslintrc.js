@@ -83,7 +83,7 @@ module.exports = {
         }],
         "no-multi-assign": "error",
         "no-multi-str": "error",
-        "no-nested-ternaly": "off",
+        "no-nested-ternary": "off",
         "no-process-exit": "off",
         "no-return-assign": "error",
         "no-script-url": "error",
