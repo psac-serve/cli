@@ -3,6 +3,7 @@ import cliTruncate from "cli-truncate";
 import repeat from "repeat-string";
 import stringWidth from "string-width";
 import wrapAnsi from "wrap-ansi";
+import CliTable3 from "cli-table3";
 
 export default class CliComponents {
     public static heading(text: string, wrapIn?: number): string {
@@ -24,5 +25,13 @@ export default class CliComponents {
 
             return truncate ? cliTruncate(merged, process.stdout.columns, { space: true }) : merged;
         }).join("\n");
+    }
+
+    public static table(options?: CliTable3.TableInstanceOptions): CliTable3.Table {
+        return new CliTable3(options || {});
+    }
+
+    public static tableString(tableInstance: CliTable3): string {
+        return tableInstance.toString();
     }
 }
