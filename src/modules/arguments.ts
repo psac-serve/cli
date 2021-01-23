@@ -12,7 +12,8 @@ import Module from "./base";
 /**
  * An argument manager module to manage command-line arguments.
  */
-export default class Arguments extends Module {
+export default class Arguments extends Module 
+{
     constructor(private _usage: string = commandLineUsage([{
         header: "Minecraft Ban Manager Client",
         content: __("A client application of the server to manage Minecraft's ban / kick records.")
@@ -94,20 +95,26 @@ export default class Arguments extends Module {
         host: string,
         "ignore-test": boolean,
         help: boolean
-    }) {
+    }) 
+    {
         super("Arguments Manager", "Manage command-line arguments to show usage, arguments, and parse.");
     }
 
-    init(): Promise<void> {
-        if (this._arguments.version) {
+    init(): Promise<void> 
+    {
+        if (this._arguments.version) 
+        {
             console.log("v0.1.0");
             process.exit(0);
         }
 
-        if (this._arguments.help) {
+        if (this._arguments.help) 
+        {
             console.log(this._usage);
             process.exit(0);
-        } else if (!("host" in this._arguments)) {
+        }
+        else if (!("host" in this._arguments)) 
+        {
             console.log(chalk`{red ${figures.cross} {underline error} ${__("Host not found in the arguments!")}}`);
             console.log(this._usage);
             process.exit(1);
@@ -118,13 +125,15 @@ export default class Arguments extends Module {
         return Promise.resolve();
     }
 
-    close(): Promise<void> {
+    close(): Promise<void> 
+    {
         this.enabled = false;
 
         return Promise.resolve();
     }
 
-    use(): { version: boolean, verbose: boolean, token: boolean, host: string, "ignore-test": boolean, help: boolean } {
+    use(): { version: boolean, verbose: boolean, token: boolean, host: string, "ignore-test": boolean, help: boolean } 
+    {
         return this._arguments;
     }
 }

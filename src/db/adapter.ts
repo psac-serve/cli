@@ -9,28 +9,38 @@ const
     stringify = (object: Record<string, unknown>): string => zlib.brotliCompressSync(msgpack.pack(object)).toString("hex"),
     parse = (data: string): Record<string, unknown> => msgpack.unpack(zlib.brotliDecompressSync(data));
 
-export default class CompressedFileSync extends Base {
-    constructor(public source: string, { defaultValue = {}, serialize = stringify, deserialize = parse }) {
+export default class CompressedFileSync extends Base 
+{
+    constructor(public source: string, { defaultValue = {}, serialize = stringify, deserialize = parse }) 
+    {
         super(source, { defaultValue, serialize, deserialize });
     }
 
-    public read() {
-        if (fse.existsSync(this.source)) {
-            try {
+    public read() 
+    {
+        if (fse.existsSync(this.source)) 
+        
+            try 
+            {
                 const data = fse.readFileSync(this.source, "utf-8");
 
                 return this.deserialize ? this.deserialize(data) : this.defaultValue;
-            } catch {
+            }
+            catch 
+            {
                 throw new DatabaseMalformedError();
             }
-        } else {
+        
+        else 
+        {
             fse.writeFileSync(this.source, this.serialize ? this.serialize(this.defaultValue) : zlib.brotliCompressSync(msgpack.pack(this.defaultValue)).toString("hex"), "utf-8");
 
             return this.defaultValue;
         }
     }
 
-    public write(data: string) {
+    public write(data: string) 
+    {
         return fse.writeFileSync(this.source, this.serialize ? this.serialize(data) : this.defaultValue, "utf-8");
     }
 }
