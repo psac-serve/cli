@@ -15,6 +15,7 @@ import Logger from "./modules/logger";
 import Client from "./modules/client";
 import Command from "./modules/command";
 import Prompt from "./modules/prompt";
+import Help from "./modules/help";
 
 import Timer from "./utils/timer";
 
@@ -48,7 +49,8 @@ const manager = new ModuleManager([
     new Logger(),
     new Client(),
     new Command(),
-    new Prompt()
+    new Prompt(),
+    new Help()
 ]);
 
 if (hasVerbose && spinner) {

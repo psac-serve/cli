@@ -1,5 +1,7 @@
 import CliComponents from "../utils/cli/components";
 
+import CommandNotFoundError from "../errors/command-not-found";
+
 import Module from "./base";
 
 type CliHeading = (text: string, wrapIn?: number, indent?: number) => string;
@@ -27,7 +29,11 @@ export default class Help extends Module {
                 CliComponents.blankLine
             ],
             helps: this.helps,
-            getHelp: (command: string) => this.helps[0][command].join("\n")
+            getHelp: (command: string) => (command in this.helps[0]
+                ? this.helps[0][command]
+                : (() => {
+                    throw new CommandNotFoundError();
+                })()).join("\n")
         };
     }
 

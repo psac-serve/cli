@@ -1,22 +1,26 @@
 import chalk from "chalk";
 import figures from "figures";
+import { __ } from "i18n";
 
 import InvalidArgumentsError from "../errors/invalid-arguments";
 
-import manager from "../index";
+import manager from "..";
 
 import { Command } from "./base";
 
-const [ heading, content, , blankLine ] = manager.use("Help").functions;
-
 export default class Exit extends Command<string> {
     constructor() {
+        const [ heading, content, , blankLine ] = manager.use("Help").functions;
+
         super(
             "exit",
             "Exit the session.",
             [
                 heading("Usage", 1),
                 content(chalk`{magentaBright ${figures.pointer}} {greenBright exit} {magenta [code]}{dim ;}`, 2),
+                blankLine(),
+                heading("Arguments", 1),
+                content(chalk`{magenta [code]} - ${__("The exit code to exit with a code.")}`, 2),
                 blankLine(),
                 heading("Examples", 1),
                 content(chalk`{magentaBright ${figures.pointer}} {greenBright exit}{dim ;}`, 2),

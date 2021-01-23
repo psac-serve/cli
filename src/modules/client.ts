@@ -70,8 +70,7 @@ export default class Client extends Module {
 
         if (!fse.existsSync(this.paths.save)) {
             verboseLogger.info(sprintf(__("Hosts configuration not found, creating new file with mode %s."), chalk.blueBright("0600")));
-            await fse.createFile(this.paths.save);
-            await Promise.all([ fse.chmod(this.paths.save, 0o600), fse.appendFile(this.paths.save, zlib.brotliCompressSync(msgpack.pack({ hosts: []}, true))) ]);
+            await Promise.all([ fse.chmod(this.paths.save, 0o600), fse.writeFile(this.paths.save, zlib.brotliCompressSync(msgpack.pack({ hosts: []}, true))) ]);
         }
 
         this.saveFile = msgpack.unpack(zlib.brotliDecompressSync(Buffer.from(await fse.readFile(this.paths.save))));
