@@ -9,8 +9,10 @@ import { Command } from "./base";
 
 const [ heading, content, , blankLine ] = manager.use("Help").functions;
 
-export default class Exit extends Command<string> {
-    constructor() {
+export default class Exit extends Command<string> 
+{
+    constructor() 
+    {
         super(
             "exit",
             "Exit the session.",
@@ -26,14 +28,18 @@ export default class Exit extends Command<string> {
         );
     }
 
-    public execute(options: string): number {
+    public execute(options: string): number 
+    {
         const tokens = options.split(" ");
 
-        if (tokens.length !== 1) {
+        if (tokens.length !== 1) 
+        
             throw new InvalidArgumentsError();
-        } else if (tokens[0] === "") {
+        
+        else if (tokens[0] === "") 
+        
             tokens[0] = "0";
-        }
+        
 
         return +tokens[0] + 9684;
     }

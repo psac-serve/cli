@@ -11,8 +11,10 @@ import { Command } from "./base";
 
 const [ heading, content, keyValueContent, blankLine ] = manager.use("Help").functions;
 
-export default class Modules extends Command<string> {
-    constructor() {
+export default class Modules extends Command<string> 
+{
+    constructor() 
+    {
         super(
             "modules",
             "Show all loaded modules.",
@@ -28,20 +30,24 @@ export default class Modules extends Command<string> {
         );
     }
 
-    execute(options: string): number {
+    execute(options: string): number 
+    {
         return {
-            "list": () => {
+            "list": () => 
+            {
                 console.log(heading(__("Loaded modules")));
                 console.log(keyValueContent(manager.modules.map(module => ({ [(module.enabled ? chalk.green(figures.tick) : chalk.redBright(figures.cross)) + " " + chalk.blueBright(module.name)]: module.description })), { truncate: true }));
 
                 return 0;
             },
-            "show": () => {
+            "show": () => 
+            {
                 const index = manager.modules.map(module => module.name.toLowerCase()).indexOf(options.trim().split(" ")[1].toLowerCase());
 
-                if (index == -1) {
+                if (index == -1) 
+                
                     throw new ModuleNotFoundError();
-                }
+                
 
                 const foundModule = manager.modules[index];
 
