@@ -10,6 +10,10 @@ import manager from "..";
 import Quotes from "../utils/quotes";
 
 import Module from "./base";
+import CommandNotFoundError from "../errors/command-not-found";
+import InvalidArgumentsError from "../errors/invalid-arguments";
+import ModuleNotFoundError from "../errors/module-not-found";
+import SubCommandNotFoundError from "../errors/sub-command-not-found";
 
 export default class Prompt extends Module {
     constructor() {
@@ -69,17 +73,23 @@ export default class Prompt extends Module {
             try {
                 stopCode = manager.use("Command").commands(command.trim());
             } catch (error) {
-                console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__(error.message)));
+                if (error instanceof CommandNotFoundError) {
+                    stopCode = -1;
+                } else if (error instanceof InvalidArgumentsError) {
+                    stopCode = 2;
+                } else if (error instanceof ModuleNotFoundError) {
+                    stopCode = 3;
+                } else if (error instanceof SubCommandNotFoundError) {
+                    stopCode = 4;
+                } else {
+                    stopCode = 1;
+                }
 
-                stopCode = 1;
+                console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__(error.message)));
             }
 
             if (stopCode >= 9684) {
                 return stopCode - 9684;
-            }
-
-            if (stopCode == -1) {
-                console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__("Command not found.")));
             }
 
             return this.use()(stopCode);
