@@ -80,6 +80,10 @@ module.exports = {
         "key-spacing": [ "error", {
             mode: "strict"
         }],
+        "keyword-spacing": [ "error", {
+            before: true,
+            after: true
+        }],
         "no-confusing-arrow": [ "error", {
             allowParens: true
         }],
@@ -103,6 +107,7 @@ module.exports = {
             objectsInObjects: false
         }],
         "operator-linebreak": "error",
+        "padded-blocks": [ "error", "never" ],
         "padding-line-between-statements": [ "error", {
             blankLine: "always",
             prev: [
@@ -177,6 +182,7 @@ module.exports = {
         "require-yield": "error",
         "rest-spread-spacing": [ "error", "never" ],
         "space-in-parens": [ "error", "never" ],
+        "space-infix-ops": "error",
         "wrap-iife": [ "error", "inside" ],
         "yoda": "error",
         "import/order": "error",
