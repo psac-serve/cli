@@ -94,7 +94,6 @@ export default class Logger extends Module {
         } else {
             throw new ModuleNotEnabledError();
         }
-
     }
 }
 
