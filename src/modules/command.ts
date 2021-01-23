@@ -7,7 +7,7 @@ import CommandNotFoundError from "../errors/command-not-found";
 import Module from "./base";
 
 export default class Command extends Module {
-    constructor(private _commands: AnotherCommand<string | undefined>[] = [], public execute: Record<string, (options: string) => number>[] = [{}]) {
+    constructor(private _commands: AnotherCommand<string | undefined>[] = [], public execute: { [command: string]: (options: string) => number }[] = [{}]) {
         super("Command", "Parse / Run the commands.");
     }
 
@@ -22,7 +22,7 @@ export default class Command extends Module {
         return Promise.resolve();
     }
 
-    use(): { commands: (command: string) => number, list: Record<string, (options: string) => number>[] } {
+    use(): { commands: (command: string) => number, list: { [command: string]: (options: string) => number }[] } {
         return {
             commands: (command: string): number => (command.split(" ")[0] in this.execute[0]
                 ? this.execute[0][command.split(" ")[0]](command.split(" ").slice(1).join(" "))

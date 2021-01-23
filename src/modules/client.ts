@@ -68,13 +68,13 @@ export default class Client extends Module {
 
         let token: string | undefined;
 
-        if (!fse.existsSync(this.paths.config)) {
+        if (!fse.existsSync(this.paths.save)) {
             verboseLogger.info(sprintf(__("Hosts configuration not found, creating new file with mode %s."), chalk.blueBright("0600")));
-            await fse.createFile(this.paths.config);
-            await Promise.all([ fse.chmod(this.paths.config, 0o600), fse.appendFile(this.paths.config, zlib.brotliCompressSync(msgpack.pack({ hosts: []}, true))) ]);
+            await fse.createFile(this.paths.save);
+            await Promise.all([ fse.chmod(this.paths.save, 0o600), fse.appendFile(this.paths.save, zlib.brotliCompressSync(msgpack.pack({ hosts: []}, true))) ]);
         }
 
-        this.saveFile = msgpack.unpack(zlib.brotliDecompressSync(Buffer.from(await fse.readFile(this.paths.config))));
+        this.saveFile = msgpack.unpack(zlib.brotliDecompressSync(Buffer.from(await fse.readFile(this.paths.save))));
 
         if (this.saveFile.hosts && this.saveFile.hosts.some(hostname => hostname && hostname.name === host.hostname)) {
             const found = this.saveFile.hosts.find(hostname => hostname && hostname.name === host.hostname);
@@ -201,7 +201,7 @@ export default class Client extends Module {
         this.client = undefined;
         this.enabled = false;
 
-        fs.writeFileSync(this.paths.config, zlib.brotliCompressSync(msgpack.pack(this.saveFile, true)));
+        fs.writeFileSync(this.paths.save, zlib.brotliCompressSync(msgpack.pack(this.saveFile, true)));
 
         return Promise.resolve();
     }

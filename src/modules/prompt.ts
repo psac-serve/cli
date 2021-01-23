@@ -9,24 +9,25 @@ import manager from "..";
 
 import Quotes from "../utils/quotes";
 
-import Module from "./base";
 import CommandNotFoundError from "../errors/command-not-found";
 import InvalidArgumentsError from "../errors/invalid-arguments";
 import ModuleNotFoundError from "../errors/module-not-found";
 import SubCommandNotFoundError from "../errors/sub-command-not-found";
+
+import Module from "./base";
 
 export default class Prompt extends Module {
     constructor() {
         super("Prompt", "Show beauty prompts.");
     }
 
-    init(): Promise<void> {
+    public init(): Promise<void> {
         this.enabled = true;
 
         return Promise.resolve();
     }
 
-    use(): (code: number) => void {
+    public use(): (code: number) => void {
         const { hostname } = manager.use("Client");
 
         return (code: number) => {
@@ -96,7 +97,7 @@ export default class Prompt extends Module {
         };
     }
 
-    close(): Promise<void> {
+    public close(): Promise<void> {
         this.enabled = false;
 
         return Promise.resolve();

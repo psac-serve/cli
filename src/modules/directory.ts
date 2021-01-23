@@ -20,13 +20,14 @@ export default class Directory extends Module {
         return Promise.resolve();
     }
 
-    use(): { config: string, save: string, log: string, mkdirs: () => void } {
+    use(): { config: string, save: string, log: string, help: string, mkdirs: () => void } {
         const baseDirectory = path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli");
 
         return {
             config: path.join(baseDirectory, "psac-client.conf"),
             save: path.join(baseDirectory, "hosts"),
             log: path.join(baseDirectory, "logs"),
+            help: path.join(baseDirectory, "help.db"),
             mkdirs: () => {
                 fse.mkdirsSync(baseDirectory);
                 fse.createFileSync(path.join(baseDirectory, "logs", "debug.log"));

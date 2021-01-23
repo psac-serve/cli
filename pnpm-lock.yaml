@@ -11,7 +11,6 @@ dependencies:
   figures: 3.2.0
   fs-extra: 9.1.0
   i18n: 0.13.2
-  lowdb: 1.0.0
   msgpack: 1.0.3
   ora: 5.3.0
   pretty-error: 3.0.3
@@ -28,7 +27,6 @@ devDependencies:
   '@types/command-line-usage': 5.0.1
   '@types/fs-extra': 9.0.6
   '@types/i18n': 0.12.0
-  '@types/lowdb': 1.0.9
   '@types/msgpack': 0.0.30
   '@types/node': 14.14.22
   '@types/readline-sync': 1.4.3
@@ -237,16 +235,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
-  /@types/lodash/4.14.168:
-    dev: true
-    resolution:
-      integrity: sha512-oVfRvqHV/V6D1yifJbVRU3TMp8OT6o6BG+U9MkwuJ3U8/CsDHvalRpsxBqivn71ztOFZBTfJMvETbqHiaNSj7Q==
-  /@types/lowdb/1.0.9:
-    dependencies:
-      '@types/lodash': 4.14.168
-    dev: true
-    resolution:
-      integrity: sha512-LBRG5EPXFOJDoJc9jACstMhtMP+u+UkPYllBeGQXXKiaHc+uzJs9+/Aynb/5KkX33DtrIiKyzNVTPQc/4RcD6A==
   /@types/mdast/3.0.3:
     dependencies:
       '@types/unist': 2.0.3
@@ -4423,7 +4411,6 @@ specifiers:
   '@types/command-line-usage': ^5.0.1
   '@types/fs-extra': ^9.0.6
   '@types/i18n': ^0.12.0
-  '@types/lowdb': ^1.0.9
   '@types/msgpack': ^0.0.30
   '@types/node': ^14.14.22
   '@types/readline-sync': ^1.4.3
@@ -4448,7 +4435,6 @@ specifiers:
   figures: ^3.2.0
   fs-extra: ^9.1.0
   i18n: ^0.13.2
-  lowdb: ^1.0.0
   msgpack: ^1.0.3
   nodemon: ^2.0.7
   npm-run-all: ^4.1.5
