@@ -1,8 +1,9 @@
 {
     "name": "ban-client",
-    "version": "0.1.0",
+    "version": "0.0.0",
     "description": "A client to manage Minecraft's ban records",
-    "main": "dist/src",
+    "author": "P2P-Develop (https://p2p-dev.team)",
+    "main": "src/index.ts",
     "private": true,
     "scripts": {
         "build": "tsc -p .",
@@ -14,7 +15,7 @@
         "typedoc": "typedoc --out typedoc src"
     },
     "bin": {
-        "psac": "dist/src/index.js"
+        "psac": "dist/index.js"
     },
     "repository": {
         "type": "git",
@@ -25,7 +26,6 @@
         "ban-manager",
         "minecraft"
     ],
-    "author": "P2P-Develop",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/psac-serve/cli/issues"
@@ -33,7 +33,6 @@
     "homepage": "https://github.com/psac-serve/cli#readme",
     "dependencies": {
         "@ptkdev/logger": "^1.7.2",
-        "@types/sprintf-js": "^1.1.2",
         "axios": "^0.21.1",
         "chalk": "^4.1.0",
         "cli-cursor": "^3.1.0",
@@ -45,6 +44,7 @@
         "figures": "^3.2.0",
         "fs-extra": "^9.1.0",
         "i18n": "^0.13.2",
+        "lowdb": "^1.0.0",
         "msgpack": "^1.0.3",
         "ora": "^5.3.0",
         "pretty-error": "^3.0.3",
@@ -62,10 +62,12 @@
         "@types/command-line-usage": "^5.0.1",
         "@types/fs-extra": "^9.0.6",
         "@types/i18n": "^0.12.0",
+        "@types/lowdb": "^1.0.9",
         "@types/msgpack": "^0.0.30",
         "@types/node": "^14.14.22",
         "@types/readline-sync": "^1.4.3",
         "@types/repeat-string": "^1.6.0",
+        "@types/sprintf-js": "^1.1.2",
         "@types/wrap-ansi": "^3.0.0",
         "@typescript-eslint/eslint-plugin": "^4.14.0",
         "@typescript-eslint/parser": "^4.14.0",
