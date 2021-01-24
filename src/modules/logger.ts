@@ -8,46 +8,37 @@ import ModuleNotEnabledError from "../errors/module-not-enabled";
 
 import Module from "./base";
 
-class VerboseAnotherLogger extends AnotherLogger 
-{
-    constructor(public verbose: boolean, public options: LoggerOptions) 
-    {
+class VerboseAnotherLogger extends AnotherLogger {
+    constructor(public verbose: boolean, public options: LoggerOptions) {
         super(options);
     }
 
-    info(message: string, tag?: string) 
-    {
-        if (!this.verbose) 
-        
+    info(message: string, tag?: string) {
+        if (!this.verbose) {
             return;
-        
+        }
 
         super.info(message, tag);
     }
 
-    warning(message: string, tag?: string) 
-    {
-        if (!this.verbose) 
-        
+    warning(message: string, tag?: string) {
+        if (!this.verbose) {
             return;
-        
+        }
 
         super.warning(message, tag);
     }
 
-    error(message: string, tag?: string) 
-    {
-        if (!this.verbose) 
-        
+    error(message: string, tag?: string) {
+        if (!this.verbose) {
             return;
-        
+        }
 
         super.error(message, tag);
     }
 }
 
-export default class Logger extends Module 
-{
+export default class Logger extends Module {
     /**
      * Constructor.
      *
@@ -58,13 +49,11 @@ export default class Logger extends Module
      *
      * @returns The instance of this class.
      */
-    constructor(private logger?: AnotherLogger, private verboseLogger?: VerboseAnotherLogger) 
-    {
+    constructor(private logger?: AnotherLogger, private verboseLogger?: VerboseAnotherLogger) {
         super("Logger", "A logging / debugging / beautify output module to manage log file, stdout, and so on.");
     }
 
-    init(): Promise<void> 
-    {
+    init(): Promise<void> {
         const directories = manager.use("Directory Manager");
 
         directories.mkdirs();
@@ -92,23 +81,19 @@ export default class Logger extends Module
         return Promise.resolve();
     }
 
-    close(): Promise<void> 
-    {
+    close(): Promise<void> {
         this.logger = undefined;
         this.enabled = false;
 
         return Promise.resolve();
     }
 
-    use(): [ AnotherLogger, VerboseAnotherLogger ] 
-    {
-        if (this.logger instanceof AnotherLogger && this.verboseLogger instanceof VerboseAnotherLogger) 
-        
+    use(): [ AnotherLogger, VerboseAnotherLogger ] {
+        if (this.logger instanceof AnotherLogger && this.verboseLogger instanceof VerboseAnotherLogger) {
             return [ this.logger, this.verboseLogger ];
-        
-        else 
-        
+        } else {
             throw new ModuleNotEnabledError();
+        }
     }
 }
 
