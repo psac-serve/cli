@@ -29,8 +29,7 @@ cliCursor.hide();
 i18n.configure({
     locales: [ "en" ],
     directory: `${__dirname}/locales`,
-    defaultLocale: "en"
-    //defaultLocale: Intl.DateTimeFormat().resolvedOptions().locale === "ja-JP" ? "ja" : "en"
+    defaultLocale: "en" //Intl.DateTimeFormat().resolvedOptions().locale === "ja-JP" ? "ja" : "en"
 });
 
 const hasVerbose = /(-v|--verbose)/.test(process.argv.join());
