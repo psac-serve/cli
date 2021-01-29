@@ -1,36 +1,36 @@
 {
     "name": "ban-client",
     "version": "0.0.0",
-    "description": "A client to manage Minecraft's ban records",
-    "author": "P2P-Develop (https://p2p-dev.team)",
-    "main": "src/index.ts",
     "private": true,
-    "scripts": {
-        "build": "tsc -p .",
-        "lint": "npm-run-all -p lint:*",
-        "lint:js": "eslint .",
-        "lint:md": "remark -r .remarkrc.js .",
-        "fix": "eslint --fix .",
-        "start": "nodemon",
-        "typedoc": "typedoc --out typedoc src"
-    },
-    "bin": {
-        "psac": "dist/index.js"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/psac-serve/cli.git"
-    },
+    "description": "A client to manage Minecraft's ban records",
     "keywords": [
         "client",
         "ban-manager",
         "minecraft"
     ],
-    "license": "MIT",
+    "homepage": "https://github.com/psac-serve/cli#readme",
     "bugs": {
         "url": "https://github.com/psac-serve/cli/issues"
     },
-    "homepage": "https://github.com/psac-serve/cli#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/psac-serve/cli.git"
+    },
+    "license": "MIT",
+    "author": "P2P-Develop (https://p2p-dev.team)",
+    "main": "src/index.ts",
+    "bin": {
+        "psac": "dist/index.js"
+    },
+    "scripts": {
+        "build": "tsc -p .",
+        "fix": "eslint --fix .",
+        "lint": "npm-run-all -p lint:*",
+        "lint:js": "eslint .",
+        "lint:md": "remark -r .remarkrc.js .",
+        "start": "nodemon",
+        "typedoc": "typedoc --out typedoc src"
+    },
     "dependencies": {
         "@ptkdev/logger": "^1.7.2",
         "axios": "^0.21.1",
@@ -67,13 +67,13 @@
         "@types/repeat-string": "^1.6.0",
         "@types/sprintf-js": "^1.1.2",
         "@types/wrap-ansi": "^3.0.0",
-        "@typescript-eslint/eslint-plugin": "^4.14.0",
-        "@typescript-eslint/parser": "^4.14.0",
+        "@typescript-eslint/eslint-plugin": "^4.14.1",
+        "@typescript-eslint/parser": "^4.14.1",
         "eslint": "^7.18.0",
         "eslint-plugin-import": "^2.22.1",
         "eslint-plugin-json": "^2.1.2",
         "eslint-plugin-node": "^11.1.0",
-        "eslint-plugin-unicorn": "^26.0.1",
+        "eslint-plugin-unicorn": "^27.0.0",
         "nodemon": "^2.0.7",
         "npm-run-all": "^4.1.5",
         "remark-cli": "^9.0.0",
@@ -89,7 +89,7 @@
         "remark-lint-spaces-around-word": "^0.1.1",
         "remark-preset-lint-recommended": "^5.0.0",
         "ts-node": "^9.1.1",
-        "typedoc": "^0.20.16",
+        "typedoc": "^0.20.19",
         "typescript": "^4.1.3"
     }
 }
