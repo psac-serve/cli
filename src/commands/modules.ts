@@ -5,7 +5,7 @@ import { sprintf } from "sprintf-js";
 
 import CliComponents from "../utils/cli/components";
 
-import manager from "..";
+import manager from "../manager-instance";
 
 import ModuleNotFoundError from "../errors/module-not-found";
 

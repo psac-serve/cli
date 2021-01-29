@@ -5,7 +5,7 @@ import { __ } from "i18n";
 
 import cliCursor from "cli-cursor";
 
-import manager from "..";
+import manager from "../manager-instance";
 
 import Quotes from "../utils/quotes";
 

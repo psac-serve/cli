@@ -11,9 +11,11 @@ import { __ } from "i18n";
 
 import Timer from "../utils/timer";
 
-import manager from "..";
+import { arguments_, default as manager } from "../manager-instance";
 
 import ModuleNotEnabledError from "../errors/module-not-enabled";
+
+import BanClient from "..";
 
 import Module from "./base";
 
@@ -31,22 +33,22 @@ export default class Client extends Module {
      *
      * @returns The instance of this class.
      */
-    constructor(private client?: AxiosInstance, private saveFile: { hosts: [ { token?: string, name: string }? ] } = { hosts: []}, private paths: any = {}, private hostname: string = "") {
+    constructor(private client?: AxiosInstance, private saveFile: { hosts: [ { token?: string, name: string }? ] } = { hosts: []}, private paths: any = {}, private hostname: string = arguments_.hostname as string) {
         super("Client", "Core module to using this application.");
     }
 
     async init(): Promise<void> {
-        const parsedArguments = manager.use("Arguments Manager");
         const [ logger, verboseLogger ] = manager.use("Logger");
+        const { flags } = BanClient;
 
         this.paths = manager.use("Directory Manager");
 
         let host = new URL("http://127.0.0.1");
 
         try {
-            host = new URL(parsedArguments.host.replace("localhost", "127.0.0.1"));
+            host = new URL(this.hostname.replace("localhost", "127.0.0.1"));
         } catch {
-            host = new URL("http://" + parsedArguments.host.replace("localhost", "127.0.0.1"));
+            host = new URL("http://" + this.hostname.replace("localhost", "127.0.0.1"));
         }
 
         if (!host.port) {
@@ -81,7 +83,7 @@ export default class Client extends Module {
             if (found && "token" in found) {
                 verboseLogger.info(__("Found token in specified host."));
                 token = found.token;
-            } else if (parsedArguments.token && !token) {
+            } else if (flags.token && !token) {
                 try {
                     verboseLogger.info(__("No token found, asking the user."));
 
@@ -99,7 +101,7 @@ export default class Client extends Module {
                 this.saveFile.hosts.push({ token, name: host.hostname });
                 verboseLogger.info(__("Hostname has been pushed."));
             }
-        } else if (parsedArguments.token && !token) {
+        } else if (flags.token && !token) {
             try {
                 verboseLogger.info(__("No token found, asking the user."));
 
@@ -130,7 +132,7 @@ export default class Client extends Module {
 
         verboseLogger.info(sprintf(__("Created new client %s. "), chalk.cyan("main")) + Timer.prettyTime());
 
-        if (parsedArguments.verbose) {
+        if (flags.verbose) {
             Timer.time();
             this.client.interceptors.request.use((request) => {
                 logger.info(chalk`{greenBright.underline ${__("REQUEST")}} - {yellowBright ${request.method}} ${figures.arrowRight} {blueBright.underline ${request.url}}${request.data
@@ -146,7 +148,7 @@ export default class Client extends Module {
             logger.info(__("Request logger created. ") + Timer.prettyTime());
         }
 
-        if (!parsedArguments["ignore-test"]) {
+        if (!flags["ignore-test"]) {
             Timer.time();
 
             verboseLogger.info(__("Testing connection using /teapot."));
@@ -176,7 +178,7 @@ export default class Client extends Module {
 
             verboseLogger.info(__("Connection and authentication tests finished. ") + Timer.prettyTime());
 
-            if (parsedArguments.verbose) {
+            if (flags.verbose) {
                 Timer.time();
 
                 this.client.interceptors.response.use((response) => {

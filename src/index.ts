@@ -6,18 +6,12 @@ import ora from "ora";
 import { sprintf } from "sprintf-js";
 import sudoBlock from "sudo-block";
 
+import { Command as OclifCommand, flags } from "@oclif/command";
+
 import cliCursor from "cli-cursor";
 
-import ModuleManager from "./modules/manager";
-import Arguments from "./modules/arguments";
-import Directory from "./modules/directory";
-import Logger from "./modules/logger";
-import Client from "./modules/client";
-import Command from "./modules/command";
-import Prompt from "./modules/prompt";
-import Help from "./modules/help";
-
 import Timer from "./utils/timer";
+import { default as manager, ModuleManagerInstance } from "./manager-instance";
 
 sudoBlock(chalk`{redBright ${figures.cross} {underline error} Do not run this app with root permissions.}\n` +
           chalk`        If running without sudo doesn't work, you can either fix your permission\n` +
@@ -29,69 +23,74 @@ cliCursor.hide();
 i18n.configure({
     locales: [ "en" ],
     directory: `${__dirname}/locales`,
-    defaultLocale: "en" //Intl.DateTimeFormat().resolvedOptions().locale === "ja-JP" ? "ja" : "en"
+    indent: "    ",
+    defaultLocale: "en" // Intl.DateTimeFormat().resolvedOptions().locale === "ja-JP" ? "ja" : "en"
 });
 
-const hasVerbose = /(-v|--verbose)/.test(process.argv.join());
+class BanClient extends OclifCommand {
+    static description = __("A client application of the server to manage Minecraft's ban / kick records.")
 
-let spinner;
+    static flags: flags.Input<{ [key: string]: unknown }> = {
+        version: flags.version({ char: "V", description: __("Show app version.") }),
+        verbose: flags["boolean"]({ char: "v", description: __("Enable verbose output.") }),
+        help: flags.help({ char: "h", description: __("Show this usage guide.") }),
+        token: flags["boolean"]({ char: "t", description: __("Use a token to connect to a server.") }),
+        "ignore-test": flags["boolean"]({ char: "i", description: __("Ignore connection testing.") })
+    }
 
-if (hasVerbose) {
-    Timer.time();
+    static args = [{
+        name: "hostname",
+        description: __("Specify the host to connect. If you not specified the port, the client connects with port 810 (example.com:810)."),
+        required: true
+    }]
 
-    spinner = ora(chalk.magentaBright(figures.pointer) + " " + __("Resolving modules...")).start();
+    async run(): Promise<void> {
+        const { args, flags } = this.parse(BanClient);
+
+        let spinner;
+
+        if (flags.verbose) {
+            Timer.time();
+
+            spinner = ora(__("Resolving modules...")).start();
+        }
+
+        ModuleManagerInstance.register(flags, args);
+
+        await manager.initAllModules();
+
+        if (flags.verbose && spinner) {
+            spinner.succeed(__("All modules have been resolved successfully. ") + Timer.prettyTime());
+        }
+
+        Timer.time();
+
+        const [ , verboseLogger ] = manager.use("Logger");
+
+        verboseLogger.info(__("Modules loaded. ") + Timer.prettyTime());
+        console.info(chalk`\n{magentaBright ${figures.pointer}} {bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(manager.use("Client").hostname))}}`);
+        console.info(chalk`\n{dim.italic ${(() => {
+            const items = [
+                "ほーん、で？どうしたいの？",
+                "一切手をつけないのも、過ぎた最適化を行うのもよろしくない行為である。間を貫き通せ。",
+                "時間の無駄になりそうならせめてOSSにしてしまおう。何も起きないよりも一生待ちぼうけしてた方がマシでしょ？",
+                "う　ご　い　た　！　リ　リ　ー　ス　だ　！",
+                "バグ == 仕様 -> true",
+                "バグが治らないのは私が間違っているからではない。言語の仕様が間違っている。",
+                "コンピューターを人間らしくしたら、プログラミングはされなくなる。ヲタク達の倫理観が崩れるよ。",
+                "ファイアウォールも名前のくせして燃やしたら壊れる。"
+            ];
+
+            return items[Math.floor(Math.random() * items.length)];
+        })()}}`);
+        console.log("\nType \"help [command];\" for help.\n");
+
+        const exitCode = manager.use("Prompt")(0);
+
+        console.log(chalk`{greenBright Good bye.}`);
+        await manager.closeAllModules();
+        process.exit(exitCode);
+    }
 }
 
-const manager = new ModuleManager([
-    new Arguments(),
-    new Directory(),
-    new Logger(),
-    new Client(),
-    new Command(),
-    new Prompt(),
-    new Help()
-]);
-
-if (hasVerbose && spinner) {
-    spinner.succeed(__("All modules have been resolved successfully. ") + Timer.prettyTime());
-}
-
-export default manager;
-
-if (hasVerbose) {
-    console.log(chalk.green(figures.tick) + " " + __("Exported Module Manager."));
-}
-
-const main = async () => {
-    await manager.initAllModules();
-
-    Timer.time();
-
-    const [ , verboseLogger ] = manager.use("Logger");
-
-    verboseLogger.info(__("Modules loaded. ") + Timer.prettyTime());
-    console.info(chalk`\n{magentaBright ${figures.pointer}} {bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(manager.use("Client").hostname))}}`);
-    console.info(chalk`\n{dim.italic ${(() => {
-        const items = [
-            "ほーん、で？どうしたいの？",
-            "一切手をつけないのも、過ぎた最適化を行うのもよろしくない行為である。間を貫き通せ。",
-            "時間の無駄になりそうならせめてOSSにしてしまおう。何も起きないよりも一生待ちぼうけしてた方がマシでしょ？",
-            "う　ご　い　た　！　リ　リ　ー　ス　だ　！",
-            "バグ == 仕様 -> true",
-            "バグが治らないのは私が間違っているからではない。言語の仕様が間違っている。",
-            "コンピューターを人間らしくしたら、プログラミングはされなくなる。ヲタク達の倫理観が崩れるよ。",
-            "ファイアウォールも名前のくせして燃やしたら壊れる。"
-        ];
-
-        return items[Math.floor(Math.random() * items.length)];
-    })()}}`);
-    console.log("\nType \"help [command];\" for help.\n");
-
-    const exitCode = manager.use("Prompt")(0);
-
-    console.log(chalk`{greenBright Good bye.}`);
-    await manager.closeAllModules();
-    process.exit(exitCode);
-};
-
-main().then();
+export = BanClient;

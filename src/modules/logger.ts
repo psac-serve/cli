@@ -2,7 +2,7 @@ import path from "path";
 import { default as AnotherLogger, LoggerOptions } from "@ptkdev/logger";
 import { __ } from "i18n";
 
-import manager from "..";
+import manager from "../manager-instance";
 
 import ModuleNotEnabledError from "../errors/module-not-enabled";
 

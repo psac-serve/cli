@@ -4,7 +4,7 @@
         "module": "commonjs",
         "allowJs": true,
         "sourceMap": true,
-        "outDir": "dist",
+        "outDir": "lib",
         "strict": true,
         "moduleResolution": "node",
         "types": [ "@types/node" ],
@@ -28,6 +28,6 @@
         "noFallthroughCasesInSwitch": true,
         "noEmitOnError": true
     },
-    "include": [ "src", "test" ],
+    "include": "src/**/*",
     "exclude": [ "node_modules" ]
 }

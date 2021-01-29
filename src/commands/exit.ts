@@ -4,7 +4,7 @@ import { __ } from "i18n";
 
 import InvalidArgumentsError from "../errors/invalid-arguments";
 
-import manager from "..";
+import manager from "../manager-instance";
 
 import { Command } from "./base";
 

@@ -35,7 +35,10 @@ export default class ModuleManager {
             this.initModule(module).then();
         } else {
             this.modules.push(...module);
-            module.forEach(element => this.initModule(element));
+
+            for (const element of module) {
+                this.initModule(element).then();
+            }
         }
 
         return this;
