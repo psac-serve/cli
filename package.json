@@ -25,6 +25,7 @@
     "scripts": {
         "build": "tsc -p .",
         "fix": "eslint --fix .",
+        "preinstall": "npx only-allow pnpm",
         "lint": "npm-run-all -p lint:*",
         "lint:js": "eslint .",
         "lint:md": "remark -r .remarkrc.js .",
