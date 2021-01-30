@@ -33,5 +33,8 @@
     "Request logger created. ": "Request logger created. ",
     "REQUEST": "REQUEST",
     "Response logger created. ": "Response logger created. ",
-    "Cannot connect to the server.": "Cannot connect to the server."
+    "Cannot connect to the server.": "Cannot connect to the server.",
+    "Use a file to run actions.": "Use a file to run actions.",
+    "Compress the connection data.": "Compress the connection data.",
+    "Do not compress the connection data.": "Do not compress the connection data."
 }

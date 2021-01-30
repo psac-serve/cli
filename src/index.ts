@@ -1,3 +1,4 @@
+import path from "path";
 import figures from "figures";
 import chalk from "chalk";
 import prettyError from "pretty-error";
@@ -43,12 +44,25 @@ class BanClient extends OclifCommand {
 
     static args = [{
         name: "hostname",
-        description: __("Specify the host to connect. If you not specified the port, the client connects with port 810 (example.com:810)."),
-        required: true
+        description: __("Specify the host to connect. If you not specified the port, the client connects with port 810 (example.com:810).")
     }]
 
     async run(): Promise<void> {
         const { args, flags } = this.parse(BanClient);
+
+        if (!(flags.file || args.hostname)) {
+            throw new Error(__("Hostname is required."));
+        }
+
+        if (flags.file) {
+            const file = (await import(path.resolve(flags.file as string)))["default"];
+
+            console.log(file);
+
+            flags["no-compress"] = file.raw ? !file.raw : false;
+            args.hostname = file.hostname;
+            flags.token = file.token;
+        }
 
         let spinner;
 
