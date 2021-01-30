@@ -35,6 +35,9 @@ class BanClient extends OclifCommand {
         verbose: flags["boolean"]({ char: "v", description: __("Enable verbose output.") }),
         help: flags.help({ char: "h", description: __("Show this usage guide.") }),
         token: flags["boolean"]({ char: "t", description: __("Use a token to connect.") }),
+        file: flags.string({ char: "f", description: __("Use a file to run actions.") }),
+        compress: flags["boolean"]({ char: "c", description: __("Compress the connection data."), default: true }),
+        "no-compress": flags["boolean"]({ char: "C", description: __("Do not compress the connection data."), default: false }),
         "ignore-test": flags["boolean"]({ char: "i", description: __("Ignore connection testing.") })
     }
 

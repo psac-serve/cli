@@ -11,7 +11,7 @@ import { __ } from "i18n";
 
 import Timer from "../utils/timer";
 
-import { arguments_, flags, default as manager } from "../manager-instance";
+import { arguments_, default as manager, flags } from "../manager-instance";
 
 import ModuleNotEnabledError from "../errors/module-not-enabled";
 
@@ -129,7 +129,10 @@ export default class Client extends Module {
             headers: token ? {
                 token,
                 "access-control-allow-origin": "*"
-            } : { "access-control-allow-origin": "*" }
+            } : { "access-control-allow-origin": "*" },
+            params: {
+                raw: flags["no-compress"] as boolean
+            }
         });
 
         logger.info(sprintf(__("Created new client %s. "), chalk.cyan("main")) + Timer.prettyTime(), verbose);
@@ -138,12 +141,12 @@ export default class Client extends Module {
             Timer.time();
             this.client.interceptors.request.use((request) => {
                 logger.info(chalk`{greenBright.underline ${__("REQUEST")}} - {yellowBright ${request.method}} ${figures.arrowRight} {blueBright.underline ${request.url}}${request.data
-                    ? chalk`\n{white ${msgpack.unpack(request.data)}}` : ""}`);
+                    ? chalk`\n{white ${flags["no-compress"] ? JSON.stringify(request.data) : msgpack.unpack(request.data)}}` : ""}`);
 
                 return request;
             }, (error) => {
                 logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}${error.data
-                    ? chalk`\n{white ${msgpack.unpack(error.data)}}` : ""}`);
+                    ? chalk`\n{white ${flags["no-compress"] ? JSON.stringify(error.data) : msgpack.unpack(error.data)}}` : ""}`);
 
                 return Promise.reject(error);
             });
@@ -184,11 +187,11 @@ export default class Client extends Module {
                 Timer.time();
 
                 this.client.interceptors.response.use((response) => {
-                    logger.info(chalk`{greenBright.underline ${__("RESPONSE")}} - {greenBright ${response.status}}: {whiteBright ${response.statusText}}\n{white ${response.data}}`);
+                    logger.info(chalk`{greenBright.underline ${__("RESPONSE")}} - {greenBright ${response.status}}: {whiteBright ${response.statusText}}\n{white ${flags["no-compress"] ? JSON.stringify(response.data) : msgpack.unpack(response.data)}}`);
 
                     return response;
                 }, (error) => {
-                    logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}\n{white ${error.data}}`);
+                    logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}\n{white ${flags["no-compress"] ? JSON.stringify(error.data) : msgpack.unpack(error.data)}}`);
 
                     return Promise.reject(error);
                 });
