@@ -105,3 +105,6 @@ dist
 
 dist/
 .idea/
+.directory
+lib/
+tmp/

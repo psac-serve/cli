@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+const
+    fs = require("fs"),
+    path = require("path"),
+    project = path.join(__dirname, "../tsconfig.json"),
+    development = fs.existsSync(project);
+
+if (development) {
+    require("ts-node").register({ project });
+}
+
+if (!process.env.DEBUG) {
+    require(`../${development ? "src" : "lib"}`).run().catch(require("@oclif/errors/handle"));
+} else {
+    require(`../${development ? "src" : "lib"}`).run()
+}

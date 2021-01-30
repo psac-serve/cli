@@ -9,22 +9,18 @@ type CliContent = (text: string, indent?: number) => string;
 type CliKeyValueContent = (contents: { [key: string]: string }[], indent?: number, truncate?: boolean) => string;
 type CliBlankLine = () => string;
 
-export default class Help extends Module 
-{
-    constructor(public helps: { [key: string]: string[] }[] = [{}]) 
-    {
+export default class Help extends Module {
+    constructor(public helps: { [key: string]: string[] }[] = [{}]) {
         super("Help", "Manage help documents using the database.");
     }
 
-    public init(): Promise<void> 
-    {
+    public init(): Promise<void> {
         this.enabled = true;
 
         return Promise.resolve();
     }
 
-    public use(): { functions: [ CliHeading, CliContent, CliKeyValueContent, CliBlankLine ], helps: { [key: string]: string[] }[], getHelp: (command: string) => string } 
-    {
+    public use(): { functions: [ CliHeading, CliContent, CliKeyValueContent, CliBlankLine ], helps: { [key: string]: string[] }[], getHelp: (command: string) => string } {
         return {
             functions: [
                 CliComponents.heading,
@@ -35,15 +31,13 @@ export default class Help extends Module
             helps: this.helps,
             getHelp: (command: string) => (command in this.helps[0]
                 ? this.helps[0][command]
-                : (() => 
-                {
+                : (() => {
                     throw new CommandNotFoundError();
                 })()).join("\n")
         };
     }
 
-    public close(): Promise<void> 
-    {
+    public close(): Promise<void> {
         this.enabled = false;
 
         return Promise.resolve();
