@@ -32,7 +32,7 @@ export default class Logger {
     }
 
     appendFile(type: Colors = Colors.info, tag = "", message = ""): void {
-        if (!(this.logStream && this.errorLogStream)) {
+        if (!this.logStream) {
             throw new Error(__("Stream not found."));
         }
 
@@ -53,7 +53,7 @@ export default class Logger {
     }
 
     appendErrorFile(type: Colors = Colors.error, tag = "", message = ""): void {
-        if (!(this.logStream && this.errorLogStream)) {
+        if (!this.errorLogStream) {
             throw new Error(__("Stream not found."));
         }
 
@@ -190,29 +190,26 @@ export default class Logger {
     }
 
     info(message = "", verbose = true, tag = ""): void {
-        if (!verbose) {
-            return;
+        if (verbose) {
+            this.stdout(Colors.info, tag, `${message}`);
         }
 
-        this.stdout(Colors.info, tag, `${message}`);
         this.appendFile(Colors.info, tag, message);
     }
 
     warn(message = "", verbose = true, tag = ""): void {
         if (!verbose) {
-            return;
+            this.stdout(Colors.warning, tag, `${message}`);
         }
 
-        this.stdout(Colors.warning, tag, `${message}`);
         this.appendFile(Colors.warning, tag, message);
     }
 
     error(message = "", verbose = true, tag = ""): void {
         if (!verbose) {
-            return;
+            this.stderr(Colors.error, tag, `${message}`);
         }
 
-        this.stderr(Colors.error, tag, `${message}`);
         this.appendErrorFile(Colors.error, tag, message);
     }
 }
