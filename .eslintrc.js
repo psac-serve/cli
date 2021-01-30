@@ -63,7 +63,7 @@ module.exports = {
             enforceForClassMembers: true
         }],
         "constructor-super": "error",
-        "curly": [ "error" ],
+        curly: [ "error" ],
         "default-case-last": "error",
         "default-param-last": [ "error" ],
         "dot-notation": [ "error", {
@@ -183,6 +183,7 @@ module.exports = {
         "space-infix-ops": "error",
         "wrap-iife": [ "error", "inside" ],
         "yoda": "error",
+        "node/no-missing-import": "off",
         "import/order": "error",
         "unicorn/no-process-exit": "off"
     }
