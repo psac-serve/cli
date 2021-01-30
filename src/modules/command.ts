@@ -1,6 +1,7 @@
 import { Command as AnotherCommand } from "../commands/base";
 import Exit from "../commands/exit";
 import Modules from "../commands/modules";
+import Help from "../commands/help";
 
 import CommandNotFoundError from "../errors/command-not-found";
 
@@ -17,7 +18,7 @@ export default class Command extends Module {
 
     init(): Promise<void> {
         this.enabled = true;
-        this._commands = [ new Exit(), new Modules() ];
+        this._commands = [ new Exit(), new Modules(), new Help() ];
 
         return Promise.resolve();
     }

@@ -9,4 +9,8 @@ if (development) {
     require("ts-node").register({ project });
 }
 
-require(`../${development ? "src" : "lib"}`).run();
+if (!process.env.DEBUG) {
+    require(`../${development ? "src" : "lib"}`).run().catch(require("@oclif/errors/handle"));
+} else {
+    require(`../${development ? "src" : "lib"}`).run()
+}

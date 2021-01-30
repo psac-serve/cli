@@ -1,6 +1,6 @@
 import chalk from "chalk";
 
-import manager from "../index";
+import manager from "../manager-instance";
 
 import CliComponents from "../utils/cli/components";
 
