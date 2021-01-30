@@ -27,7 +27,8 @@ i18n.configure({
     defaultLocale: "en" // Intl.DateTimeFormat().resolvedOptions().locale === "ja-JP" ? "ja" : "en"
 });
 
-class BanClient extends OclifCommand {
+class BanClient extends OclifCommand 
+{
     static description = __("A client application of the server to manage Minecraft's ban / kick records.")
 
     static flags: flags.Input<{ [key: string]: unknown }> = {
@@ -44,12 +45,14 @@ class BanClient extends OclifCommand {
         required: true
     }]
 
-    async run(): Promise<void> {
+    async run(): Promise<void> 
+    {
         const { args, flags } = this.parse(BanClient);
 
         let spinner;
 
-        if (flags.verbose) {
+        if (flags.verbose) 
+        {
             Timer.time();
 
             spinner = ora(__("Starting module manager...")).start();
@@ -57,9 +60,10 @@ class BanClient extends OclifCommand {
 
         ModuleManagerInstance.register(flags, args);
 
-        if (flags.verbose && spinner) {
+        if (flags.verbose && spinner) 
+        
             spinner.succeed(__("Started module manager. ") + Timer.prettyTime());
-        }
+        
 
         Timer.time();
 
@@ -68,7 +72,8 @@ class BanClient extends OclifCommand {
         manager.logger.info(__("Modules loaded. ") + Timer.prettyTime(), flags.verbose as boolean);
         console.log();
         manager.logger.info(chalk`{bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(manager.use("Client").hostname))}}`);
-        console.info(chalk`\n{dim.italic ${(() => {
+        console.info(chalk`\n{dim.italic ${(() => 
+        {
             const items = [
                 "ほーん、で？どうしたいの？",
                 "一切手をつけないのも、過ぎた最適化を行うのもよろしくない行為である。間を貫き通せ。",
