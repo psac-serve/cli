@@ -11,11 +11,9 @@ import { __ } from "i18n";
 
 import Timer from "../utils/timer";
 
-import { arguments_, default as manager } from "../manager-instance";
+import { arguments_, flags, default as manager } from "../manager-instance";
 
 import ModuleNotEnabledError from "../errors/module-not-enabled";
-
-import BanClient from "..";
 
 import Module from "./base";
 
@@ -33,17 +31,20 @@ export default class Client extends Module {
      *
      * @returns The instance of this class.
      */
-    constructor(private client?: AxiosInstance, private saveFile: { hosts: [ { token?: string, name: string }? ] } = { hosts: []}, private paths: any = {}, private hostname: string = arguments_.hostname as string) {
+    constructor(private client?: AxiosInstance, private saveFile: { hosts: [ { token?: string, name: string }? ] } = { hosts: []}, private paths: any = {}, private hostname: string = "") {
         super("Client", "Core module to using this application.");
     }
 
     async init(): Promise<void> {
-        const [ logger, verboseLogger ] = manager.use("Logger");
-        const { flags } = BanClient;
+        const
+            { logger } = manager,
+            verbose = flags.verbose as boolean;
 
         this.paths = manager.use("Directory Manager");
 
         let host = new URL("http://127.0.0.1");
+
+        this.hostname = arguments_.hostname as string;
 
         try {
             host = new URL(this.hostname.replace("localhost", "127.0.0.1"));
@@ -53,17 +54,17 @@ export default class Client extends Module {
 
         if (!host.port) {
             host.port = "810";
-            verboseLogger.info(sprintf(__("The port didn't specify in hostname, using the default port %s."), chalk.yellowBright(810)));
+            logger.info(sprintf(__("The port didn't specify in hostname, using the default port %s."), chalk.yellowBright(810)), verbose);
         }
 
         if (host.protocol === "https:") {
             host.protocol = "http:";
-            verboseLogger.warning(__("The server doesn't support HTTPS protocol, using HTTP protocol instead."));
+            logger.warn(__("The server doesn't support HTTPS protocol, using HTTP protocol instead."), verbose);
         }
 
         if (host.pathname !== "/") {
             host.pathname = "/";
-            verboseLogger.warning(__("The hostname doesn't support paths, using the root path."));
+            logger.warn(__("The hostname doesn't support paths, using the root path."), verbose);
         }
 
         this.hostname = host.hostname;
@@ -71,8 +72,9 @@ export default class Client extends Module {
         let token: string | undefined;
 
         if (!fse.existsSync(this.paths.save)) {
-            verboseLogger.info(sprintf(__("Hosts configuration not found, creating new file with mode %s."), chalk.blueBright("0600")));
-            await Promise.all([ fse.chmod(this.paths.save, 0o600), fse.writeFile(this.paths.save, zlib.brotliCompressSync(msgpack.pack({ hosts: []}, true))) ]);
+            logger.info(sprintf(__("Hosts configuration not found, creating new file with mode %s."), chalk.blueBright("0600")), verbose);
+            await fse.writeFile(this.paths.save, zlib.brotliCompressSync(msgpack.pack({ hosts: []}, true)));
+            await fse.chmod(this.paths.save, 0o600);
         }
 
         this.saveFile = msgpack.unpack(zlib.brotliDecompressSync(Buffer.from(await fse.readFile(this.paths.save))));
@@ -81,11 +83,11 @@ export default class Client extends Module {
             const found = this.saveFile.hosts.find(hostname => hostname && hostname.name === host.hostname);
 
             if (found && "token" in found) {
-                verboseLogger.info(__("Found token in specified host."));
+                logger.info(__("Found token in specified host."), verbose);
                 token = found.token;
             } else if (flags.token && !token) {
                 try {
-                    verboseLogger.info(__("No token found, asking the user."));
+                    logger.info(__("No token found, asking to user."), verbose);
 
                     token = (await prompt({
                         type: "password",
@@ -99,11 +101,11 @@ export default class Client extends Module {
                 }
 
                 this.saveFile.hosts.push({ token, name: host.hostname });
-                verboseLogger.info(__("Hostname has been pushed."));
+                logger.info(__("Hostname has been pushed."), verbose);
             }
         } else if (flags.token && !token) {
             try {
-                verboseLogger.info(__("No token found, asking the user."));
+                logger.info(__("No token found, asking to user."), verbose);
 
                 token = (await prompt({
                     type: "password",
@@ -117,7 +119,7 @@ export default class Client extends Module {
             }
 
             this.saveFile.hosts.push({ token, name: host.hostname });
-            verboseLogger.info(__("Hostname has been pushed."));
+            logger.info(__("Hostname has been pushed."), verbose);
         }
 
         Timer.time();
@@ -130,7 +132,7 @@ export default class Client extends Module {
             } : { "access-control-allow-origin": "*" }
         });
 
-        verboseLogger.info(sprintf(__("Created new client %s. "), chalk.cyan("main")) + Timer.prettyTime());
+        logger.info(sprintf(__("Created new client %s. "), chalk.cyan("main")) + Timer.prettyTime(), verbose);
 
         if (flags.verbose) {
             Timer.time();
@@ -151,12 +153,12 @@ export default class Client extends Module {
         if (!flags["ignore-test"]) {
             Timer.time();
 
-            verboseLogger.info(__("Testing connection using /teapot."));
+            logger.info(__("Testing connection using /teapot."), verbose);
 
             try {
                 await this.client.get("/teapot");
             } catch (error) {
-                if (!error.response.status) {
+                if (!error.response) {
                     throw new Error(__("Cannot connect to the server."));
                 }
 
@@ -176,7 +178,7 @@ export default class Client extends Module {
                 }
             }
 
-            verboseLogger.info(__("Connection and authentication tests finished. ") + Timer.prettyTime());
+            logger.info(__("Connection and authentication tests finished. ") + Timer.prettyTime(), verbose);
 
             if (flags.verbose) {
                 Timer.time();

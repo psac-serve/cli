@@ -34,7 +34,7 @@ class BanClient extends OclifCommand {
         version: flags.version({ char: "V", description: __("Show app version.") }),
         verbose: flags["boolean"]({ char: "v", description: __("Enable verbose output.") }),
         help: flags.help({ char: "h", description: __("Show this usage guide.") }),
-        token: flags["boolean"]({ char: "t", description: __("Use a token to connect to a server.") }),
+        token: flags["boolean"]({ char: "t", description: __("Use a token to connect.") }),
         "ignore-test": flags["boolean"]({ char: "i", description: __("Ignore connection testing.") })
     }
 
@@ -52,23 +52,22 @@ class BanClient extends OclifCommand {
         if (flags.verbose) {
             Timer.time();
 
-            spinner = ora(__("Resolving modules...")).start();
+            spinner = ora(__("Starting module manager...")).start();
         }
 
         ModuleManagerInstance.register(flags, args);
 
-        await manager.initAllModules();
-
         if (flags.verbose && spinner) {
-            spinner.succeed(__("All modules have been resolved successfully. ") + Timer.prettyTime());
+            spinner.succeed(__("Started module manager. ") + Timer.prettyTime());
         }
 
         Timer.time();
 
-        const [ , verboseLogger ] = manager.use("Logger");
+        await manager.initAllModules();
 
-        verboseLogger.info(__("Modules loaded. ") + Timer.prettyTime());
-        console.info(chalk`\n{magentaBright ${figures.pointer}} {bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(manager.use("Client").hostname))}}`);
+        manager.logger.info(__("Modules loaded. ") + Timer.prettyTime(), flags.verbose as boolean);
+        console.log();
+        manager.logger.info(chalk`{bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(manager.use("Client").hostname))}}`);
         console.info(chalk`\n{dim.italic ${(() => {
             const items = [
                 "ほーん、で？どうしたいの？",

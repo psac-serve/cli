@@ -1,6 +1,7 @@
 import ModuleNotFoundError from "../errors/module-not-found";
 
 import Module from "./base";
+import Logger from "./native/logger";
 
 /**
  * The module manager to manage cli modules.
@@ -11,9 +12,10 @@ export default class ModuleManager {
      *
      * @param _modules The modules to use. All modules is disabled first.
      *
+     * @param logger Module Manager native logger.
      * @returns The instance of this class.
      */
-    constructor(private _modules: Module[]) {}
+    constructor(private _modules: Module[], public logger = new Logger()) {}
 
     /**
      * Encapsulated _modules value.
