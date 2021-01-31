@@ -57,8 +57,6 @@ class BanClient extends OclifCommand {
         if (flags.file) {
             const file = (await import(path.resolve(flags.file as string)))["default"];
 
-            console.log(file);
-
             flags["no-compress"] = file.raw ? !file.raw : false;
             args.hostname = file.hostname;
             flags.token = file.token;

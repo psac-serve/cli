@@ -37,5 +37,12 @@
     "Use a file to run actions.": "Use a file to run actions.",
     "Compress the connection data.": "Compress the connection data.",
     "Do not compress the connection data.": "Do not compress the connection data.",
-    "Hostname is required.": "Hostname is required."
+    "Hostname is required.": "Hostname is required.",
+    "Loaded modules": "Loaded modules",
+    "Manage settings / logs dir.": "Manage settings / logs dir.",
+    "Manage help documents using the database.": "Manage help documents using the database.",
+    "Core module to using this application.": "Core module to using this application.",
+    "Parse / Run the commands.": "Parse / Run the commands.",
+    "Show beauty prompts.": "Show beauty prompts.",
+    "This comment block must be enclosed in */.": "This comment block must be enclosed in */."
 }

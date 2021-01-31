@@ -1,7 +1,6 @@
 import chalk from "chalk";
 import figures from "figures";
 import readlineSync from "readline-sync";
-import { __ } from "i18n";
 
 import cliCursor from "cli-cursor";
 
@@ -28,12 +27,15 @@ export default class Prompt extends Module {
     }
 
     public use(): (code: number) => void {
-        const { hostname } = manager.use("Client");
+        const
+            { hostname } = manager.use("Client"),
+            { logger } = manager;
 
         return (code: number) => {
             cliCursor.show();
 
             let command = "";
+            let count = 2;
 
             command = readlineSync.question(chalk`{bold {blueBright.underline ${hostname}} as {cyanBright ban-server}${code !== 0
                 ? chalk.bold(" stopped with " + chalk.redBright(code))
@@ -42,20 +44,23 @@ export default class Prompt extends Module {
 
             while (Quotes.check(command)) {
                 command += " " + readlineSync.question(chalk`   {blueBright ${figures.pointer}}     `).trim();
+                count++;
             }
 
-            if (command.trim() === "" || (command.startsWith("/*") && command.endsWith("*/")) || [ "#", "//", ";" ].some(value => command.trim()
-                .startsWith(value))) {
+            if (command.trim() === "" || [ "#", "//", ";" ].some(value => command.trim().startsWith(value))) {
                 return this.use()(0);
-            } else if (command.startsWith("/*") && !command.endsWith("*/")) {
-                console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__("This comment block must be enclosed in */.")));
             }
 
             while (!command.endsWith(";")) {
                 command += " " + readlineSync.question(chalk`   {greenBright ${figures.pointer}}     `).trim();
+                count++;
             }
 
             cliCursor.hide();
+
+            process.stdout.moveCursor(0, -count);
+            process.stdout.clearLine(0);
+            process.stdout.moveCursor(0, count);
 
             do {
                 command = command.slice(0, -1);
@@ -86,12 +91,14 @@ export default class Prompt extends Module {
                     stopCode = 1;
                 }
 
-                console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__(error.message)));
+                logger.error(error.message);
             }
 
             if (stopCode >= 9684) {
                 return stopCode - 9684;
             }
+
+            console.log();
 
             return this.use()(stopCode);
         };

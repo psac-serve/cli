@@ -66,11 +66,7 @@ export default class Logger {
             body = message.split("\n").map((line, index) => (index !== 0 ? repeat(" ", stringWidth(prefix)) : "") + line).join("\n"),
             logText = prefix + body + "\n";
 
-        fse.appendFile(this.errorLog, stripAnsi(logText), (error) => {
-            if (error) {
-                console.log(error);
-            }
-        });
+        fse.appendFileSync(this.errorLog, stripAnsi(logText));
     }
 
     stdout(type: Colors = Colors.info, tag = "", message = ""): void {
@@ -198,7 +194,7 @@ export default class Logger {
     }
 
     warn(message = "", verbose = true, tag = ""): void {
-        if (!verbose) {
+        if (verbose) {
             this.stdout(Colors.warning, tag, `${message}`);
         }
 
@@ -206,7 +202,7 @@ export default class Logger {
     }
 
     error(message = "", verbose = true, tag = ""): void {
-        if (!verbose) {
+        if (verbose) {
             this.stderr(Colors.error, tag, `${message}`);
         }
 
