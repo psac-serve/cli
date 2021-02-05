@@ -1,3 +1,8 @@
+import { sprintf } from "sprintf-js";
+import { __ } from "i18n";
+
+import { flags } from "../manager-instance";
+
 import ModuleNotFoundError from "../errors/module-not-found";
 
 import Module from "./base";
@@ -15,7 +20,7 @@ export default class ModuleManager {
      * @param logger Module Manager native logger.
      * @returns The instance of this class.
      */
-    constructor(private _modules: Module[], public logger = new Logger()) {}
+    constructor(private _modules: Module[] = [], public logger = new Logger()) {}
 
     /**
      * Encapsulated _modules value.
@@ -34,13 +39,15 @@ export default class ModuleManager {
     load(module: Module | Module[]): ModuleManager {
         if (module instanceof Module) {
             this._modules.push(module);
-            this.initModule(module).then();
+            this.initModule(module).then(value => value)["catch"]((error) => {
+                throw error;
+            });
         } else {
             this.modules.push(...module);
 
-            for (const element of module) {
-                this.initModule(element).then();
-            }
+            Promise.all(module.map(element => this.initModule(element))).then(value => value)["catch"]((error) => {
+                throw error;
+            });
         }
 
         return this;
@@ -61,11 +68,25 @@ export default class ModuleManager {
             throw new ModuleNotFoundError();
         }
 
+        const foundName = name instanceof Module ? name.name : name;
+
+        if (!this.modules[index].enabled) {
+            this.logger.info(sprintf(__("Module %s is disabled. Waiting..."), foundName), !!flags.verbose, `manager.use - ${name instanceof Module ? name.name : name}`);
+        }
+
         while (!this.modules[index].enabled) {
             if (process.env.DEBUG === "1") {
                 console.log("Enabling " + this.modules[index].name);
             }
         }
+
+        if (flags.verbose) {
+            process.stdout.moveCursor(0, -1);
+            process.stdout.cursorTo(0);
+            process.stdout.clearLine(0);
+        }
+
+        this.logger.success(sprintf(__("Module %s is enabled. Getting data and returning..."), foundName), !!flags.verbose, `manager.use - ${name instanceof Module ? name.name : name}`);
 
         return this.modules[index].use();
     }

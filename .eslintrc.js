@@ -1,51 +1,41 @@
 module.exports = {
     env: {
         es6: true,
-        node: true,
-        jest: true
-    },
-    plugins: [
-        "import",
-        "json",
-        "node",
-        "unicorn"
-    ],
-    settings: {
-        "import/resolver": {
-            node: {
-                extensions: [
-                    ".js",
-                    ".jsx",
-                    ".json",
-                    ".ts",
-                    ".tsx"
-                ]
-            }
-        }
+        jest: true,
+        node: true
     },
     extends: [
         "eslint:recommended",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
+        "plugin:eslint-comments/recommended",
         "plugin:import/errors",
         "plugin:import/warnings",
         "plugin:json/recommended",
+        "plugin:promise/recommended",
+        "plugin:radar/recommended",
         "plugin:unicorn/recommended"
     ],
     parser: "@typescript-eslint/parser",
     parserOptions: {
         sourceType: "module"
     },
+    plugins: [
+        "import",
+        "json",
+        "node",
+        "sort-class-members",
+        "sort-destructure-keys",
+        "sort-keys-fix",
+        "unicorn"
+    ],
     rules: {
-        "indent": [ "error", 4, { SwitchCase: 1 }],
-        "quotes": [ "error", "double" ],
-        "semi": [ "error" ],
-        "array-bracket-spacing": [ "error", "always", {
-            singleValue: true,
-            arraysInArrays: false,
-            objectsInArrays: false
-        }],
         "array-bracket-newline": [ "error", "consistent" ],
+        "array-bracket-spacing": [ "error", "always", {
+            arraysInArrays: false,
+            objectsInArrays: false,
+            singleValue: true
+        }],
         "array-element-newline": [ "error", "consistent" ],
         "arrow-body-style": [ "error", "as-needed" ],
         "arrow-parens": [ "error", "as-needed", {
@@ -55,8 +45,8 @@ module.exports = {
         "brace-style": [ "error", "1tbs" ],
         "comma-dangle": [ "error", "never" ],
         "comma-spacing": [ "error", {
-            before: false,
-            after: true
+            after: true,
+            before: false
         }],
         "comma-style": [ "error", "last" ],
         "computed-property-spacing": [ "error", "never", {
@@ -75,12 +65,14 @@ module.exports = {
         "func-style": [ "error", "expression" ],
         "function-paren-newline": [ "error", "multiline" ],
         "implicit-arrow-linebreak": [ "error", "beside" ],
+        "import/order": "error",
+        "indent": [ "error", 4, { SwitchCase: 1 }],
         "key-spacing": [ "error", {
             mode: "strict"
         }],
         "keyword-spacing": [ "error", {
-            before: true,
-            after: true
+            after: true,
+            before: true
         }],
         "no-confusing-arrow": [ "error", {
             allowParens: true
@@ -100,6 +92,7 @@ module.exports = {
         "no-useless-concat": "error",
         "no-useless-return": "error",
         "no-warning-comments": "warn",
+        "node/no-missing-import": "off",
         "object-curly-spacing": [ "error", "always", {
             arraysInObjects: false,
             objectsInObjects: false
@@ -108,83 +101,111 @@ module.exports = {
         "padded-blocks": [ "error", "never" ],
         "padding-line-between-statements": [ "error", {
             blankLine: "always",
+            next: "*",
             prev: [
                 "block",
                 "block-like"
-            ],
-            next: "*"
+            ]
         }, {
             blankLine: "always",
-            prev: "block",
-            next: "export"
+            next: "export",
+            prev: "block"
         }, {
             blankLine: "always",
-            prev: "const",
-            next: "*"
+            next: "*",
+            prev: "const"
         }, {
             blankLine: "never",
-            prev: "singleline-const",
-            next: "singleline-const"
+            next: "singleline-const",
+            prev: "singleline-const"
         }, {
             blankLine: "always",
-            prev: "let",
-            next: "*"
+            next: "*",
+            prev: "let"
         }, {
             blankLine: "never",
-            prev: "singleline-let",
-            next: "singleline-let"
+            next: "singleline-let",
+            prev: "singleline-let"
         }, {
             blankLine: "always",
-            prev: "var",
-            next: "*"
+            next: "*",
+            prev: "var"
         }, {
             blankLine: "never",
-            prev: "singleline-var",
-            next: "singleline-var"
+            next: "singleline-var",
+            prev: "singleline-var"
         }, {
             blankLine: "never",
-            prev: [
+            next: [
                 "cjs-export",
                 "cjs-import"
             ],
-            next: [
+            prev: [
                 "cjs-export",
                 "cjs-import"
             ]
         }, {
             blankLine: "always",
-            prev: "*",
             next: [
                 "return",
                 "continue",
                 "break",
                 "throw"
-            ]
+            ],
+            prev: "*"
         }, {
             blankLine: "always",
-            prev: "directive",
-            next: "*"
+            next: "*",
+            prev: "directive"
         }, {
             blankLine: "always",
+            next: "*",
             prev: [
                 "case",
                 "default"
-            ],
-            next: "*"
+            ]
         }],
         "prefer-arrow-callback": [ "error", {
             allowNamedFunctions: true
         }],
+        "quotes": [ "error", "double" ],
+        "radar/cognitive-complexity": "off",
         "radix": "error",
         "require-await": "error",
         "require-yield": "error",
         "rest-spread-spacing": [ "error", "never" ],
+        "semi": [ "error" ],
+        "sort-class-members/sort-class-members": [ "error", {
+            "accessorPairPositioning": "getThenSet",
+            "order": [
+                "[static-properties]",
+                "[static-methods]",
+                "[properties]",
+                "[conventional-private-properties]",
+                "constructor",
+                "[methods]",
+                "[conventional-private-methods]"
+            ]
+        }],
+        "sort-destructure-keys/sort-destructure-keys": [ "error", { "caseSensitive": false }],
+        "sort-keys-fix/sort-keys-fix": "error",
         "space-in-parens": [ "error", "never" ],
         "space-infix-ops": "error",
+        "unicorn/no-process-exit": "off",
         "wrap-iife": [ "error", "inside" ],
-        "yoda": "error",
-        "node/no-missing-import": "off",
-        "import/order": "error",
-        "unicorn/no-process-exit": "off"
+        "yoda": "error"
+    },
+    settings: {
+        "import/resolver": {
+            node: {
+                extensions: [
+                    ".js",
+                    ".jsx",
+                    ".json",
+                    ".ts",
+                    ".tsx"
+                ]
+            }
+        }
     }
 };

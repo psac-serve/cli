@@ -22,9 +22,9 @@ export default class Logger {
     private readonly errorLogStream: RotatingFileStream;
 
     constructor(private log: string = path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "logs", "psac.log"), private errorLog: string = path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "logs", "errors.log")) {
-        this.logStream = createStream(log, { size: "10K", encoding: "utf8", compress: true });
+        this.logStream = createStream(log, { compress: true, encoding: "utf8", size: "10M" });
 
-        this.errorLogStream = createStream(errorLog, { size: "10K", encoding: "utf8", compress: true });
+        this.errorLogStream = createStream(errorLog, { compress: true, encoding: "utf8", size: "10M" });
     }
 
     currentTime(): string {
@@ -104,11 +104,11 @@ export default class Logger {
         }
 
         const {
-            time,
             leftLogMessage,
             leftLogWidth,
             middleLogMessage,
-            splitMiddleLogMessage
+            splitMiddleLogMessage,
+            time
         } = this.generateLog(typeSymbol, titleText, message, tag);
 
         if (-(stringWidth(splitMiddleLogMessage) - process.stdout.columns) - stringWidth(` ${tag} ${time} `) < 0) {
@@ -131,7 +131,7 @@ export default class Logger {
                 .join("\n"),
             splitMiddleLogMessage = middleLogMessage.split("\n").slice(-1)[0];
 
-        return { time, leftLogMessage, leftLogWidth, middleLogMessage, splitMiddleLogMessage };
+        return { leftLogMessage, leftLogWidth, middleLogMessage, splitMiddleLogMessage, time };
     }
 
     stderr(type: Colors = Colors.error, tag = "", message = ""): void {
@@ -169,11 +169,11 @@ export default class Logger {
         }
 
         const {
-            time,
             leftLogMessage,
             leftLogWidth,
             middleLogMessage,
-            splitMiddleLogMessage
+            splitMiddleLogMessage,
+            time
         } = this.generateLog(typeSymbol, titleText, message, tag);
 
         if (-(stringWidth(splitMiddleLogMessage) - process.stdout.columns) - stringWidth(` ${tag} ${time} `) < 0) {
@@ -207,5 +207,13 @@ export default class Logger {
         }
 
         this.appendErrorFile(Colors.error, tag, message);
+    }
+
+    success(message = "", verbose = true, tag = ""): void {
+        if (verbose) {
+            this.stdout(Colors.success, tag, `${message}`);
+        }
+
+        this.appendFile(Colors.success, tag, message);
     }
 }

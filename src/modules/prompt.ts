@@ -1,12 +1,16 @@
 import chalk from "chalk";
 import figures from "figures";
-import readlineSync from "readline-sync";
+//import lexing from "lexing";
+//import readlineSync from "readline-sync";
+import { terminal } from "terminal-kit";
+import { __ } from "i18n";
 
 import cliCursor from "cli-cursor";
 
 import manager from "../manager-instance";
 
 import Quotes from "../utils/quotes";
+import { build } from "../utils/lexing";
 
 import CommandNotFoundError from "../errors/command-not-found";
 import InvalidArgumentsError from "../errors/invalid-arguments";
@@ -16,7 +20,7 @@ import SubCommandNotFoundError from "../errors/sub-command-not-found";
 import Module from "./base";
 
 export default class Prompt extends Module {
-    constructor() {
+    constructor(private history: string[] = []) {
         super("Prompt", "Show beauty prompts.");
     }
 
@@ -31,36 +35,85 @@ export default class Prompt extends Module {
             { hostname } = manager.use("Client"),
             { logger } = manager;
 
-        return (code: number) => {
+        return async (code: number) => {
             cliCursor.show();
 
-            let command = "";
+            const
+                commands = manager.use("Command").list[0],
+                autoComplete = Object.keys(commands);
+
             let count = 2;
 
-            command = readlineSync.question(chalk`{bold {blueBright.underline ${hostname}} as {cyanBright ban-server}${code !== 0
+            let command = await terminal(chalk`\n{bold {blueBright.underline ${hostname}} as {cyanBright ban-server}${code !== 0
                 ? chalk.bold(" stopped with " + chalk.redBright(code))
                 : ""}}\n {magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer)
-                : chalk.blueBright(figures.pointer)}${figures.pointer}} `).trim();
+                : chalk.blueBright(figures.pointer)}${figures.pointer}} `).inputField({
+                autoComplete,
+                autoCompleteHint: true,
+                autoCompleteMenu: true,
+                history: this.history,
+                tokenHook: (token, _, __, term) => {
+                    if (token === ";" || [ "#", "//" ].some(value => token.startsWith(value))) {
+                        return term.dim;
+                    }
 
-            while (Quotes.check(command)) {
-                command += " " + readlineSync.question(chalk`   {blueBright ${figures.pointer}}     `).trim();
-                count++;
-            }
+                    if (!Number.isNaN(+token)) {
+                        return term.yellow;
+                    }
 
-            if (command.trim() === "" || [ "#", "//", ";" ].some(value => command.trim().startsWith(value))) {
+                    if (/[%&*+/^|-]|\*\*|\|\|/.test(token)) {
+                        return term.brightBlue;
+                    }
+
+                    return autoComplete.some(value => token === value) ? term.brightGreen : term.bold.brightRed;
+                },
+                tokenRegExp: build()
+            }).promise;
+
+            command = command || "";
+
+            if (command.trim() === "" || [ "#", "//" ].some(value => command?.trim().startsWith(value))) {
+                console.log();
+
                 return this.use()(0);
             }
 
-            while (!command.endsWith(";")) {
-                command += " " + readlineSync.question(chalk`   {greenBright ${figures.pointer}}     `).trim();
+            while (Quotes.check(command)) {
+                command += " " + (await terminal(chalk`\n   {blueBright ${figures.pointer}}     `).inputField({
+                    autoComplete: undefined,
+                    autoCompleteHint: false,
+                    autoCompleteMenu: false
+                }).promise || "").trim();
                 count++;
             }
 
+            while (!command.endsWith(";")) {
+                command += " " + (await terminal(chalk`\n   {greenBright ${figures.pointer}}     `).inputField({
+                    autoComplete: undefined,
+                    autoCompleteHint: false,
+                    autoCompleteMenu: false
+                }).promise || "").trim();
+                count++;
+            }
+
+            terminal("\n");
+
             cliCursor.hide();
 
-            process.stdout.moveCursor(0, -count);
-            process.stdout.clearLine(0);
-            process.stdout.moveCursor(0, count);
+            terminal.saveCursor();
+            terminal.move(0, -count);
+            terminal.eraseLine();
+            terminal.restoreCursor();
+
+            //if (!Quotes.check(command)) {
+            //    logger.error(__("Quotes are not closed."), true, "Command");
+
+            //    return this.use()(1);
+            //}
+
+            //if (!command.endsWith(";")) {
+            //    logger.error(__("Commands must end with ';'."), true, "Command");
+            //}
 
             do {
                 command = command.slice(0, -1);
@@ -73,6 +126,12 @@ export default class Prompt extends Module {
                 .replace(/\\'/g, "'")
                 .replace(/\\`/g, "`")
                 .replace(/(["'`])/g, "");
+
+            if (!(command in this.history)) {
+                this.history.push(command);
+            }
+
+            terminal("\n");
 
             let stopCode;
 
@@ -91,7 +150,7 @@ export default class Prompt extends Module {
                     stopCode = 1;
                 }
 
-                logger.error(error.message);
+                logger.error(error.message, true, "command");
             }
 
             if (stopCode >= 9684) {

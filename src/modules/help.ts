@@ -28,12 +28,12 @@ export default class Help extends Module {
                 CliComponents.keyValueContent,
                 CliComponents.blankLine
             ],
-            helps: this.helps,
             getHelp: (command: string) => (command in this.helps[0]
                 ? this.helps[0][command]
                 : (() => {
                     throw new CommandNotFoundError();
-                })()).join("\n")
+                })()).join("\n"),
+            helps: this.helps
         };
     }
 

@@ -8,6 +8,7 @@ import CliComponents from "../utils/cli/components";
 import manager from "../manager-instance";
 
 import ModuleNotFoundError from "../errors/module-not-found";
+import SubCommandNotFoundError from "../errors/sub-command-not-found";
 
 import { Command } from "./base";
 
@@ -36,6 +37,8 @@ export default class Modules extends Command<string> {
     }
 
     execute(options: string): number {
+        const subCommand = options.trim().split(" ")[0];
+
         return {
             "list": () => {
                 console.log(CliComponents.heading(__("Loaded modules")));
@@ -44,7 +47,7 @@ export default class Modules extends Command<string> {
                 return 0;
             },
             "show": () => {
-                const index = manager.modules.map(module => module.name.toLowerCase()).indexOf(options.trim().split(" ")[1].toLowerCase());
+                const index = manager.modules.map(module => module.name.toLowerCase()).indexOf(options.trim().split(" ").slice(1).join(" ").toLowerCase());
 
                 if (index == -1) {
                     throw new ModuleNotFoundError();
@@ -58,6 +61,12 @@ export default class Modules extends Command<string> {
 
                 return 0;
             }
-        }[options.trim() === "" || options.trim().split(" ")[0] ? "list" : "show"]();
+        }[!subCommand || subCommand === "list"
+            ? "list"
+            : (subCommand === "show"
+                ? "show"
+                : (() => {
+                    throw new SubCommandNotFoundError();
+                })())]();
     }
 }

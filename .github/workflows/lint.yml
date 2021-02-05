@@ -2,9 +2,9 @@ name: Lint
 
 on:
     push:
-        branches: [ develop ]
+        branches: [ develop, feature/** ]
     pull_request:
-        branches: [ main ]
+        branches: [ main, develop ]
 
 jobs:
     lint:
@@ -19,31 +19,36 @@ jobs:
             - name: Setup Node.js environment
               uses: actions/setup-node@v2
 
-            - name: Get npm cache directory
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v1
+              with:
+                  version: 5.16.0
+              env:
+                  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+            - name: Get pnpm cache directory
               id: npm-cache
               run: |
-                  echo "::set-output name=dir::$(npm config get cache)"
+                  echo "::set-output name=dir::$(pnpm config get cache)"
             - name: Cache
               uses: actions/cache@v2
               with:
                   path: ${{ steps.npm-cache.outputs.dir }}
-                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
                   restore-keys: |
                       ${{ runner.os }}-node-
             - name: Install dependencies
-              run: npm i
+              run: pnpm i
 
             - name: ESLint review
               uses: reviewdog/action-eslint@v1
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   reporter: github-pr-review
-                  eslint_flags: "./**/*.{yml,json,ts}"
 
-            - name: Run remark-lint with reviewdog
-              uses: prologic/action-remark-lint@v0.0.5
+            - name: Remark Lint review
+              uses: reviewdog/action-remark-lint@v1
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: Run lint
-              run: npm run lint
+                  reporter: github-pr-review
+                  remark_args: "-r .remarkrc.js ."

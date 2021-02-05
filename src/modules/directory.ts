@@ -25,14 +25,14 @@ export default class Directory extends Module {
 
         return {
             config: path.join(baseDirectory, "psac-client.conf"),
-            save: path.join(baseDirectory, "hosts"),
-            log: path.join(baseDirectory, "logs"),
             help: path.join(baseDirectory, "help.db"),
+            log: path.join(baseDirectory, "logs"),
             mkdirs: () => {
                 fse.mkdirsSync(baseDirectory);
                 fse.createFileSync(path.join(baseDirectory, "logs", "debug.log"));
                 fse.createFileSync(path.join(baseDirectory, "logs", "errors.log"));
-            }
+            },
+            save: path.join(baseDirectory, "hosts")
         };
     }
 }

@@ -44,5 +44,13 @@
     "Core module to using this application.": "Core module to using this application.",
     "Parse / Run the commands.": "Parse / Run the commands.",
     "Show beauty prompts.": "Show beauty prompts.",
-    "This comment block must be enclosed in */.": "This comment block must be enclosed in */."
+    "Finding module %s...": "Finding module %s...",
+    "Found module %s.": "Found module %s.",
+    "Module %s is enabled. Getting data and returning...": "Module %s is enabled. Getting data and returning...",
+    "Information for %s": "Information for %s",
+    "Status": "Status",
+    "Enabled": "Enabled",
+    "Description": "Description",
+    "Subcommand not found.": "Subcommand not found.",
+    "Quotes are not closed.": "Quotes are not closed."
 }

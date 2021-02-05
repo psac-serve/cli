@@ -38,7 +38,7 @@ export default class Client extends Module {
     async init(): Promise<void> {
         const
             { logger } = manager,
-            verbose = flags.verbose as boolean;
+            verbose = !!flags.verbose;
 
         this.paths = manager.use("Directory Manager");
 
@@ -90,9 +90,9 @@ export default class Client extends Module {
                     logger.info(__("No token found, asking to user."), verbose);
 
                     token = (await prompt({
-                        type: "password",
+                        message: __("Enter token to connect"),
                         name: "token",
-                        message: __("Enter token to connect")
+                        type: "password"
                     }) as { token: string }).token;
                 } catch {
                     logger.error("Interrupted the question!");
@@ -100,7 +100,7 @@ export default class Client extends Module {
                     throw new Error("KEYBOARD_INTERRUPT");
                 }
 
-                this.saveFile.hosts.push({ token, name: host.hostname });
+                this.saveFile.hosts.push({ name: host.hostname, token });
                 logger.info(__("Hostname has been pushed."), verbose);
             }
         } else if (flags.token && !token) {
@@ -108,9 +108,9 @@ export default class Client extends Module {
                 logger.info(__("No token found, asking to user."), verbose);
 
                 token = (await prompt({
-                    type: "password",
+                    message: __("Enter token to connect"),
                     name: "token",
-                    message: __("Enter token to connect")
+                    type: "password"
                 }) as { token: string }).token;
             } catch {
                 logger.error("Interrupted the question!");
@@ -118,20 +118,22 @@ export default class Client extends Module {
                 throw new Error("KEYBOARD_INTERRUPT");
             }
 
-            this.saveFile.hosts.push({ token, name: host.hostname });
+            this.saveFile.hosts.push({ name: host.hostname, token });
             logger.info(__("Hostname has been pushed."), verbose);
         }
 
         Timer.time();
 
+        const raw = !!flags["no-compress"];
+
         this.client = axios.create({
             baseURL: host.toString(),
             headers: token ? {
-                token,
-                "access-control-allow-origin": "*"
+                "access-control-allow-origin": "*",
+                token
             } : { "access-control-allow-origin": "*" },
             params: {
-                raw: flags["no-compress"] as boolean
+                raw
             }
         });
 
@@ -141,12 +143,12 @@ export default class Client extends Module {
             Timer.time();
             this.client.interceptors.request.use((request) => {
                 logger.info(chalk`{greenBright.underline ${__("REQUEST")}} - {yellowBright ${request.method}} ${figures.arrowRight} {blueBright.underline ${request.url}}${request.data
-                    ? chalk`\n{white ${flags["no-compress"] ? JSON.stringify(request.data) : msgpack.unpack(request.data)}}` : ""}`);
+                    ? chalk`\n{white ${raw ? JSON.stringify(request.data) : msgpack.unpack(request.data)}}` : ""}`);
 
                 return request;
             }, (error) => {
                 logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}${error.data
-                    ? chalk`\n{white ${flags["no-compress"] ? JSON.stringify(error.data) : msgpack.unpack(error.data)}}` : ""}`);
+                    ? chalk`\n{white ${raw ? JSON.stringify(error.data) : msgpack.unpack(error.data)}}` : ""}`);
 
                 return Promise.reject(error);
             });
@@ -187,11 +189,11 @@ export default class Client extends Module {
                 Timer.time();
 
                 this.client.interceptors.response.use((response) => {
-                    logger.info(chalk`{greenBright.underline ${__("RESPONSE")}} - {greenBright ${response.status}}: {whiteBright ${response.statusText}}\n{white ${flags["no-compress"] ? JSON.stringify(response.data) : msgpack.unpack(response.data)}}`);
+                    logger.info(chalk`{greenBright.underline ${__("RESPONSE")}} - {greenBright ${response.status}}: {whiteBright ${response.statusText}}\n{white ${raw ? JSON.stringify(response.data) : msgpack.unpack(response.data)}}`);
 
                     return response;
                 }, (error) => {
-                    logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}\n{white ${flags["no-compress"] ? JSON.stringify(error.data) : msgpack.unpack(error.data)}}`);
+                    logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}\n{white ${raw ? JSON.stringify(error.data) : msgpack.unpack(error.data)}}`);
 
                     return Promise.reject(error);
                 });
@@ -217,6 +219,6 @@ export default class Client extends Module {
             throw new ModuleNotEnabledError();
         }
 
-        return { instance: this.client, hostname: this.hostname === "127.0.0.1" ? "localhost" : this.hostname };
+        return { hostname: this.hostname === "127.0.0.1" ? "localhost" : this.hostname, instance: this.client };
     }
 }
