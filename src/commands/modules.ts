@@ -12,8 +12,10 @@ import SubCommandNotFoundError from "../errors/sub-command-not-found";
 
 import { Command } from "./base";
 
-export default class Modules extends Command<string> {
-    constructor() {
+export default class Modules extends Command<string> 
+{
+    constructor() 
+    {
         super(
             "modules",
             "Show loaded modules.",
@@ -36,22 +38,26 @@ export default class Modules extends Command<string> {
         );
     }
 
-    execute(options: string): number {
+    execute(options: string): number 
+    {
         const subCommand = options.trim().split(" ")[0];
 
         return {
-            "list": () => {
+            "list": () => 
+            {
                 console.log(CliComponents.heading(__("Loaded modules")));
                 console.log(CliComponents.keyValueContent(manager.modules.map(module => ({ [(module.enabled ? chalk.green(figures.tick) : chalk.redBright(figures.cross)) + " " + chalk.blueBright(module.name)]: module.description })), 0, true));
 
                 return 0;
             },
-            "show": () => {
+            "show": () => 
+            {
                 const index = manager.modules.map(module => module.name.toLowerCase()).indexOf(options.trim().split(" ").slice(1).join(" ").toLowerCase());
 
-                if (index == -1) {
+                if (index == -1) 
+                
                     throw new ModuleNotFoundError();
-                }
+                
 
                 const foundModule = manager.modules[index];
 
@@ -65,7 +71,8 @@ export default class Modules extends Command<string> {
             ? "list"
             : (subCommand === "show"
                 ? "show"
-                : (() => {
+                : (() => 
+                {
                     throw new SubCommandNotFoundError();
                 })())]();
     }

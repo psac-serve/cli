@@ -3,7 +3,8 @@ import { __ } from "i18n";
 /**
  * The abstract base class to implement module operations and necessary information.
  */
-export default abstract class Module {
+export default abstract class Module 
+{
     /**
      * The boolean value whether this module is running / enabled.
      */
@@ -17,14 +18,16 @@ export default abstract class Module {
      *
      * @returns The instance of this class.
      */
-    protected constructor(public name: string, private _description: string) {}
+    protected constructor(public name: string, private _description: string) 
+    {}
 
     /**
      * Encapsulated _description value.
      *
      * @returns Translated description.
      */
-    get description(): string {
+    get description(): string 
+    {
         return __(this._description);
     }
 

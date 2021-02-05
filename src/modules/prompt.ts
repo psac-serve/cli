@@ -19,23 +19,28 @@ import SubCommandNotFoundError from "../errors/sub-command-not-found";
 
 import Module from "./base";
 
-export default class Prompt extends Module {
-    constructor(private history: string[] = []) {
+export default class Prompt extends Module 
+{
+    constructor(private history: string[] = []) 
+    {
         super("Prompt", "Show beauty prompts.");
     }
 
-    public init(): Promise<void> {
+    public init(): Promise<void> 
+    {
         this.enabled = true;
 
         return Promise.resolve();
     }
 
-    public use(): (code: number) => void {
+    public use(): (code: number) => void 
+    {
         const
             { hostname } = manager.use("Client"),
             { logger } = manager;
 
-        return async (code: number) => {
+        return async (code: number) => 
+        {
             cliCursor.show();
 
             const
@@ -52,18 +57,22 @@ export default class Prompt extends Module {
                 autoCompleteHint: true,
                 autoCompleteMenu: true,
                 history: this.history,
-                tokenHook: (token, _, __, term) => {
-                    if (token === ";" || [ "#", "//" ].some(value => token.startsWith(value))) {
+                tokenHook: (token, _, __, term) => 
+                {
+                    if (token === ";" || [ "#", "//" ].some(value => token.startsWith(value))) 
+                    
                         return term.dim;
-                    }
+                    
 
-                    if (!Number.isNaN(+token)) {
+                    if (!Number.isNaN(+token)) 
+                    
                         return term.yellow;
-                    }
+                    
 
-                    if (/[%&*+/^|-]|\*\*|\|\|/.test(token)) {
+                    if (/[%&*+/^|-]|\*\*|\|\|/.test(token)) 
+                    
                         return term.brightBlue;
-                    }
+                    
 
                     return autoComplete.some(value => token === value) ? term.brightGreen : term.bold.brightRed;
                 },
@@ -72,13 +81,15 @@ export default class Prompt extends Module {
 
             command = command || "";
 
-            if (command.trim() === "" || [ "#", "//" ].some(value => command?.trim().startsWith(value))) {
+            if (command.trim() === "" || [ "#", "//" ].some(value => command?.trim().startsWith(value))) 
+            {
                 console.log();
 
                 return this.use()(0);
             }
 
-            while (Quotes.check(command)) {
+            while (Quotes.check(command)) 
+            {
                 command += " " + (await terminal(chalk`\n   {blueBright ${figures.pointer}}     `).inputField({
                     autoComplete: undefined,
                     autoCompleteHint: false,
@@ -87,7 +98,8 @@ export default class Prompt extends Module {
                 count++;
             }
 
-            while (!command.endsWith(";")) {
+            while (!command.endsWith(";")) 
+            {
                 command += " " + (await terminal(chalk`\n   {greenBright ${figures.pointer}}     `).inputField({
                     autoComplete: undefined,
                     autoCompleteHint: false,
@@ -115,9 +127,10 @@ export default class Prompt extends Module {
             //    logger.error(__("Commands must end with ';'."), true, "Command");
             //}
 
-            do {
+            do 
+            
                 command = command.slice(0, -1);
-            } while (command.endsWith(";"));
+            while (command.endsWith(";"));
 
             command = command
                 .replace(/\\r/g, "\r")
@@ -127,35 +140,49 @@ export default class Prompt extends Module {
                 .replace(/\\`/g, "`")
                 .replace(/(["'`])/g, "");
 
-            if (!(command in this.history)) {
+            if (!(command in this.history)) 
+            
                 this.history.push(command);
-            }
+            
 
             terminal("\n");
 
             let stopCode;
 
-            try {
+            try 
+            {
                 stopCode = manager.use("Command").commands(command.trim());
-            } catch (error) {
-                if (error instanceof CommandNotFoundError) {
+            }
+            catch (error) 
+            {
+                if (error instanceof CommandNotFoundError) 
+                
                     stopCode = -1;
-                } else if (error instanceof InvalidArgumentsError) {
+                
+                else if (error instanceof InvalidArgumentsError) 
+                
                     stopCode = 2;
-                } else if (error instanceof ModuleNotFoundError) {
+                
+                else if (error instanceof ModuleNotFoundError) 
+                
                     stopCode = 3;
-                } else if (error instanceof SubCommandNotFoundError) {
+                
+                else if (error instanceof SubCommandNotFoundError) 
+                
                     stopCode = 4;
-                } else {
+                
+                else 
+                
                     stopCode = 1;
-                }
+                
 
                 logger.error(error.message, true, "command");
             }
 
-            if (stopCode >= 9684) {
+            if (stopCode >= 9684) 
+            
                 return stopCode - 9684;
-            }
+            
 
             console.log();
 
@@ -163,7 +190,8 @@ export default class Prompt extends Module {
         };
     }
 
-    public close(): Promise<void> {
+    public close(): Promise<void> 
+    {
         this.enabled = false;
 
         return Promise.resolve();
