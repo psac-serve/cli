@@ -7,8 +7,7 @@
 [![License](https://img.shields.io/npm/l/ban-client.svg)](https://github.com/psac-serve/cli/blob/master/package.json)
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
 <!-- tocstop -->
 
 ## Usage
@@ -26,8 +25,3 @@ USAGE
 ...
 ```
 <!-- usagestop -->
-
-## Commands
-
-<!-- commands -->
-<!-- commandsstop -->

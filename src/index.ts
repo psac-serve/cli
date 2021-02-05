@@ -1,3 +1,4 @@
+import path from "path";
 import figures from "figures";
 import chalk from "chalk";
 import prettyError from "pretty-error";
@@ -21,38 +22,49 @@ sudoBlock(chalk`{redBright ${figures.cross} {underline error} Do not run this ap
 prettyError.start();
 cliCursor.hide();
 i18n.configure({
-    locales: [ "en" ],
+    defaultLocale: "en",
     directory: `${__dirname}/locales`,
     indent: "    ",
-    defaultLocale: "en" // Intl.DateTimeFormat().resolvedOptions().locale === "ja-JP" ? "ja" : "en"
+    locales: [ "en" ] // Intl.DateTimeFormat().resolvedOptions().locale === "ja-JP" ? "ja" : "en"
 });
 
-class BanClient extends OclifCommand 
-{
+class BanClient extends OclifCommand {
     static description = __("A client application of the server to manage Minecraft's ban / kick records.")
 
     static flags: flags.Input<{ [key: string]: unknown }> = {
-        version: flags.version({ char: "V", description: __("Show app version.") }),
-        verbose: flags["boolean"]({ char: "v", description: __("Enable verbose output.") }),
+        compress: flags["boolean"]({ char: "c", default: true, description: __("Compress the connection data.") }),
+        file: flags.string({ char: "f", description: __("Use a file to run actions.") }),
         help: flags.help({ char: "h", description: __("Show this usage guide.") }),
+        "ignore-test": flags["boolean"]({ char: "i", description: __("Ignore connection testing.") }),
+        "no-compress": flags["boolean"]({ char: "C", default: false, description: __("Do not compress the connection data.") }),
         token: flags["boolean"]({ char: "t", description: __("Use a token to connect.") }),
-        "ignore-test": flags["boolean"]({ char: "i", description: __("Ignore connection testing.") })
+        verbose: flags["boolean"]({ char: "v", description: __("Enable verbose output.") }),
+        version: flags.version({ char: "V", description: __("Show app version.") })
     }
 
     static args = [{
-        name: "hostname",
         description: __("Specify the host to connect. If you not specified the port, the client connects with port 810 (example.com:810)."),
-        required: true
+        name: "hostname"
     }]
 
-    async run(): Promise<void> 
-    {
+    async run(): Promise<void> {
         const { args, flags } = this.parse(BanClient);
+
+        if (!(flags.file || args.hostname)) {
+            throw new Error(__("Hostname is required."));
+        }
+
+        if (flags.file) {
+            const file = (await import(path.resolve(flags.file as string)))["default"];
+
+            flags["no-compress"] = file.raw ? !file.raw : false;
+            args.hostname = file.hostname;
+            flags.token = file.token;
+        }
 
         let spinner;
 
-        if (flags.verbose) 
-        {
+        if (flags.verbose) {
             Timer.time();
 
             spinner = ora(__("Starting module manager...")).start();
@@ -60,20 +72,18 @@ class BanClient extends OclifCommand
 
         ModuleManagerInstance.register(flags, args);
 
-        if (flags.verbose && spinner) 
-        
+        if (flags.verbose && spinner) {
             spinner.succeed(__("Started module manager. ") + Timer.prettyTime());
-        
+        }
 
         Timer.time();
 
         await manager.initAllModules();
 
-        manager.logger.info(__("Modules loaded. ") + Timer.prettyTime(), flags.verbose as boolean);
+        manager.logger.info(__("Modules loaded. ") + Timer.prettyTime(), !!flags.verbose);
         console.log();
         manager.logger.info(chalk`{bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(manager.use("Client").hostname))}}`);
-        console.info(chalk`\n{dim.italic ${(() => 
-        {
+        console.info(chalk`\n{dim.italic ${(() => {
             const items = [
                 "ほーん、で？どうしたいの？",
                 "一切手をつけないのも、過ぎた最適化を行うのもよろしくない行為である。間を貫き通せ。",
@@ -89,7 +99,7 @@ class BanClient extends OclifCommand
         })()}}`);
         console.log("\nType \"help [command];\" for help.\n");
 
-        const exitCode = manager.use("Prompt")(0);
+        const exitCode = await manager.use("Prompt")(0);
 
         console.log(chalk`{greenBright Good bye.}`);
         await manager.closeAllModules();

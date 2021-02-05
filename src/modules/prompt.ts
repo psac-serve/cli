@@ -1,6 +1,8 @@
 import chalk from "chalk";
 import figures from "figures";
-import readlineSync from "readline-sync";
+//import lexing from "lexing";
+//import readlineSync from "readline-sync";
+import { terminal } from "terminal-kit";
 import { __ } from "i18n";
 
 import cliCursor from "cli-cursor";
@@ -8,6 +10,7 @@ import cliCursor from "cli-cursor";
 import manager from "../manager-instance";
 
 import Quotes from "../utils/quotes";
+import { build } from "../utils/lexing";
 
 import CommandNotFoundError from "../errors/command-not-found";
 import InvalidArgumentsError from "../errors/invalid-arguments";
@@ -16,61 +19,105 @@ import SubCommandNotFoundError from "../errors/sub-command-not-found";
 
 import Module from "./base";
 
-export default class Prompt extends Module 
-{
-    constructor() 
-    {
+export default class Prompt extends Module {
+    constructor(private history: string[] = []) {
         super("Prompt", "Show beauty prompts.");
     }
 
-    public init(): Promise<void> 
-    {
+    public init(): Promise<void> {
         this.enabled = true;
 
         return Promise.resolve();
     }
 
-    public use(): (code: number) => void 
-    {
-        const { hostname } = manager.use("Client");
+    public use(): (code: number) => void {
+        const
+            { hostname } = manager.use("Client"),
+            { logger } = manager;
 
-        return (code: number) => 
-        {
+        return async (code: number) => {
             cliCursor.show();
 
-            let command = "";
+            const
+                commands = manager.use("Command").list[0],
+                autoComplete = Object.keys(commands);
 
-            command = readlineSync.question(chalk`{bold {blueBright.underline ${hostname}} as {cyanBright ban-server}${code !== 0
+            let count = 2;
+
+            let command = await terminal(chalk`\n{bold {blueBright.underline ${hostname}} as {cyanBright ban-server}${code !== 0
                 ? chalk.bold(" stopped with " + chalk.redBright(code))
                 : ""}}\n {magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer)
-                : chalk.blueBright(figures.pointer)}${figures.pointer}} `).trim();
+                : chalk.blueBright(figures.pointer)}${figures.pointer}} `).inputField({
+                autoComplete,
+                autoCompleteHint: true,
+                autoCompleteMenu: true,
+                history: this.history,
+                tokenHook: (token, _, __, term) => {
+                    if (token === ";" || [ "#", "//" ].some(value => token.startsWith(value))) {
+                        return term.dim;
+                    }
 
-            while (Quotes.check(command)) 
-            
-                command += " " + readlineSync.question(chalk`   {blueBright ${figures.pointer}}     `).trim();
-            
+                    if (!Number.isNaN(+token)) {
+                        return term.yellow;
+                    }
 
-            if (command.trim() === "" || (command.startsWith("/*") && command.endsWith("*/")) || [ "#", "//", ";" ].some(value => command.trim()
-                .startsWith(value))) 
-            
+                    if (/[%&*+/^|-]|\*\*|\|\|/.test(token)) {
+                        return term.brightBlue;
+                    }
+
+                    return autoComplete.some(value => token === value) ? term.brightGreen : term.bold.brightRed;
+                },
+                tokenRegExp: build()
+            }).promise;
+
+            command = command || "";
+
+            if (command.trim() === "" || [ "#", "//" ].some(value => command?.trim().startsWith(value))) {
+                console.log();
+
                 return this.use()(0);
-            
-            else if (command.startsWith("/*") && !command.endsWith("*/")) 
-            
-                console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__("This comment block must be enclosed in */.")));
-            
+            }
 
-            while (!command.endsWith(";")) 
-            
-                command += " " + readlineSync.question(chalk`   {greenBright ${figures.pointer}}     `).trim();
-            
+            while (Quotes.check(command)) {
+                command += " " + (await terminal(chalk`\n   {blueBright ${figures.pointer}}     `).inputField({
+                    autoComplete: undefined,
+                    autoCompleteHint: false,
+                    autoCompleteMenu: false
+                }).promise || "").trim();
+                count++;
+            }
+
+            while (!command.endsWith(";")) {
+                command += " " + (await terminal(chalk`\n   {greenBright ${figures.pointer}}     `).inputField({
+                    autoComplete: undefined,
+                    autoCompleteHint: false,
+                    autoCompleteMenu: false
+                }).promise || "").trim();
+                count++;
+            }
+
+            terminal("\n");
 
             cliCursor.hide();
 
-            do 
-            
+            terminal.saveCursor();
+            terminal.move(0, -count);
+            terminal.eraseLine();
+            terminal.restoreCursor();
+
+            //if (!Quotes.check(command)) {
+            //    logger.error(__("Quotes are not closed."), true, "Command");
+
+            //    return this.use()(1);
+            //}
+
+            //if (!command.endsWith(";")) {
+            //    logger.error(__("Commands must end with ';'."), true, "Command");
+            //}
+
+            do {
                 command = command.slice(0, -1);
-            while (command.endsWith(";"));
+            } while (command.endsWith(";"));
 
             command = command
                 .replace(/\\r/g, "\r")
@@ -80,49 +127,43 @@ export default class Prompt extends Module
                 .replace(/\\`/g, "`")
                 .replace(/(["'`])/g, "");
 
+            if (!(command in this.history)) {
+                this.history.push(command);
+            }
+
+            terminal("\n");
+
             let stopCode;
 
-            try 
-            {
+            try {
                 stopCode = manager.use("Command").commands(command.trim());
-            }
-            catch (error) 
-            {
-                if (error instanceof CommandNotFoundError) 
-                
+            } catch (error) {
+                if (error instanceof CommandNotFoundError) {
                     stopCode = -1;
-                
-                else if (error instanceof InvalidArgumentsError) 
-                
+                } else if (error instanceof InvalidArgumentsError) {
                     stopCode = 2;
-                
-                else if (error instanceof ModuleNotFoundError) 
-                
+                } else if (error instanceof ModuleNotFoundError) {
                     stopCode = 3;
-                
-                else if (error instanceof SubCommandNotFoundError) 
-                
+                } else if (error instanceof SubCommandNotFoundError) {
                     stopCode = 4;
-                
-                else 
-                
+                } else {
                     stopCode = 1;
-                
+                }
 
-                console.log(chalk`{bgRedBright.black  ERROR } ` + chalk.redBright(__(error.message)));
+                logger.error(error.message, true, "command");
             }
 
-            if (stopCode >= 9684) 
-            
+            if (stopCode >= 9684) {
                 return stopCode - 9684;
-            
+            }
+
+            console.log();
 
             return this.use()(stopCode);
         };
     }
 
-    public close(): Promise<void> 
-    {
+    public close(): Promise<void> {
         this.enabled = false;
 
         return Promise.resolve();
