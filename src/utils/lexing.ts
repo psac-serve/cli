@@ -2,7 +2,7 @@ export const regexes = {
     command: "(?<=^|;|\\|)[A-Za-z]+(?= ?)",
     comment: "(#|\\/\\/).*$",
     digits: "(\\d+#\\d+|\\d+#(?! )|\\d+)(([Ee])[+-]?)?(\\d+#\\d+|\\d+#(?! )|\\d+)",
-    operators: "([%&*+/^|-]|\\*\\*|\\|\\|)",
+    operators: "([&|]|\\|\\|)",
     semicolon: ";"
 };
 
