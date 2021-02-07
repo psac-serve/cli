@@ -1,6 +1,9 @@
 import { AxiosInstance } from "axios";
 import { v4 } from "uuid";
 
+import SessionNotFoundError from "../../errors/session-not-found";
+import NoSessionsError from "../../errors/no-sessions";
+
 export interface Client {
     id: string,
     instance: AxiosInstance,
@@ -8,7 +11,8 @@ export interface Client {
 }
 
 export default class Clients {
-    private _instance: AxiosInstance
+    public attaching = "";
+
     private _sessions: Client[] = []
 
     constructor() {
@@ -16,7 +20,17 @@ export default class Clients {
     }
 
     get instance(): AxiosInstance {
-        return this._instance;
+        if (!this._sessions) {
+            throw new NoSessionsError();
+        }
+
+        const found = this._sessions.find(client => client.id === this.attaching);
+
+        if (!found) {
+            throw new SessionNotFoundError();
+        }
+
+        return found.instance;
     }
 
     get sessions(): Client[] {
@@ -28,6 +42,10 @@ export default class Clients {
     }
 
     attachSession(uuid: string): void {
+        if (!this._sessions.some(client => client.id === uuid)) {
+            throw new SessionNotFoundError();
+        }
 
+        this.attaching = uuid;
     }
 }
