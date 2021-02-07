@@ -90,6 +90,7 @@
         "terminal-kit": "1.45.9",
         "terminal-link": "^2.1.1",
         "tslib": "^2.1.0",
+        "uuid": "8.3.2",
         "wrap-ansi": "^7.0.0"
     },
     "devDependencies": {
