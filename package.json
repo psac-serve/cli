@@ -52,6 +52,9 @@
         ],
         "package.json": [
             "sort-package-json"
+        ],
+        "docs/**": [
+            "remark -r .remarkrc.js docs"
         ]
     },
     "dependencies": {
