@@ -10,6 +10,7 @@ import { sprintf } from "sprintf-js";
 import { __ } from "i18n";
 
 import Timer from "../utils/timer";
+import parseHostname from "../utils/hostname";
 
 import { arguments_, default as manager, flags } from "../manager-instance";
 
@@ -41,33 +42,7 @@ export default class Client extends Module {
             verbose = !!flags.verbose;
 
         this.paths = manager.use("Directory Manager");
-
-        let host = new URL("http://127.0.0.1");
-
-        this.hostname = arguments_.hostname as string;
-
-        try {
-            host = new URL(this.hostname.replace("localhost", "127.0.0.1"));
-        } catch {
-            host = new URL("http://" + this.hostname.replace("localhost", "127.0.0.1"));
-        }
-
-        if (!host.port) {
-            host.port = "810";
-            logger.info(sprintf(__("The port didn't specify in hostname, using the default port %s."), chalk.yellowBright(810)), verbose);
-        }
-
-        if (host.protocol === "https:") {
-            host.protocol = "http:";
-            logger.warn(__("The server doesn't support HTTPS protocol, using HTTP protocol instead."), verbose);
-        }
-
-        if (host.pathname !== "/") {
-            host.pathname = "/";
-            logger.warn(__("The hostname doesn't support paths, using the root path."), verbose);
-        }
-
-        this.hostname = host.hostname;
+        this.hostname = parseHostname(arguments_.hostname as string);
 
         let token: string | undefined;
 
@@ -79,8 +54,8 @@ export default class Client extends Module {
 
         this.saveFile = msgpack.unpack(zlib.brotliDecompressSync(Buffer.from(await fse.readFile(this.paths.save))));
 
-        if (this.saveFile.hosts && this.saveFile.hosts.some(hostname => hostname && hostname.name === host.hostname)) {
-            const found = this.saveFile.hosts.find(hostname => hostname && hostname.name === host.hostname);
+        if (this.saveFile.hosts && this.saveFile.hosts.some(hostname => hostname && hostname.name === this.hostname)) {
+            const found = this.saveFile.hosts.find(hostname => hostname && hostname.name === this.hostname);
 
             if (found && "token" in found) {
                 logger.info(__("Found token in specified host."), verbose);
@@ -100,7 +75,7 @@ export default class Client extends Module {
                     throw new Error("KEYBOARD_INTERRUPT");
                 }
 
-                this.saveFile.hosts.push({ name: host.hostname, token });
+                this.saveFile.hosts.push({ name: this.hostname, token });
                 logger.info(__("Hostname has been pushed."), verbose);
             }
         } else if (flags.token && !token) {
@@ -118,7 +93,7 @@ export default class Client extends Module {
                 throw new Error("KEYBOARD_INTERRUPT");
             }
 
-            this.saveFile.hosts.push({ name: host.hostname, token });
+            this.saveFile.hosts.push({ name: this.hostname, token });
             logger.info(__("Hostname has been pushed."), verbose);
         }
 
@@ -127,7 +102,7 @@ export default class Client extends Module {
         const raw = !!flags["no-compress"];
 
         this.client = axios.create({
-            baseURL: host.toString(),
+            baseURL: this.hostname,
             headers: token ? {
                 "access-control-allow-origin": "*",
                 token
@@ -201,6 +176,19 @@ export default class Client extends Module {
                 logger.info(__("Response logger created. ") + Timer.prettyTime());
             }
         }
+
+        const sessionsManager = manager.use("Sessions Manager");
+
+        sessionsManager.create(token ? {
+            client: this.client,
+            hostname: this.hostname,
+            name: "main",
+            token
+        } : {
+            client: this.client,
+            hostname: this.hostname,
+            name: "main"
+        });
 
         this.enabled = true;
     }
