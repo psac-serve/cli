@@ -1,7 +1,6 @@
 import ModuleManager from "./modules/manager";
 
 import Directory from "./modules/directory";
-import Client from "./modules/client";
 import Command from "./modules/command";
 import Prompt from "./modules/prompt";
 import Help from "./modules/help";
@@ -20,7 +19,6 @@ export { flags, arguments_ };
 export default new ModuleManager([
     new Directory(),
     new Help(),
-    new Client(),
     new Command(),
     new Prompt()
 ]);

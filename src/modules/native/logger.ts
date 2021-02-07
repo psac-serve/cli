@@ -9,6 +9,9 @@ import stringWidth from "string-width";
 import repeat from "repeat-string";
 import wrapAnsi from "wrap-ansi";
 import { __ } from "i18n";
+import { terminal } from "terminal-kit";
+
+import manager from "../../manager-instance";
 
 enum Colors {
     info = "INFO",
@@ -112,11 +115,31 @@ export default class Logger {
         } = this.generateLog(typeSymbol, titleText, message, tag);
 
         if (-(stringWidth(splitMiddleLogMessage) - process.stdout.columns) - stringWidth(` ${tag} ${time} `) < 0) {
+            if (manager.prompting) {
+                terminal.saveCursor();
+                terminal.move(0, -(manager.promptCount + 3));
+                console.log();
+            }
+
             console.log(supportsColor.stdout ? leftLogMessage + middleLogMessage : stripAnsi(leftLogMessage + middleLogMessage));
+
+            if (manager.prompting) {
+                terminal.restoreCursor();
+            }
         } else {
             const mergedMessage = leftLogMessage + middleLogMessage + repeat(" ", -((middleLogMessage === splitMiddleLogMessage ? stringWidth(splitMiddleLogMessage) + leftLogWidth : stringWidth(splitMiddleLogMessage)) - process.stdout.columns) - stringWidth(` ${tag} ${time} `)) + chalk`{dim  ${tag} ${time}}`;
 
+            if (manager.prompting) {
+                terminal.saveCursor();
+                terminal.move(0, -(manager.promptCount + 3));
+                console.log();
+            }
+
             console.log(supportsColor.stdout ? mergedMessage : stripAnsi(mergedMessage));
+
+            if (manager.prompting) {
+                terminal.restoreCursor();
+            }
         }
     }
 
@@ -177,11 +200,31 @@ export default class Logger {
         } = this.generateLog(typeSymbol, titleText, message, tag);
 
         if (-(stringWidth(splitMiddleLogMessage) - process.stdout.columns) - stringWidth(` ${tag} ${time} `) < 0) {
+            if (manager.prompting) {
+                terminal.saveCursor();
+                terminal.move(0, -(manager.promptCount + 3));
+                console.log();
+            }
+
             console.error(supportsColor.stdout ? leftLogMessage + middleLogMessage : stripAnsi(leftLogMessage + middleLogMessage));
+
+            if (manager.prompting) {
+                terminal.restoreCursor();
+            }
         } else {
             const mergedMessage = leftLogMessage + middleLogMessage + repeat(" ", -((middleLogMessage === splitMiddleLogMessage ? stringWidth(splitMiddleLogMessage) + leftLogWidth : stringWidth(splitMiddleLogMessage)) - process.stdout.columns) - stringWidth(` ${tag} ${time} `)) + chalk`{dim  ${tag} ${time}}`;
 
+            if (manager.prompting) {
+                terminal.saveCursor();
+                terminal.move(0, -(manager.promptCount + 3));
+                console.log();
+            }
+
             console.error(supportsColor.stdout ? mergedMessage : stripAnsi(mergedMessage));
+
+            if (manager.prompting) {
+                terminal.restoreCursor();
+            }
         }
     }
 

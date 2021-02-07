@@ -14,6 +14,8 @@ import cliCursor from "cli-cursor";
 import Timer from "./utils/timer";
 import { default as manager, ModuleManagerInstance } from "./manager-instance";
 
+import { Client } from "./modules/native/clients";
+
 sudoBlock(chalk`{redBright ${figures.cross} {underline error} Do not run this app with root permissions.}\n` +
           chalk`        If running without sudo doesn't work, you can either fix your permission\n` +
           chalk`        problems or change where {greenBright npm} stores global packages by putting {magentaBright.underline ~/npm/bin}\n` +
@@ -82,7 +84,7 @@ class BanClient extends OclifCommand {
 
         manager.logger.info(__("Modules loaded. ") + Timer.prettyTime(), !!flags.verbose);
         console.log();
-        manager.logger.info(chalk`{bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(manager.use("Client").hostname))}}`);
+        manager.logger.info(chalk`{bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(manager.sessions.sessions.find((session: Client) => session.id === manager.sessions.attaching).hostname))}}`);
         console.info(chalk`\n{dim.italic ${(() => {
             const items = [
                 "ほーん、で？どうしたいの？",

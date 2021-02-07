@@ -1,26 +1,40 @@
+import path from "path";
+import zlib from "zlib";
+import chalk from "chalk";
+import fse from "fs-extra";
+import msgpack from "msgpack";
 import { sprintf } from "sprintf-js";
 import { __ } from "i18n";
 
-import { flags } from "../manager-instance";
+import { arguments_, flags } from "../manager-instance";
 
 import ModuleNotFoundError from "../errors/module-not-found";
 
+import parseHostname from "../utils/hostname";
+
 import Module from "./base";
 import Logger from "./native/logger";
+import Clients from "./native/clients";
 
 /**
  * The module manager to manage cli modules.
  */
 export default class ModuleManager {
+    public logger: Logger | Record<string, any> = {}
+    public sessions: Clients | Record<string, any> = {}
+    public prompting = false
+    public promptCount = 0
+
     /**
      * Constructor.
      *
      * @param _modules The modules to use. All modules is disabled first.
      *
      * @param logger Module Manager native logger.
+     * @param sessions Module Manager native session manager / clients.
      * @returns The instance of this class.
      */
-    constructor(private _modules: Module[] = [], public logger = new Logger()) {}
+    constructor(private _modules: Module[] = []) {}
 
     /**
      * Encapsulated _modules value.
@@ -68,12 +82,6 @@ export default class ModuleManager {
             throw new ModuleNotFoundError();
         }
 
-        const foundName = name instanceof Module ? name.name : name;
-
-        if (!this.modules[index].enabled) {
-            this.logger.info(sprintf(__("Module %s is disabled. Waiting..."), foundName), !!flags.verbose, `manager.use - ${name instanceof Module ? name.name : name}`);
-        }
-
         while (!this.modules[index].enabled) {
             if (process.env.DEBUG === "1") {
                 console.log("Enabling " + this.modules[index].name);
@@ -86,8 +94,6 @@ export default class ModuleManager {
             process.stdout.clearLine(0);
         }
 
-        this.logger.success(sprintf(__("Module %s is enabled. Getting data and returning..."), foundName), !!flags.verbose, `manager.use - ${name instanceof Module ? name.name : name}`);
-
         return this.modules[index].use();
     }
 
@@ -97,6 +103,18 @@ export default class ModuleManager {
      * @returns Promise class to use await / .then().
      */
     async initAllModules(): Promise<void> {
+        this.logger = new Logger();
+
+        if (!fse.existsSync(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"))) {
+            this.logger.info(sprintf(__("Hosts configuration not found, creating new file with mode %s."), chalk.blueBright("0600")), flags.verbose as boolean);
+            await fse.writeFile(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), zlib.brotliCompressSync(msgpack.pack([], true)));
+            await fse.chmod(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), 0o600);
+        }
+
+        this.sessions = new Clients();
+
+        await this.sessions.createSession("main", parseHostname(arguments_.hostname as string), flags.token as boolean, flags.raw as boolean, flags["ignore-test"] as boolean, true);
+
         await Promise.all(this.modules.map(module => module.init()));
     }
 
@@ -106,6 +124,8 @@ export default class ModuleManager {
      * @returns Promise class to use await / .then().
      */
     async closeAllModules(): Promise<void> {
+        this.sessions.closeAllSession();
+
         await Promise.all(this.modules.map(module => module.close()));
     }
 
