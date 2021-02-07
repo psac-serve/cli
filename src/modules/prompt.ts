@@ -5,7 +5,7 @@ import { terminal } from "terminal-kit";
 
 import cliCursor from "cli-cursor";
 
-import manager from "../manager-instance";
+import { default as manager, flags } from "../manager-instance";
 
 import Quotes from "../utils/quotes";
 import { build } from "../utils/lexing";
@@ -16,6 +16,8 @@ import ModuleNotFoundError from "../errors/module-not-found";
 import SubCommandNotFoundError from "../errors/sub-command-not-found";
 
 import Module from "./base";
+
+import { Client } from "./native/clients";
 
 export default class Prompt extends Module {
     constructor(private history: string[] = []) {
@@ -29,8 +31,12 @@ export default class Prompt extends Module {
     }
 
     public use(): (code: number) => void {
+        if (!flags.verbose) {
+            terminal.move(0, -1);
+        }
+
         const
-            { hostname } = manager.use("Client"),
+            { hostname } = manager.sessions.sessions.find((session: Client) => session.id === manager.sessions.attaching),
             { logger } = manager;
 
         return async (code: number) => {
@@ -42,17 +48,12 @@ export default class Prompt extends Module {
 
             let count = 2;
 
-            let command = await terminal(
-                chalk`\n{bold %s as {cyanBright ban-server} %s$ \n` +
-                chalk`{magentaBright ${figures.pointer}%s${figures.pointer}} `,
-                chalk.blueBright.underline(hostname),
-                code !== 0
-                    ? chalk.bold(" stopped with " + chalk.redBright(code))
-                    : "",
-                code !== 0
-                    ? chalk.redBright(figures.pointer)
-                    : chalk.blueBright(figures.pointer)
-            ).inputField({
+            manager.prompting = true;
+
+            const { sessions } = manager;
+
+            let command = await terminal(chalk`\n{bold ${chalk.blueBright.underline(hostname)} as {cyanBright ${sessions.sessions.find((session: Client) => session.id === sessions.attaching)}}${code !== 0 ? chalk.bold(" stopped with " + chalk.redBright(code)) : ""}} \n` +
+                chalk`{magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer) : chalk.blueBright(figures.pointer)}${figures.pointer}} `).inputField({
                 autoComplete,
                 autoCompleteHint: true,
                 autoCompleteMenu: true,
@@ -77,6 +78,19 @@ export default class Prompt extends Module {
 
             command = command || "";
 
+            if (!command) {
+                terminal("\n");
+
+                terminal.saveCursor();
+                terminal.move(0, -count);
+                terminal.eraseLine();
+                terminal.restoreCursor();
+
+                terminal("\n");
+
+                return this.use()(0);
+            }
+
             while (Quotes.check(command)) {
                 command += " " + (await terminal(chalk`\n   {blueBright ${figures.pointer}}     `).inputField({
                     autoComplete: undefined,
@@ -84,6 +98,7 @@ export default class Prompt extends Module {
                     autoCompleteMenu: false
                 }).promise || "").trim();
                 count++;
+                manager.promptCount++;
             }
 
             while (!command.endsWith(";")) {
@@ -93,7 +108,10 @@ export default class Prompt extends Module {
                     autoCompleteMenu: false
                 }).promise || "").trim();
                 count++;
+                manager.promptCount++;
             }
+
+            manager.prompting = false;
 
             terminal("\n");
 
@@ -116,6 +134,7 @@ export default class Prompt extends Module {
 
             if (command.trim() === "" || [ "#", "//" ].some(value => command?.trim().startsWith(value))) {
                 terminal("\n");
+                terminal.move(0, -1);
 
                 return this.use()(0);
             }
@@ -123,6 +142,10 @@ export default class Prompt extends Module {
             do {
                 command = command.slice(0, -1);
             } while (command.endsWith(";"));
+
+            if (!(command in this.history)) {
+                this.history.push(command + ";");
+            }
 
             command = command
                 .replace(/\\r/g, "\r")
@@ -132,16 +155,16 @@ export default class Prompt extends Module {
                 .replace(/\\`/g, "`")
                 .replace(/(["'`])/g, "");
 
-            if (!(command in this.history)) {
-                this.history.push(command);
-            }
-
             terminal("\n");
+            terminal.move(0, -1);
 
             let stopCode;
 
             try {
-                stopCode = manager.use("Command").commands(command.trim());
+                manager.prompting = false;
+                manager.promptCount = 0;
+
+                stopCode = await manager.use("Command").commands(command.trim());
             } catch (error) {
                 if (error instanceof CommandNotFoundError) {
                     stopCode = 1;
