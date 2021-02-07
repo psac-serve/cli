@@ -8,8 +8,10 @@ import Help from "./modules/help";
 let flags: { [key: string]: unknown } = {};
 let arguments_: { [key: string]: unknown } = {};
 
-export class ModuleManagerInstance {
-    static register(_flags: { [key: string]: unknown }, _arguments: { [key: string]: unknown }): void {
+export class ModuleManagerInstance 
+{
+    static register(_flags: { [key: string]: unknown }, _arguments: { [key: string]: unknown }): void 
+    {
         [ flags, arguments_ ] = [ _flags, _arguments ];
     }
 }
