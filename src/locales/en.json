@@ -53,5 +53,13 @@
     "Description": "Description",
     "Subcommand not found.": "Subcommand not found.",
     "Quotes are not closed.": "Quotes are not closed.",
-    "Manage sessions on-demand.": "Manage sessions on-demand."
+    "Manage sessions on-demand.": "Manage sessions on-demand.",
+    "Incorrect token.": "Incorrect token.",
+    "Sessions": "Sessions",
+    " (attached)": " (attached)",
+    "Similar sessions found, which do you attach?": "Similar sessions found, which do you attach?",
+    "Successfully attached to session %s %s": "Successfully attached to session %s %s",
+    "Successfully attached to session %s %s.": "Successfully attached to session %s %s.",
+    "Successfully created session %s.": "Successfully created session %s.",
+    "Specified session not found.": "Specified session not found."
 }

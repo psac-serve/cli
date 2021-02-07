@@ -52,7 +52,7 @@ export default class Clients {
         return this._sessions;
     }
 
-    async createSession(name: string, hostname: string, hasToken?: boolean, raw = false, ignoreTest = false): Promise<void> {
+    async createSession(name: string, hostname: string, hasToken?: boolean, raw = false, ignoreTest = false, attach = false): Promise<void> {
         const
             { logger } = manager,
             verbose = !!flags.verbose;
@@ -63,11 +63,11 @@ export default class Clients {
 
         if (hasToken) {
             if (this.knownHosts && this.knownHosts.some(knownHost => knownHost && knownHost.name === hostname) && found && "token" in found) {
-                logger.info(__("Found token in specified host."), verbose);
+                logger.info(__("Found token in specified host."), verbose, name);
                 token = found.token;
             } else {
                 try {
-                    logger.info(__("No token found, asking to user."), verbose);
+                    logger.info(__("No token found, asking to user."), verbose, name);
 
                     token = (await prompt({
                         message: __("Enter token to connect"),
@@ -75,13 +75,13 @@ export default class Clients {
                         type: "password"
                     }) as { token: string }).token;
                 } catch {
-                    logger.error("Interrupted the question!");
+                    logger.error("Interrupted the question!", name);
 
                     throw new Error("KEYBOARD_INTERRUPT");
                 }
 
                 this.knownHosts.push({ name: hostname, token });
-                logger.info(__("Hostname has been pushed."), verbose);
+                logger.info(__("Hostname has been pushed."), verbose, name);
             }
         }
 
@@ -98,28 +98,28 @@ export default class Clients {
             }
         });
 
-        logger.info(sprintf(__("Created new client %s. "), chalk.cyan("main")) + Timer.prettyTime(), verbose);
+        logger.info(sprintf(__("Created new client %s. "), chalk.cyan("main")) + Timer.prettyTime(), verbose, name);
 
         if (flags.verbose) {
             Timer.time();
             client.interceptors.request.use((request) => {
                 logger.info(chalk`{greenBright.underline ${__("REQUEST")}} - {yellowBright ${request.method}} ${figures.arrowRight} {blueBright.underline ${request.url}}${request.data
-                    ? chalk`\n{white ${raw ? JSON.stringify(request.data) : msgpack.unpack(request.data)}}` : ""}`);
+                    ? chalk`\n{white ${raw ? JSON.stringify(request.data) : msgpack.unpack(request.data)}}` : ""}`, true, name);
 
                 return request;
             }, (error) => {
                 logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}${error.data
-                    ? chalk`\n{white ${raw ? JSON.stringify(error.data) : msgpack.unpack(error.data)}}` : ""}`);
+                    ? chalk`\n{white ${raw ? JSON.stringify(error.data) : msgpack.unpack(error.data)}}` : ""}`, true, name);
 
                 return Promise.reject(error);
             });
-            logger.info(__("Request logger created. ") + Timer.prettyTime());
+            logger.info(__("Request logger created. ") + Timer.prettyTime(), true, name);
         }
 
         if (!ignoreTest) {
             Timer.time();
 
-            logger.info(__("Testing connection using /teapot."), verbose);
+            logger.info(__("Testing connection using /teapot."), verbose, true, name);
 
             try {
                 await client.get("/teapot");
@@ -130,7 +130,7 @@ export default class Clients {
 
                 switch (error.response.status) {
                     case 403:
-                        logger.error(__("Incorrect token."));
+                        logger.error(__("Incorrect token."), true, name);
 
                         throw new Error("INCORRECT_TOKEN");
 
@@ -138,37 +138,43 @@ export default class Clients {
                         break;
 
                     default:
-                        logger.error(__("Received invalid response."));
+                        logger.error(__("Received invalid response."), true, name);
 
                         throw new Error("INVALID_RESPONSE");
                 }
             }
 
-            logger.info(__("Connection and authentication tests finished. ") + Timer.prettyTime(), verbose);
+            logger.info(__("Connection and authentication tests finished. ") + Timer.prettyTime(), verbose, name);
 
             if (flags.verbose) {
                 Timer.time();
 
                 client.interceptors.response.use((response) => {
-                    logger.info(chalk`{greenBright.underline ${__("RESPONSE")}} - {greenBright ${response.status}}: {whiteBright ${response.statusText}}\n{white ${raw ? JSON.stringify(response.data) : msgpack.unpack(response.data)}}`);
+                    logger.info(chalk`{greenBright.underline ${__("RESPONSE")}} - {greenBright ${response.status}}: {whiteBright ${response.statusText}}\n{white ${raw ? JSON.stringify(response.data) : msgpack.unpack(response.data)}}`, true, name);
 
                     return response;
                 }, (error) => {
-                    logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}\n{white ${raw ? JSON.stringify(error.data) : msgpack.unpack(error.data)}}`);
+                    logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}\n{white ${raw ? JSON.stringify(error.data) : msgpack.unpack(error.data)}}`, true, name);
 
                     return Promise.reject(error);
                 });
 
-                logger.info(__("Response logger created. ") + Timer.prettyTime());
+                logger.info(__("Response logger created. ") + Timer.prettyTime(), true, name);
             }
         }
 
+        const id = v4();
+
         this._sessions.push({
             hostname,
-            id: v4(),
+            id,
             instance: client,
             name
         });
+
+        if (attach) {
+            this.attachSession(id);
+        }
     }
 
     attachSession(uuid: string): void {
@@ -180,6 +186,6 @@ export default class Clients {
     }
 
     closeAllSession(): void {
-        fs.writeFileSync(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), zlib.brotliCompressSync(msgpack.pack([ this.knownHosts ], true)));
+        fs.writeFileSync(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), zlib.brotliCompressSync(msgpack.pack(this.knownHosts, true)));
     }
 }

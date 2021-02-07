@@ -5,7 +5,7 @@ import chalk from "chalk";
 import { flags, default as manager } from "../manager-instance";
 
 export default (hostname: string): string => {
-    const verbose = flags.verbose as boolean;
+    const verbose = !!flags.verbose;
     const { logger } = manager;
 
     let host;

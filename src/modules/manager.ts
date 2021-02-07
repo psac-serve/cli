@@ -22,6 +22,8 @@ import Clients from "./native/clients";
 export default class ModuleManager {
     public logger: Logger | Record<string, any> = {}
     public sessions: Clients | Record<string, any> = {}
+    public prompting = false
+    public promptCount = 0
 
     /**
      * Constructor.
@@ -80,12 +82,6 @@ export default class ModuleManager {
             throw new ModuleNotFoundError();
         }
 
-        const foundName = name instanceof Module ? name.name : name;
-
-        if (!this.modules[index].enabled) {
-            this.logger.info(sprintf(__("Module %s is disabled. Waiting..."), foundName), !!flags.verbose, `manager.use - ${name instanceof Module ? name.name : name}`);
-        }
-
         while (!this.modules[index].enabled) {
             if (process.env.DEBUG === "1") {
                 console.log("Enabling " + this.modules[index].name);
@@ -97,8 +93,6 @@ export default class ModuleManager {
             process.stdout.cursorTo(0);
             process.stdout.clearLine(0);
         }
-
-        this.logger.success(sprintf(__("Module %s is enabled. Getting data and returning..."), foundName), !!flags.verbose, `manager.use - ${name instanceof Module ? name.name : name}`);
 
         return this.modules[index].use();
     }
@@ -119,8 +113,7 @@ export default class ModuleManager {
 
         this.sessions = new Clients();
 
-        await this.sessions.createSession("main", parseHostname(arguments_.hostname as string), flags.token as boolean, flags.raw as boolean, flags["ignore-test"] as boolean);
-        this.sessions.attachSession(this.sessions.sessions[0].id);
+        await this.sessions.createSession("main", parseHostname(arguments_.hostname as string), flags.token as boolean, flags.raw as boolean, flags["ignore-test"] as boolean, true);
 
         await Promise.all(this.modules.map(module => module.init()));
     }
@@ -131,6 +124,8 @@ export default class ModuleManager {
      * @returns Promise class to use await / .then().
      */
     async closeAllModules(): Promise<void> {
+        this.sessions.closeAllSession();
+
         await Promise.all(this.modules.map(module => module.close()));
     }
 

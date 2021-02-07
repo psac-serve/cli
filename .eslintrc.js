@@ -170,6 +170,7 @@ module.exports = {
         }],
         "quotes": [ "error", "double" ],
         "radar/cognitive-complexity": "off",
+        "radar/no-duplicate-string": "off",
         "radix": "error",
         "require-await": "error",
         "require-yield": "error",
