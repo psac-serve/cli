@@ -30,8 +30,7 @@ i18n.configure({
     locales: [ "en" ] // Intl.DateTimeFormat().resolvedOptions().locale === "ja-JP" ? "ja" : "en"
 });
 
-class BanClient extends OclifCommand 
-{
+class BanClient extends OclifCommand {
     static description = __("A client application of the server to manage Minecraft's ban / kick records.")
 
     static flags: flags.Input<{ [key: string]: unknown }> = {
@@ -50,17 +49,14 @@ class BanClient extends OclifCommand
         name: "hostname"
     }]
 
-    async run(): Promise<void> 
-    {
+    async run(): Promise<void> {
         const { args, flags } = this.parse(BanClient);
 
-        if (!(flags.file || args.hostname)) 
-        
+        if (!(flags.file || args.hostname)) {
             throw new Error(__("Hostname is required."));
-        
+        }
 
-        if (flags.file) 
-        {
+        if (flags.file) {
             const file = (await import(path.resolve(flags.file as string)))["default"];
 
             flags["no-compress"] = file.raw ? !file.raw : false;
@@ -70,8 +66,7 @@ class BanClient extends OclifCommand
 
         let spinner;
 
-        if (flags.verbose) 
-        {
+        if (flags.verbose) {
             Timer.time();
 
             spinner = ora(__("Starting module manager...")).start();
@@ -79,10 +74,9 @@ class BanClient extends OclifCommand
 
         ModuleManagerInstance.register(flags, args);
 
-        if (flags.verbose && spinner) 
-        
+        if (flags.verbose && spinner) {
             spinner.succeed(__("Started module manager. ") + Timer.prettyTime());
-        
+        }
 
         Timer.time();
 
@@ -91,8 +85,7 @@ class BanClient extends OclifCommand
         manager.logger.info(__("Modules loaded. ") + Timer.prettyTime(), !!flags.verbose);
         console.log();
         manager.logger.info(chalk`{bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(manager.sessions.sessions.find((session: Client) => session.id === manager.sessions.attaching).hostname))}}`);
-        console.info(chalk`\n{dim.italic ${(() => 
-        {
+        console.info(chalk`\n{dim.italic ${(() => {
             const items = [
                 "ほーん、で？どうしたいの？",
                 "一切手をつけないのも、過ぎた最適化を行うのもよろしくない行為である。間を貫き通せ。",
