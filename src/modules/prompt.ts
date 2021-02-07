@@ -17,6 +17,8 @@ import SubCommandNotFoundError from "../errors/sub-command-not-found";
 
 import Module from "./base";
 
+import { Client } from "./native/clients";
+
 export default class Prompt extends Module {
     constructor(private history: string[] = []) {
         super("Prompt", "Show beauty prompts.");
@@ -30,7 +32,7 @@ export default class Prompt extends Module {
 
     public use(): (code: number) => void {
         const
-            { hostname } = manager.use("Client"),
+            { hostname } = manager.sessions.sessions.find((session: Client) => session.id === manager.sessions.attaching),
             { logger } = manager;
 
         return async (code: number) => {
@@ -42,17 +44,8 @@ export default class Prompt extends Module {
 
             let count = 2;
 
-            let command = await terminal(
-                chalk`\n{bold %s as {cyanBright ban-server} %s$ \n` +
-                chalk`{magentaBright ${figures.pointer}%s${figures.pointer}} `,
-                chalk.blueBright.underline(hostname),
-                code !== 0
-                    ? chalk.bold(" stopped with " + chalk.redBright(code))
-                    : "",
-                code !== 0
-                    ? chalk.redBright(figures.pointer)
-                    : chalk.blueBright(figures.pointer)
-            ).inputField({
+            let command = await terminal(chalk`\n{bold ${chalk.blueBright.underline(hostname)} as {cyanBright ban-server}${code !== 0 ? chalk.bold(" stopped with " + chalk.redBright(code)) : ""}} \n` +
+                chalk`{magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer) : chalk.blueBright(figures.pointer)}${figures.pointer}} `).inputField({
                 autoComplete,
                 autoCompleteHint: true,
                 autoCompleteMenu: true,

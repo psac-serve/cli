@@ -31,5 +31,5 @@ export default (hostname: string): string => {
         logger.warn(__("The hostname doesn't support paths, using the root path."), verbose);
     }
 
-    return host.hostname;
+    return host.hostname + ":" + host.port;
 };

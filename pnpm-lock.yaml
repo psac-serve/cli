@@ -52,6 +52,7 @@ devDependencies:
   '@types/sprintf-js': 1.1.2
   '@types/supports-color': 7.2.0
   '@types/terminal-kit': 1.28.2
+  '@types/uuid': 8.3.0
   '@types/wrap-ansi': 3.0.0
   '@typescript-eslint/eslint-plugin': 4.14.2_fd306a9e1b3edff8f0bc2094ef2474e5
   '@typescript-eslint/parser': 4.14.2_fd6aa6c726751041119292f44d6f51f6
@@ -686,6 +687,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-FvUupuM3rlRsRtCN+fDudtmytGO6iHJuuRKS1Ss0pG5z8oX0diNEw94UEL7hgDbpN94rgaK5R7sWm6RrSkZuAQ==
+  /@types/uuid/8.3.0:
+    dev: true
+    resolution:
+      integrity: sha512-eQ9qFW/fhfGJF8WKHGEHZEyVWfZxrT+6CLIJGBcZPfxUh/+BnEj+UCGYMlr9qZuX/2AltsvwrGqp0LhEW8D0zQ==
   /@types/wrap-ansi/3.0.0:
     dev: true
     resolution:
@@ -6473,6 +6478,7 @@ specifiers:
   '@types/sprintf-js': ^1.1.2
   '@types/supports-color': ^7.2.0
   '@types/terminal-kit': 1.28.2
+  '@types/uuid': 8.3.0
   '@types/wrap-ansi': ^3.0.0
   '@typescript-eslint/eslint-plugin': ^4.14.2
   '@typescript-eslint/parser': ^4.14.2

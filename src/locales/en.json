@@ -52,5 +52,6 @@
     "Enabled": "Enabled",
     "Description": "Description",
     "Subcommand not found.": "Subcommand not found.",
-    "Quotes are not closed.": "Quotes are not closed."
+    "Quotes are not closed.": "Quotes are not closed.",
+    "Manage sessions on-demand.": "Manage sessions on-demand."
 }
