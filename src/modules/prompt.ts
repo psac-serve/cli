@@ -19,33 +19,27 @@ import Module from "./base";
 
 import { Client } from "./native/clients";
 
-export default class Prompt extends Module 
-{
-    constructor(private history: string[] = []) 
-    {
+export default class Prompt extends Module {
+    constructor(private history: string[] = []) {
         super("Prompt", "Show beauty prompts.");
     }
 
-    public init(): Promise<void> 
-    {
+    public init(): Promise<void> {
         this.enabled = true;
 
         return Promise.resolve();
     }
 
-    public use(): (code: number) => void 
-    {
-        if (!flags.verbose) 
-        
+    public use(): (code: number) => void {
+        if (!flags.verbose) {
             terminal.move(0, -1);
-        
+        }
 
         const
             { hostname } = manager.sessions.sessions.find((session: Client) => session.id === manager.sessions.attaching),
             { logger } = manager;
 
-        return async (code: number) => 
-        {
+        return async (code: number) => {
             cliCursor.show();
 
             const
@@ -64,22 +58,18 @@ export default class Prompt extends Module
                 autoCompleteHint: true,
                 autoCompleteMenu: true,
                 history: this.history,
-                tokenHook: (token, _, __, term) => 
-                {
-                    if (token === ";" || [ "#", "//" ].some(value => token.startsWith(value))) 
-                    
+                tokenHook: (token, _, __, term) => {
+                    if (token === ";" || [ "#", "//" ].some(value => token.startsWith(value))) {
                         return term.dim;
-                    
+                    }
 
-                    if (!Number.isNaN(+token)) 
-                    
+                    if (!Number.isNaN(+token)) {
                         return term.yellow;
-                    
+                    }
 
-                    if (/[&|]|\|\|/.test(token)) 
-                    
+                    if (/[&|]|\|\|/.test(token)) {
                         return term.brightBlue;
-                    
+                    }
 
                     return autoComplete.some(value => token === value) ? term.brightGreen : term.bold.brightRed;
                 },
@@ -88,8 +78,7 @@ export default class Prompt extends Module
 
             command = command || "";
 
-            if (!command) 
-            {
+            if (!command) {
                 terminal("\n");
 
                 terminal.saveCursor();
@@ -102,8 +91,7 @@ export default class Prompt extends Module
                 return this.use()(0);
             }
 
-            while (Quotes.check(command)) 
-            {
+            while (Quotes.check(command)) {
                 command += " " + (await terminal(chalk`\n   {blueBright ${figures.pointer}}     `).inputField({
                     autoComplete: undefined,
                     autoCompleteHint: false,
@@ -113,8 +101,7 @@ export default class Prompt extends Module
                 manager.promptCount++;
             }
 
-            while (!command.endsWith(";")) 
-            {
+            while (!command.endsWith(";")) {
                 command += " " + (await terminal(chalk`\n   {greenBright ${figures.pointer}}     `).inputField({
                     autoComplete: undefined,
                     autoCompleteHint: false,
@@ -145,23 +132,20 @@ export default class Prompt extends Module
             //    logger.error(__("Commands must end with ';'."), true, "Command");
             //}
 
-            if (command.trim() === "" || [ "#", "//" ].some(value => command?.trim().startsWith(value))) 
-            {
+            if (command.trim() === "" || [ "#", "//" ].some(value => command?.trim().startsWith(value))) {
                 terminal("\n");
                 terminal.move(0, -1);
 
                 return this.use()(0);
             }
 
-            do 
-            
+            do {
                 command = command.slice(0, -1);
-            while (command.endsWith(";"));
+            } while (command.endsWith(";"));
 
-            if (!(command in this.history)) 
-            
+            if (!(command in this.history)) {
                 this.history.push(command + ";");
-            
+            }
 
             command = command
                 .replace(/\\r/g, "\r")
@@ -176,43 +160,30 @@ export default class Prompt extends Module
 
             let stopCode;
 
-            try 
-            {
+            try {
                 manager.prompting = false;
                 manager.promptCount = 0;
 
                 stopCode = await manager.use("Command").commands(command.trim());
-            }
-            catch (error) 
-            {
-                if (error instanceof CommandNotFoundError) 
-                
+            } catch (error) {
+                if (error instanceof CommandNotFoundError) {
                     stopCode = 1;
-                
-                else if (error instanceof InvalidArgumentsError) 
-                
+                } else if (error instanceof InvalidArgumentsError) {
                     stopCode = 2;
-                
-                else if (error instanceof ModuleNotFoundError) 
-                
+                } else if (error instanceof ModuleNotFoundError) {
                     stopCode = 3;
-                
-                else if (error instanceof SubCommandNotFoundError) 
-                
+                } else if (error instanceof SubCommandNotFoundError) {
                     stopCode = 4;
-                
-                else 
-                
+                } else {
                     stopCode = -1;
-                
+                }
 
                 logger.error(error.message, true, "command");
             }
 
-            if (stopCode >= 9684) 
-            
+            if (stopCode >= 9684) {
                 return stopCode - 9684;
-            
+            }
 
             console.log();
 
@@ -220,8 +191,7 @@ export default class Prompt extends Module
         };
     }
 
-    public close(): Promise<void> 
-    {
+    public close(): Promise<void> {
         this.enabled = false;
 
         return Promise.resolve();
