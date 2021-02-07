@@ -1,9 +1,7 @@
 import chalk from "chalk";
 import figures from "figures";
 //import lexing from "lexing";
-//import readlineSync from "readline-sync";
 import { terminal } from "terminal-kit";
-import { __ } from "i18n";
 
 import cliCursor from "cli-cursor";
 
@@ -44,10 +42,17 @@ export default class Prompt extends Module {
 
             let count = 2;
 
-            let command = await terminal(chalk`\n{bold {blueBright.underline ${hostname}} as {cyanBright ban-server}${code !== 0
-                ? chalk.bold(" stopped with " + chalk.redBright(code))
-                : ""}}\n {magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer)
-                : chalk.blueBright(figures.pointer)}${figures.pointer}} `).inputField({
+            let command = await terminal(
+                chalk`\n{bold %s as {cyanBright ban-server} %s$ \n` +
+                chalk`{magentaBright ${figures.pointer}%s${figures.pointer}} `,
+                chalk.blueBright.underline(hostname),
+                code !== 0
+                    ? chalk.bold(" stopped with " + chalk.redBright(code))
+                    : "",
+                code !== 0
+                    ? chalk.redBright(figures.pointer)
+                    : chalk.blueBright(figures.pointer)
+            ).inputField({
                 autoComplete,
                 autoCompleteHint: true,
                 autoCompleteMenu: true,
@@ -61,7 +66,7 @@ export default class Prompt extends Module {
                         return term.yellow;
                     }
 
-                    if (/[%&*+/^|-]|\*\*|\|\|/.test(token)) {
+                    if (/[&|]|\|\|/.test(token)) {
                         return term.brightBlue;
                     }
 
@@ -71,12 +76,6 @@ export default class Prompt extends Module {
             }).promise;
 
             command = command || "";
-
-            if (command.trim() === "" || [ "#", "//" ].some(value => command?.trim().startsWith(value))) {
-                console.log();
-
-                return this.use()(0);
-            }
 
             while (Quotes.check(command)) {
                 command += " " + (await terminal(chalk`\n   {blueBright ${figures.pointer}}     `).inputField({
@@ -115,6 +114,12 @@ export default class Prompt extends Module {
             //    logger.error(__("Commands must end with ';'."), true, "Command");
             //}
 
+            if (command.trim() === "" || [ "#", "//" ].some(value => command?.trim().startsWith(value))) {
+                terminal("\n");
+
+                return this.use()(0);
+            }
+
             do {
                 command = command.slice(0, -1);
             } while (command.endsWith(";"));
@@ -139,7 +144,7 @@ export default class Prompt extends Module {
                 stopCode = manager.use("Command").commands(command.trim());
             } catch (error) {
                 if (error instanceof CommandNotFoundError) {
-                    stopCode = -1;
+                    stopCode = 1;
                 } else if (error instanceof InvalidArgumentsError) {
                     stopCode = 2;
                 } else if (error instanceof ModuleNotFoundError) {
@@ -147,7 +152,7 @@ export default class Prompt extends Module {
                 } else if (error instanceof SubCommandNotFoundError) {
                     stopCode = 4;
                 } else {
-                    stopCode = 1;
+                    stopCode = -1;
                 }
 
                 logger.error(error.message, true, "command");
