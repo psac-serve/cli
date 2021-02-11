@@ -1,5 +1,3 @@
-import { __ } from "i18n";
-
 import { CommandHelp } from "../modules/help";
 
 import manager from "../manager-instance";

@@ -4,16 +4,14 @@ import { Command } from "./base";
 
 export default class Exit extends Command<string> {
     constructor() {
-        super(
-            "exit", {
-                description: "Exit the session.",
-                parameters: {
-                    code: {
-                        required: true
-                    }
+        super("exit", {
+            description: "Exit the session.",
+            parameters: {
+                code: {
+                    required: true
                 }
-            }, [ "quit", "bye" ]
-        );
+            }
+        }, [ "quit", "bye" ]);
     }
 
     public execute(options: string): Promise<number> {

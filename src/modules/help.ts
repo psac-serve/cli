@@ -164,7 +164,7 @@ export default class Help extends Module {
                     CliComponents.blankLine()
                 ]);
 
-                const buildArguments = (help: CommandHelp): { [key: string]: string }[] => ("arguments" in help && help.arguments ? Object.entries(help.arguments).map(([ name, argument ]) => "--" + name + ("alias" in argument ? `, -${argument.alias}` : "")).map((_, index, titles) => ("arguments" in help && help.arguments ? ({ [titles[index]]: Object.values(help.arguments).map(({ description }) => description)[index] }) : {})) : [{}]);
+                const buildArguments = (help: CommandHelp): { [key: string]: string }[] => ("arguments" in help && help.arguments ? Object.entries(help.arguments).map(([ name, argument ]) => "--" + name + ("alias" in argument ? `, -${argument.alias}` : "")).map((_, index, titles) => ("arguments" in help && help.arguments ? ({ [titles[index]]: Object.values(help.arguments).map(({ description }) => __(description))[index] }) : {})) : [{}]);
 
                 if ("arguments" in help && help.arguments) {
                     helpArray.push(...[
