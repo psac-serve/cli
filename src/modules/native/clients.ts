@@ -16,6 +16,7 @@ import { default as manager, flags } from "../../manager-instance";
 
 import SessionNotFoundError from "../../errors/session-not-found";
 import NoSessionsError from "../../errors/no-sessions";
+import SessionLengthTooShortError from "../../errors/session-length-too-short";
 
 export interface Client {
     id: string,
@@ -163,7 +164,11 @@ export default class Clients {
             }
         }
 
-        const id = v4();
+        let id = v4();
+
+        while (this._sessions.map(session => session.id).includes(id)) {
+            id = v4();
+        }
 
         this._sessions.push({
             hostname,
@@ -178,11 +183,29 @@ export default class Clients {
     }
 
     attachSession(uuid: string): void {
-        if (!this._sessions.some(client => client.id === uuid)) {
+        if (!this._sessions.map(session => session.id).includes(uuid)) {
             throw new SessionNotFoundError();
         }
 
         this.attaching = uuid;
+    }
+
+    closeSession(uuid: string): void {
+        const session = this._sessions.map(session => session.id).indexOf(uuid);
+
+        if (session === -1) {
+            throw new SessionNotFoundError();
+        }
+
+        if (this._sessions.length <= 1) {
+            throw new SessionLengthTooShortError();
+        }
+
+        if (this.attaching === this._sessions[session].id) {
+            this.attachSession(this._sessions.filter(session => session.id !== this.attaching)[Math.floor(Math.random() * this._sessions.length)].id);
+        }
+
+        delete this._sessions[session];
     }
 
     closeAllSession(): void {
