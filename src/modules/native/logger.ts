@@ -39,10 +39,6 @@ export default class Logger {
             throw new Error(__("Stream not found."));
         }
 
-        if (tag !== "") {
-            tag = `${tag}: `;
-        }
-
         const
             prefix = `[${this.currentTime()}] [${type}]${tag ? ` (${tag})` : ""} `,
             body = message.split("\n").map((line, index) => (index !== 0 ? repeat(" ", stringWidth(prefix)) : "") + line).join("\n"),
@@ -58,10 +54,6 @@ export default class Logger {
     appendErrorFile(type: Colors = Colors.error, tag = "", message = ""): void {
         if (!this.errorLogStream) {
             throw new Error(__("Stream not found."));
-        }
-
-        if (tag !== "") {
-            tag = `${tag}: `;
         }
 
         const
