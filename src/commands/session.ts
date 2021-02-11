@@ -120,7 +120,7 @@ export default class Session extends Command<string> {
                         throw new SessionNotFoundError();
                     }
 
-                    const session = sessionsWithoutAttached.map((session: Client) => session.name).filter((sessionName: string) => name === sessionName).length > 1
+                    const session = sessionsWithoutAttached.filter((session: Client) => session.name === name).length > 1
                         ? (await terminal.brightWhite("Similar sessions found, which do you attach?")
                             .singleColumnMenu(sessionsWithoutAttached.filter((session: Client) => name === session.name)
                                 .map((session: Client) => `${session.id} - ${session.hostname}`)).promise).selectedText.split(" ")[0]
@@ -134,26 +134,33 @@ export default class Session extends Command<string> {
                 return 0;
             },
             "close": async () => {
-                const name = options.trim().split(" ")[1],
+                const
+                    name = options.trim().split(" ")[1],
                     isID = /\b[\da-f]{8}\b(?:-[\da-f]{4}){3}-\b[\da-f]{12}\b/.test(name),
                     { sessions } = manager;
 
                 if (isID) {
-                    sessions.closeSession(name);
+                    await sessions.closeSession(name);
 
                     logger.success(sprintf(__("Successfully attached to session %s %s."), chalk.cyanBright(sessions.sessions.find((session: Client) => name === session.id).name || ""), chalk`{dim (${name})}`));
                 } else {
-                    if (!sessions.sessions.map((session: Client) => session.name).includes(name)) {
-                        const session = sessions.sessions.map((session: Client) => session.name).filter((sessionName: string) => name === sessionName).length > 1
-                            ? (await terminal.brightWhite("Similar sessions found, which do you close?")
-                                .singleColumnMenu(sessions.sessions.filter((session: Client) => name === session.name)
-                                    .map((session: Client) => `${session.id} - ${session.hostname}`)).promise).selectedText.split(" ")[0]
-                            : sessions.sessions.find((session: Client) => name === session.name).id;
+                    const session = sessions.sessions.filter((session: Client) => session.name === name).length > 1
+                        ? (await terminal.brightWhite("Similar sessions found, which do you close?")
+                            .singleColumnMenu(sessions.sessions.filter((session: Client) => name === session.name)
+                                .map((session: Client) => `${session.id} - ${session.hostname}`)).promise).selectedText.split(" ")[0]
+                        : (() => {
+                            const found = sessions.sessions.find((session: Client) => session.name === name);
 
-                        session.closeSession(session);
-                        process.stdout.pause();
-                        logger.success(sprintf(__("Successfully closed the session %s %s."), chalk.cyanBright(name), chalk`{dim (${session})}`));
-                    }
+                            if (!found) {
+                                throw new SessionNotFoundError();
+                            }
+
+                            return found.id;
+                        })();
+
+                    await sessions.closeSession(session);
+                    process.stdout.pause();
+                    logger.success(sprintf(__("Successfully closed the session %s %s."), chalk.cyanBright(name), chalk`{dim (${session})}`));
                 }
 
                 return 0;

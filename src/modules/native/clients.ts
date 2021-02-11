@@ -204,7 +204,7 @@ export default class Clients {
             this.attachSession(this._sessions.filter(session => session.id !== this.attaching)[Math.floor(Math.random() * this._sessions.length)].id);
         }
 
-        delete this._sessions[session];
+        this._sessions = this._sessions.filter(session => session.id !== uuid);
     }
 
     closeAllSession(): void {
