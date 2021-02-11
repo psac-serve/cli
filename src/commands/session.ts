@@ -7,6 +7,7 @@ import { __ } from "i18n";
 import SubCommandNotFoundError from "../errors/sub-command-not-found";
 import BackgroundViolationError from "../errors/background-violation";
 import SessionNotFoundError from "../errors/session-not-found";
+import InvalidArgumentsError from "../errors/invalid-arguments";
 
 import manager from "../manager-instance";
 
@@ -204,6 +205,10 @@ export default class Session extends Command<string> {
                     host: string
                 };
 
+                if (!("host" in parsed) || !parsed.host) {
+                    throw new InvalidArgumentsError();
+                }
+
                 const sessionName = !("name" in parsed) ? `session${sessions.sessions.filter((session: Client) => /session\d*$/.test(session.name)).length}` : parsed.name;
 
                 (async (parsed) => {
@@ -212,9 +217,11 @@ export default class Session extends Command<string> {
                     }
 
                     await sessions.createSession(sessionName, parseHostname(parsed.host), parsed.token, parsed.raw, parsed["ignore-test"], !parsed.background);
-
+                })(parsed).then((r) => {
                     logger.success(sprintf(__("Successfully created session %s."), chalk.cyanBright(sessionName)));
-                })(parsed).then(r => r)["catch"]((error) => {
+
+                    return r;
+                })["catch"]((error) => {
                     throw error;
                 });
 
