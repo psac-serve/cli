@@ -12,6 +12,6 @@ export abstract class Command<C extends string | undefined> {
         }
     }
 
-    abstract execute(options: C): number
+    abstract execute(options: C): Promise<number>
 }
 

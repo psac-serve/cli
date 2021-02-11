@@ -11,8 +11,6 @@ dependencies:
   cli-table3: 0.6.0
   cli-truncate: 2.1.0
   command-line-args: 5.1.1
-  command-line-usage: 6.1.1
-  dot-object: 2.1.4
   enquirer: 2.3.6
   figures: 3.2.0
   fs-extra: 9.1.0
@@ -31,9 +29,9 @@ dependencies:
   strip-ansi: 6.0.0
   sudo-block: 3.0.0
   supports-color: 8.1.1
-  terminal-kit: 1.47.0
-  terminal-link: 2.1.1
+  terminal-kit: 1.45.9
   tslib: 2.1.0
+  uuid: 8.3.2
   wrap-ansi: 7.0.0
 devDependencies:
   '@oclif/dev-cli': 1.26.0_supports-color@8.1.1
@@ -41,8 +39,6 @@ devDependencies:
   '@types/chai': 4.2.14
   '@types/cli-spinners': 1.3.0
   '@types/command-line-args': 5.0.0
-  '@types/command-line-usage': 5.0.1
-  '@types/dot-object': 2.1.2
   '@types/fs-extra': 9.0.6
   '@types/i18n': 0.12.0
   '@types/mocha': 8.2.0
@@ -53,6 +49,7 @@ devDependencies:
   '@types/sprintf-js': 1.1.2
   '@types/supports-color': 7.2.0
   '@types/terminal-kit': 1.28.2
+  '@types/uuid': 8.3.0
   '@types/wrap-ansi': 3.0.0
   '@typescript-eslint/eslint-plugin': 4.15.0_2cd02adfcfbc7f8bf671719fde44cc85
   '@typescript-eslint/parser': 4.15.0_394ceb53945bbf9a521252c5a4c92623
@@ -572,14 +569,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-4eOPXyn5DmP64MCMF8ePDvdlvlzt2a+F8ZaVjqmh2yFCpGjc1kI3kGnCFYX9SCsGTjQcWIyVZ86IHCEyjy/MNg==
-  /@types/command-line-usage/5.0.1:
-    dev: true
-    resolution:
-      integrity: sha512-/xUgezxxYePeXhg5S04hUjxG9JZi+rJTs1+4NwpYPfSaS7BeDa6tVJkH6lN9Cb6rl8d24Fi2uX0s0Ngg2JT6gg==
-  /@types/dot-object/2.1.2:
-    dev: true
-    resolution:
-      integrity: sha512-mARrpJofLNe6yhlukeBcznBe8ssZo5ZJ/CJWc3JKmG9L9151s0OHK+mealnkqSgO6cSn1219vND2wgL67Cuqiw==
   /@types/fs-extra/9.0.6:
     dependencies:
       '@types/node': 14.14.20
@@ -687,6 +676,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-FvUupuM3rlRsRtCN+fDudtmytGO6iHJuuRKS1Ss0pG5z8oX0diNEw94UEL7hgDbpN94rgaK5R7sWm6RrSkZuAQ==
+  /@types/uuid/8.3.0:
+    dev: true
+    resolution:
+      integrity: sha512-eQ9qFW/fhfGJF8WKHGEHZEyVWfZxrT+6CLIJGBcZPfxUh/+BnEj+UCGYMlr9qZuX/2AltsvwrGqp0LhEW8D0zQ==
   /@types/wrap-ansi/3.0.0:
     dev: true
     resolution:
@@ -947,12 +940,6 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-TkuxA4UCOvxuDK6NZYXCalszEzj+TLszyASooky+i742l9TqsOdYCMJJupxRic61hwquNtppB3hgcuq9SVSH1Q==
-  /array-back/4.0.1:
-    dev: false
-    engines:
-      node: '>=8'
-    resolution:
-      integrity: sha512-Z/JnaVEXv+A9xabHzN43FiiiWEE7gPCRXMrVmRm00tWbjZRul1iHm7ECzlyNq1p4a4ATXz+G9FJ3GqGOkOV3fg==
   /array-includes/3.1.2:
     dependencies:
       call-bind: 1.0.1
@@ -1467,23 +1454,6 @@ packages:
       node: '>=4.0.0'
     resolution:
       integrity: sha512-hL/eG8lrll1Qy1ezvkant+trihbGnaKaeEjj6Scyr3DN+RC7iQ5Rz84IeLERfAWDGo0HBSNAakczwgCilDXnWg==
-  /command-line-usage/6.1.1:
-    dependencies:
-      array-back: 4.0.1
-      chalk: 2.4.2
-      table-layout: 1.0.1
-      typical: 5.2.0
-    dev: false
-    engines:
-      node: '>=8.0.0'
-    resolution:
-      integrity: sha512-F59pEuAR9o1SF/bD0dQBDluhpT4jJQNWUHEuVBqpDmCUo6gPjCi+m9fCWnWZVR/oG6cMTUms4h+3NPl74wGXvA==
-  /commander/4.1.1:
-    dev: false
-    engines:
-      node: '>= 6'
-    resolution:
-      integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==
   /commander/6.2.1:
     dev: true
     engines:
@@ -1697,6 +1667,7 @@ packages:
     resolution:
       integrity: sha512-+QeIQyN5ZuO+3Uk5DYh6/1eKO0m0YmJFGNmFHGACpf1ClL1nmlV/p4gNgbl2pJGxgXb4faqo6UE+M5ACEMyVcw==
   /deep-extend/0.6.0:
+    dev: true
     engines:
       node: '>=4.0.0'
     resolution:
@@ -4714,12 +4685,6 @@ packages:
       esprima: 4.0.1
     resolution:
       integrity: sha1-iYS1gV2ZyyIEacme7v/jiRPmzAs=
-  /reduce-flatten/2.0.0:
-    dev: false
-    engines:
-      node: '>=6'
-    resolution:
-      integrity: sha512-EJ4UNY/U1t2P/2k6oqotuX2Cc3T6nxJwsM0N0asT7dhrtH1ltUxDn4NalSYmPE2rCkVpcf/X6R0wDwcFpzhd4w==
   /regexp-tree/0.1.23:
     dev: true
     hasBin: true
@@ -5591,17 +5556,6 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-zoE5/e+dnEijk6ASB6/qrK+oYdm2do1hjoLWrqUC/8WEIW1gbxFcKuBof7sW8ArN6e+AYvsE8HBGiVRWL/F5CA==
-  /table-layout/1.0.1:
-    dependencies:
-      array-back: 4.0.1
-      deep-extend: 0.6.0
-      typical: 5.2.0
-      wordwrapjs: 4.0.0
-    dev: false
-    engines:
-      node: '>=8.0.0'
-    resolution:
-      integrity: sha512-dEquqYNJiGwY7iPfZ3wbXDI944iqanTSchrACLL2nOB+1r+h1Nzu2eH+DuPPvWvm5Ry7iAPeFlgEtP5bIp5U7Q==
   /table/6.0.7:
     dependencies:
       ajv: 7.0.3
@@ -5654,16 +5608,7 @@ packages:
     engines:
       node: '>=10.0.0'
     resolution:
-      integrity: sha512-wyfslVEOJrB2kmZyUEkTKtd4jlNTVR9G1ogkrs7a1VMk55t83+m8sMDJTNuEqfwYXvWbRyGD8pyhv9vyl9xc5w==
-  /terminal-link/2.1.1:
-    dependencies:
-      ansi-escapes: 4.3.1
-      supports-hyperlinks: 2.1.0
-    dev: false
-    engines:
-      node: '>=8'
-    resolution:
-      integrity: sha512-un0FmiRUQNr5PJqy9kP7c40F5BOfpGlYTrxonDChEZB7pzZxRNp/bt+ymiy9/npwXya9KH99nJ/GXFIiUkYGFQ==
+      integrity: sha512-uf648u2bfWz3lX9iBVgdTebIMVc78OE0cgEGuuNQWWKU8soaf+R09fYQWTpMRiz59nKxn78s8wZptGmt/hAyfQ==
   /test-exclude/6.0.0:
     dependencies:
       '@istanbuljs/schema': 0.1.2
@@ -5874,12 +5819,6 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-VAH4IvQ7BDFYglMd7BPRDfLgxZZX4O4TFcRDA6EN5X7erNJJq+McIEp8np9aVtxrCJ6qx4GTYVfOWNjcqwZgRw==
-  /typical/5.2.0:
-    dev: false
-    engines:
-      node: '>=8'
-    resolution:
-      integrity: sha512-dvdQgNDNJo+8B2uBQoqdb11eUCE1JQXhvjC/CZtgvZseVd5TYMXnq0+vuUemXbd/Se29cTaUuPX3YIc2xgbvIg==
   /uglify-js/3.12.4:
     dev: true
     engines:
@@ -6093,6 +6032,11 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
+  /uuid/8.3.2:
+    dev: false
+    hasBin: true
+    resolution:
+      integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
   /v8-compile-cache/2.2.0:
     dev: true
     resolution:
@@ -6220,15 +6164,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-J1hIEIkUVqQXHI0CJkQa3pDLyus=
-  /wordwrapjs/4.0.0:
-    dependencies:
-      reduce-flatten: 2.0.0
-      typical: 5.2.0
-    dev: false
-    engines:
-      node: '>=8.0.0'
-    resolution:
-      integrity: sha512-Svqw723a3R34KvsMgpjFBYCgNOSdcW3mQFK4wIfhGQhtaFVOJmdYoXgi63ne3dTlWgatVcUc7t4HtQ/+bUVIzQ==
   /workerpool/6.0.2:
     dev: true
     resolution:
@@ -6414,8 +6349,6 @@ specifiers:
   '@types/chai': ^4.2.14
   '@types/cli-spinners': 1.3.0
   '@types/command-line-args': ^5.0.0
-  '@types/command-line-usage': ^5.0.1
-  '@types/dot-object': 2.1.2
   '@types/fs-extra': ^9.0.6
   '@types/i18n': ^0.12.0
   '@types/mocha': ^8.2.0
@@ -6426,6 +6359,7 @@ specifiers:
   '@types/sprintf-js': ^1.1.2
   '@types/supports-color': ^7.2.0
   '@types/terminal-kit': 1.28.2
+  '@types/uuid': 8.3.0
   '@types/wrap-ansi': ^3.0.0
   '@typescript-eslint/eslint-plugin': ^4.15.0
   '@typescript-eslint/parser': ^4.15.0
@@ -6436,8 +6370,6 @@ specifiers:
   cli-table3: ^0.6.0
   cli-truncate: ^2.1.0
   command-line-args: ^5.1.1
-  command-line-usage: ^6.1.1
-  dot-object: 2.1.4
   enquirer: ^2.3.6
   eslint: ^7.19.0
   eslint-plugin-eslint-comments: 3.2.0
@@ -6486,10 +6418,10 @@ specifiers:
   strip-ansi: ^6.0.0
   sudo-block: ^3.0.0
   supports-color: ^8.1.1
-  terminal-kit: 1.47.0
-  terminal-link: ^2.1.1
+  terminal-kit: 1.45.9
   ts-node: ^9.1.1
   tslib: ^2.1.0
-  typedoc: ^0.20.23
-  typescript: ^4.1.4
+  typedoc: ^0.20.20
+  typescript: ^4.1.3
+  uuid: 8.3.2
   wrap-ansi: ^7.0.0

@@ -16,7 +16,7 @@ export default class Exit extends Command<string> {
         );
     }
 
-    public execute(options: string): number {
+    public execute(options: string): Promise<number> {
         const tokens = options.split(" ");
 
         if (tokens.length !== 1) {
@@ -25,6 +25,6 @@ export default class Exit extends Command<string> {
             tokens[0] = "0";
         }
 
-        return +tokens[0] + 9684;
+        return Promise.resolve(+tokens[0] + 9684);
     }
 }

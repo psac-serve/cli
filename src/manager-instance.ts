@@ -1,10 +1,8 @@
 import ModuleManager from "./modules/manager";
 
 import Directory from "./modules/directory";
-import Client from "./modules/client";
 import Command from "./modules/command";
 import Prompt from "./modules/prompt";
-import Sessions from "./modules/sessions";
 import Help from "./modules/help";
 
 let flags: { [key: string]: unknown } = {};
@@ -21,8 +19,6 @@ export { flags, arguments_ };
 export default new ModuleManager([
     new Directory(),
     new Help(),
-    new Sessions(),
-    new Client(),
     new Command(),
     new Prompt()
 ]);

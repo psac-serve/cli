@@ -35,7 +35,7 @@ export default class Modules extends Command<string> {
         );
     }
 
-    execute(options: string): number {
+    execute(options: string): Promise<number> {
         const subCommand = options.trim().split(" ")[0];
 
         return {
@@ -43,7 +43,7 @@ export default class Modules extends Command<string> {
                 console.log(CliComponents.heading(__("Loaded modules")));
                 console.log(CliComponents.keyValueContent(manager.modules.map(module => ({ [(module.enabled ? chalk.green(figures.tick) : chalk.redBright(figures.cross)) + " " + chalk.blueBright(module.name)]: module.description })), 0, true));
 
-                return 0;
+                return Promise.resolve(0);
             },
             "show": () => {
                 const index = manager.modules.map(module => module.name.toLowerCase()).indexOf(options.trim().split(" ").slice(1).join(" ").toLowerCase());
@@ -58,7 +58,7 @@ export default class Modules extends Command<string> {
                 console.log(`    ${chalk.cyanBright(__("Status"))}      ${foundModule.enabled ? chalk.greenBright(__("Enabled")) : chalk.redBright(__("Disabled"))}`);
                 console.log(`    ${chalk.cyanBright(__("Description"))} ${chalk.whiteBright(foundModule.description)}`);
 
-                return 0;
+                return Promise.resolve(0);
             }
         }[!subCommand || subCommand === "list"
             ? "list"
