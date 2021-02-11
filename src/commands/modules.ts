@@ -25,7 +25,9 @@ export default class Modules extends Command<string> {
                         description: "View details for specified module.",
                         parameters: {
                             module: {
-                                required: true
+                                description: "Module to display details.",
+                                required: true,
+                                type: "string"
                             }
                         }
                     }

@@ -11,11 +11,6 @@ import { default as manager, flags } from "../manager-instance";
 
 import Module from "./base";
 
-type CliHeading = (text: string, wrapIn?: number, indent?: number) => string;
-type CliContent = (text: string, indent?: number) => string;
-type CliKeyValueContent = (contents: {[key: string]: string}[], indent?: number, truncate?: boolean) => string;
-type CliBlankLine = () => string;
-
 export interface CommandArguments {
     [name: string]: {
         alias?: string,
@@ -29,20 +24,14 @@ export interface CommandValues {
     [name: string]: {
         description: string,
         required: boolean,
-        type: "string" | "number" | "boolean"
-    }
-}
-
-export interface CommandParameters {
-    [parameter: string]: {
-        required: boolean
+        type: "string" | "number"
     }
 }
 
 export interface CommandHelp {
     description: string,
     arguments?: CommandArguments,
-    parameters?: CommandParameters,
+    parameters?: CommandValues,
     subcommands?: {
         [command: string]: CommandHelp
     }
@@ -59,22 +48,16 @@ export default class Help extends Module {
         return Promise.resolve();
     }
 
-    public use(): { functions: [ CliHeading, CliContent, CliKeyValueContent, CliBlankLine ], helps: {[key: string]: CommandHelp }[], getHelp: (command: string) => string } {
+    public use(): { helps: {[key: string]: CommandHelp }[], getHelp: (command: string) => string } {
         const { logger } = manager;
 
         return {
-            functions: [
-                CliComponents.heading,
-                CliComponents.content,
-                CliComponents.keyValueContent,
-                CliComponents.blankLine
-            ],
-            getHelp: (command: string) => {
+            getHelp(command: string) {
                 logger.info(sprintf(__("Getting help for %s."), chalk.cyanBright(command)), !!flags.verbose);
 
                 const
                     dot = new Dot(" "),
-                    help = dot.pick(command.replaceAll(/ {2,}/, " "), this.helps[0]) as CommandHelp | undefined;
+                    help = dot.pick(command.replaceAll(/ {2,}/g, " ").split(" ").map((value, index, { length }) => (length - 1 != index ? `${value} subcommands` : value)).join(" "), this.helps[0]) as CommandHelp | undefined;
 
                 if (!help) {
                     throw new HelpNotFoundError();
@@ -86,7 +69,7 @@ export default class Help extends Module {
                     CliComponents.keyValueContent([{
                         "Description": __(help.description)
                     }]),
-                    CliComponents.blankLine()
+                    " "
                 ]);
 
                 const buildUsage = (help: CommandHelp): string => {
@@ -144,40 +127,54 @@ export default class Help extends Module {
                         optionalParameters = "";
 
                     if ("parameters" in help && help.parameters) {
-                        for (const [ name, { required }] of Object.entries(help.parameters)) {
+                        for (const [ name, { required, type }] of Object.entries(help.parameters)) {
+                            const color = type === "string" ? chalk.magenta : chalk.blue;
+
                             if (required) {
-                                requiredParameters += chalk` <{blueBright ${name}}>`;
+                                requiredParameters += chalk` <${color(name)}>`;
                             } else {
-                                optionalParameters += chalk`[{dim ${name}}]`;
+                                optionalParameters += chalk`{dim [}${color(name)}{dim ]}`;
                             }
                         }
                     }
 
-                    [ booleanArguments, numberArguments, stringArguments, requiredParameters, optionalParameters ] = [ booleanArguments.trim(), numberArguments.trim(), stringArguments.trim(), requiredParameters.trim(), optionalParameters.trim() ];
+                    [ booleanArguments, numberArguments, stringArguments, requiredParameters, optionalParameters ] = [ `${booleanArguments.trim()}`, `${numberArguments.trim()}`, stringArguments.trim(), requiredParameters.trim(), optionalParameters.trim() ];
 
-                    return ("arguments" in help && help.arguments ? chalk`[{blue ${booleanArguments}}] {cyan ${numberArguments}} {magenta ${stringArguments}}` : "") + ("parameters" in help && help.parameters ? `${requiredParameters} ${optionalParameters}` : "");
+                    return ("arguments" in help && help.arguments ? chalk`{dim [}{blue ${booleanArguments}}{dim ]} {cyan ${numberArguments}}{magenta ${stringArguments}}` : "") + ("parameters" in help && help.parameters ? `${requiredParameters} ${optionalParameters}` : "");
                 };
 
                 helpArray.push(...[
                     CliComponents.heading("Usage"),
-                    CliComponents.content(chalk`{dim $} {greenBright ${command}} ${buildUsage(help)} ${"subcommands" in help ? chalk`{yellow <subcommand>} {dim [args...]}` : ""}`, 1),
-                    CliComponents.blankLine()
+                    CliComponents.content(chalk`{dim $} {greenBright ${command}} ${buildUsage(help)}${"subcommands" in help ? chalk`{yellow <subcommand>} {dim [args...]}` : ""}`, 1)
                 ]);
+
+                const buildParameters = (help: CommandHelp): { [key: string]: string }[] => ("parameters" in help && help.parameters ? Object.entries(help.parameters).map(([ name, parameter ]) => ({ [parameter.required ? `<${parameter.type === "string" ? chalk.magenta(name) : chalk.blue(name)}>` : chalk`{dim [}${parameter.type === "string" ? chalk.magenta(name) : chalk.blue(name)}{dim ]}`]: __(parameter.description) })) : [{}]);
+
+                if ("parameters" in help && help.parameters) {
+                    helpArray.push(...[
+                        " ",
+                        CliComponents.heading("Parameters"),
+                        CliComponents.keyValueContent(buildParameters(help), 1)
+                    ]);
+                }
 
                 const buildArguments = (help: CommandHelp): { [key: string]: string }[] => ("arguments" in help && help.arguments ? Object.entries(help.arguments).map(([ name, argument ]) => "--" + name + ("alias" in argument ? `, -${argument.alias}` : "")).map((_, index, titles) => ("arguments" in help && help.arguments ? ({ [titles[index]]: Object.values(help.arguments).map(({ description }) => __(description))[index] }) : {})) : [{}]);
 
                 if ("arguments" in help && help.arguments) {
                     helpArray.push(...[
+                        " ",
                         CliComponents.heading("Arguments"),
-                        CliComponents.keyValueContent(buildArguments(help)),
-                        CliComponents.blankLine()
+                        CliComponents.keyValueContent(buildArguments(help), 1)
                     ]);
                 }
 
+                const buildSubcommands = (help: CommandHelp): { [key: string]: string }[] => ("subcommands" in help && help.subcommands ? Object.entries(help.subcommands).map(([ name, subcommandHelp ]) => ({ [name]: subcommandHelp.description })) : [{}]);
+
                 if ("subcommands" in help && help.subcommands) {
                     helpArray.push(...[
+                        " ",
                         CliComponents.heading("Subcommands"),
-                        CliComponents.keyValueContent(Object.entries(help.subcommands).map(([ name, subcommandHelp ]) => ({ [name]: subcommandHelp.description })))
+                        CliComponents.keyValueContent(buildSubcommands(help), 1)
                     ]);
                 }
 

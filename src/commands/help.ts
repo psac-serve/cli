@@ -14,7 +14,9 @@ export default class Help extends Command<string> {
                 description: "Show help for a command.",
                 parameters: {
                     command: {
-                        required: false
+                        description: "The command to show help.",
+                        required: false,
+                        type: "string"
                     }
                 }
             }

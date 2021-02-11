@@ -28,7 +28,9 @@ export default class Session extends Command<string> {
                         description: "Attach the session.",
                         parameters: {
                             "name|uuid": {
-                                required: true
+                                description: "Name or UUID of the session.",
+                                required: true,
+                                type: "string"
                             }
                         }
                     },
@@ -45,6 +47,7 @@ export default class Session extends Command<string> {
                             },
                             "ignore-test": {
                                 alias: "i",
+                                defaultValue: false,
                                 description: "Ignore connection test.",
                                 type: "boolean"
                             },
@@ -55,11 +58,13 @@ export default class Session extends Command<string> {
                             },
                             raw: {
                                 alias: "r",
+                                defaultValue: false,
                                 description: "Do not use compressed connection.",
                                 type: "boolean"
                             },
                             token: {
                                 alias: "t",
+                                defaultValue: false,
                                 description: "Use token.",
                                 type: "boolean"
                             }
@@ -67,7 +72,9 @@ export default class Session extends Command<string> {
                         description: "Create a new session.",
                         parameters: {
                             host: {
-                                required: false
+                                description: "The host to connect to the server.",
+                                required: false,
+                                type: "string"
                             }
                         }
                     },

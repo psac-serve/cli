@@ -8,7 +8,9 @@ export default class Exit extends Command<string> {
             description: "Exit the session.",
             parameters: {
                 code: {
-                    required: true
+                    description: "Exit code.",
+                    required: false,
+                    type: "number"
                 }
             }
         }, [ "quit", "bye" ]);
