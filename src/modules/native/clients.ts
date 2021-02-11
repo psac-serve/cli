@@ -17,6 +17,7 @@ import { default as manager, flags } from "../../manager-instance";
 import SessionNotFoundError from "../../errors/session-not-found";
 import NoSessionsError from "../../errors/no-sessions";
 import SessionLengthTooShortError from "../../errors/session-length-too-short";
+import KeyboardInterruptError from "../../errors/keyboard-interrupt";
 
 export interface Client {
     id: string,
@@ -76,9 +77,7 @@ export default class Clients {
                         type: "password"
                     }) as { token: string }).token;
                 } catch {
-                    logger.error("Interrupted the question!", name);
-
-                    throw new Error("KEYBOARD_INTERRUPT");
+                    throw new KeyboardInterruptError();
                 }
 
                 this.knownHosts.push({ name: hostname, token });
