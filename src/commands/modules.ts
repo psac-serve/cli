@@ -15,23 +15,24 @@ import { Command } from "./base";
 export default class Modules extends Command<string> {
     constructor() {
         super(
-            "modules",
-            "Show loaded modules.",
-            [
-                CliComponents.heading(__("Usage"), 1),
-                CliComponents.content(chalk`{magentaBright ${figures.pointer}} {greenBright modules} [{yellowBright list} | {yellowBright show} {blueBright <module>}]{dim ;}`, 2),
-                CliComponents.blankLine(),
-                CliComponents.heading(__("Subcommands")),
-                CliComponents.content(chalk`{yellowBright list}`, 2),
-                CliComponents.content(__("Show all loaded modules."), 3),
-                CliComponents.content(chalk`{yellowBright show} {blueBright <module>}`, 2),
-                CliComponents.content(__("Show details for a loaded module."), 3),
-                CliComponents.content(chalk`{blueBright <module>} - ${__("Specify a module to show details.")}`, 3),
-                CliComponents.blankLine(),
-                CliComponents.heading(__("Examples"), 1),
-                CliComponents.content(chalk`{magentaBright ${figures.pointer}} {greenBright modules}{dim ;}`, 2),
-                CliComponents.content(chalk`{magentaBright ${figures.pointer}} {greenBright modules} {yellowBright show} {cyan prompt}{dim ;}`, 2)
-            ],
+            "modules", {
+                description: "Manage modules.",
+                subcommands: {
+                    list: {
+                        description: "Show all loaded modules."
+                    },
+                    show: {
+                        description: "View details for specified module.",
+                        parameters: {
+                            module: {
+                                description: "Module to display details.",
+                                required: true,
+                                type: "string"
+                            }
+                        }
+                    }
+                }
+            },
             [ "module" ]
         );
     }

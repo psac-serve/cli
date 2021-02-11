@@ -71,7 +71,7 @@ export default class Prompt extends Module {
                         return term.brightBlue;
                     }
 
-                    return autoComplete.some(value => token === value) ? term.brightGreen : term.bold.brightRed;
+                    return autoComplete.includes(token) ? term.brightGreen : term.bold.brightRed;
                 },
                 tokenRegExp: build()
             }).promise;
