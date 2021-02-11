@@ -17,49 +17,100 @@ import { Client } from "../modules/native/clients";
 
 import { Command } from "./base";
 
-export default class Session extends Command<string> 
-{
-    constructor() 
-    {
+export default class Session extends Command<string> {
+    constructor() {
         super(
             "session",
-            "Manage / Attach the sessions.",
-            [],
+            {
+                description: "Manage / Attach the sessions.",
+                subcommands: {
+                    attach: {
+                        description: "Attach the session.",
+                        parameters: {
+                            "name|uuid": {
+                                description: "Name or UUID of the session.",
+                                required: true,
+                                type: "string"
+                            }
+                        }
+                    },
+                    close: {
+                        description: "Close the session. (WIP)"
+                    },
+                    create: {
+                        arguments: {
+                            background: {
+                                alias: "b",
+                                defaultValue: false,
+                                description: "Do not attach the session when created.",
+                                type: "boolean"
+                            },
+                            "ignore-test": {
+                                alias: "i",
+                                defaultValue: false,
+                                description: "Ignore connection test.",
+                                type: "boolean"
+                            },
+                            name: {
+                                alias: "n",
+                                description: "Name of the session.",
+                                type: "string"
+                            },
+                            raw: {
+                                alias: "r",
+                                defaultValue: false,
+                                description: "Do not use compressed connection.",
+                                type: "boolean"
+                            },
+                            token: {
+                                alias: "t",
+                                defaultValue: false,
+                                description: "Use token.",
+                                type: "boolean"
+                            }
+                        },
+                        description: "Create a new session.",
+                        parameters: {
+                            host: {
+                                description: "The host to connect to the server.",
+                                required: false,
+                                type: "string"
+                            }
+                        }
+                    },
+                    list: {
+                        description: "Show created sessions."
+                    }
+                }
+            },
             [ "sessions" ]
         );
     }
 
-    public async execute(options: string): Promise<number> 
-    {
+    public async execute(options: string): Promise<number> {
         const { logger, sessions } = manager;
         const subCommand = options.trim().split(" ")[0];
 
         return await {
-            "attach": async () => 
-            {
+            "attach": async () => {
                 const name = options.trim().split(" ")[1];
                 const isID = /\b[\da-f]{8}\b(?:-[\da-f]{4}){3}-\b[\da-f]{12}\b/.test(name);
                 const sessionsWithoutAttached = sessions.sessions.filter((session: Client) => sessions.attaching !== session.id);
 
-                if (isID) 
-                {
-                    if (!sessionsWithoutAttached.map((session: Client) => session.id).some((sessionId: string) => name === sessionId)) 
-                    
+                if (isID) {
+                    if (!sessionsWithoutAttached.map((session: Client) => session.id).includes(name)) {
                         throw new SessionNotFoundError();
-                    
+                    }
 
                     sessions.attachSession(name);
 
                     process.stdout.pause();
 
                     logger.success(sprintf(__("Successfully attached to session %s %s."), chalk.cyanBright(sessionsWithoutAttached.find((session: Client) => name === session.id).name), chalk`{dim (${name})}`));
-                }
-                else 
-                {
-                    if (!sessionsWithoutAttached.map((session: Client) => session.name).some((sessionName: string) => name === sessionName)) 
-                    
+                } else {
+                    if (!sessionsWithoutAttached.map((session: Client) => session.name).includes(name)) {
                         throw new SessionNotFoundError();
-                    
+                    }
 
                     const session = sessionsWithoutAttached.map((session: Client) => session.name).filter((sessionName: string) => name === sessionName).length > 1
                         ? (await terminal.brightWhite("Similar sessions found, which do you attach?")
@@ -77,8 +128,7 @@ export default class Session extends Command<string>
                 return Promise.resolve(0);
             },
             "close": () => Promise.resolve(0),
-            "create": () => 
-            {
+            "create": () => {
                 const parsed = commandLineArgs([{
                     alias: "b",
                     defaultValue: false,
@@ -119,25 +169,21 @@ export default class Session extends Command<string>
 
                 const sessionName = !("name" in parsed) ? `session${sessions.sessions.filter((session: Client) => /session\d*$/.test(session.name)).length}` : parsed.name;
 
-                (async (parsed) => 
-                {
-                    if (!parsed) 
-                    
+                (async (parsed) => {
+                    if (!parsed) {
                         throw new BackgroundViolationError();
-                    
+                    }
 
                     await sessions.createSession(sessionName, parseHostname(parsed.host), parsed.token, parsed.raw, parsed["ignore-test"], !parsed.background);
 
                     logger.success(sprintf(__("Successfully created session %s."), chalk.cyanBright(sessionName)));
-                })(parsed).then(r => r)["catch"]((error) => 
-                {
+                })(parsed).then(r => r)["catch"]((error) => {
                     throw error;
                 });
 
                 return Promise.resolve(0);
             },
-            "list": () => 
-            {
+            "list": () => {
                 console.log(CliComponents.heading(__("Sessions")));
                 console.log(CliComponents.keyValueContent(sessions.sessions.map((session: Client) => ({ [chalk.blueBright(session.name)]: chalk.dim(session.id + (session.id === sessions.attaching ? __(" (attached)") : "")) })), 0, true));
 
@@ -147,8 +193,7 @@ export default class Session extends Command<string>
             ? "list"
             : (subCommand
                 ? subCommand as "create" | "list" | "attach" | "close"
-                : (() => 
-                {
+                : (() => {
                     throw new SubCommandNotFoundError();
                 })())]();
     }

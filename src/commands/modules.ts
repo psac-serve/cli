@@ -12,52 +12,47 @@ import SubCommandNotFoundError from "../errors/sub-command-not-found";
 
 import { Command } from "./base";
 
-export default class Modules extends Command<string> 
-{
-    constructor() 
-    {
+export default class Modules extends Command<string> {
+    constructor() {
         super(
-            "modules",
-            "Show loaded modules.",
-            [
-                CliComponents.heading(__("Usage"), 1),
-                CliComponents.content(chalk`{magentaBright ${figures.pointer}} {greenBright modules} [{yellowBright list} | {yellowBright show} {blueBright <module>}]{dim ;}`, 2),
-                CliComponents.blankLine(),
-                CliComponents.heading(__("Subcommands")),
-                CliComponents.content(chalk`{yellowBright list}`, 2),
-                CliComponents.content(__("Show all loaded modules."), 3),
-                CliComponents.content(chalk`{yellowBright show} {blueBright <module>}`, 2),
-                CliComponents.content(__("Show details for a loaded module."), 3),
-                CliComponents.content(chalk`{blueBright <module>} - ${__("Specify a module to show details.")}`, 3),
-                CliComponents.blankLine(),
-                CliComponents.heading(__("Examples"), 1),
-                CliComponents.content(chalk`{magentaBright ${figures.pointer}} {greenBright modules}{dim ;}`, 2),
-                CliComponents.content(chalk`{magentaBright ${figures.pointer}} {greenBright modules} {yellowBright show} {cyan prompt}{dim ;}`, 2)
-            ],
+            "modules", {
+                description: "Manage modules.",
+                subcommands: {
+                    list: {
+                        description: "Show all loaded modules."
+                    },
+                    show: {
+                        description: "View details for specified module.",
+                        parameters: {
+                            module: {
+                                description: "Module to display details.",
+                                required: true,
+                                type: "string"
+                            }
+                        }
+                    }
+                }
+            },
             [ "module" ]
         );
     }
 
-    execute(options: string): Promise<number> 
-    {
+    execute(options: string): Promise<number> {
         const subCommand = options.trim().split(" ")[0];
 
         return {
-            "list": () => 
-            {
+            "list": () => {
                 console.log(CliComponents.heading(__("Loaded modules")));
                 console.log(CliComponents.keyValueContent(manager.modules.map(module => ({ [(module.enabled ? chalk.green(figures.tick) : chalk.redBright(figures.cross)) + " " + chalk.blueBright(module.name)]: module.description })), 0, true));
 
                 return Promise.resolve(0);
             },
-            "show": () => 
-            {
+            "show": () => {
                 const index = manager.modules.map(module => module.name.toLowerCase()).indexOf(options.trim().split(" ").slice(1).join(" ").toLowerCase());
 
-                if (index == -1) 
-                
+                if (index == -1) {
                     throw new ModuleNotFoundError();
-                
+                }
 
                 const foundModule = manager.modules[index];
 
@@ -71,8 +66,7 @@ export default class Modules extends Command<string>
             ? "list"
             : (subCommand === "show"
                 ? "show"
-                : (() => 
-                {
+                : (() => {
                     throw new SubCommandNotFoundError();
                 })())]();
     }
