@@ -20,41 +20,49 @@ enum Colors {
     success = "SUCCESS"
 }
 
-export default class Logger {
+export default class Logger 
+{
     private readonly logStream: RotatingFileStream;
     private readonly errorLogStream: RotatingFileStream;
 
-    constructor(private log: string = path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "logs", "psac.log"), private errorLog: string = path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "logs", "errors.log")) {
+    constructor(private log: string = path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "logs", "psac.log"), private errorLog: string = path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "logs", "errors.log")) 
+    {
         this.logStream = createStream(log, { compress: true, encoding: "utf8", size: "10M" });
 
         this.errorLogStream = createStream(errorLog, { compress: true, encoding: "utf8", size: "10M" });
     }
 
-    currentTime(): string {
+    currentTime(): string 
+    {
         return (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().slice(0, -5).replace("T", " ");
     }
 
-    appendFile(type: Colors = Colors.info, tag = "", message = ""): void {
-        if (!this.logStream) {
+    appendFile(type: Colors = Colors.info, tag = "", message = ""): void 
+    {
+        if (!this.logStream) 
+        
             throw new Error(__("Stream not found."));
-        }
+        
 
         const
             prefix = `[${this.currentTime()}] [${type}]${tag ? ` (${tag})` : ""} `,
             body = message.split("\n").map((line, index) => (index !== 0 ? repeat(" ", stringWidth(prefix)) : "") + line).join("\n"),
             logText = prefix + body + "\n";
 
-        fse.appendFile(this.log, stripAnsi(logText), (error) => {
-            if (error) {
+        fse.appendFile(this.log, stripAnsi(logText), (error) => 
+        {
+            if (error) 
+            
                 console.log(error);
-            }
         });
     }
 
-    appendErrorFile(type: Colors = Colors.error, tag = "", message = ""): void {
-        if (!this.errorLogStream) {
+    appendErrorFile(type: Colors = Colors.error, tag = "", message = ""): void 
+    {
+        if (!this.errorLogStream) 
+        
             throw new Error(__("Stream not found."));
-        }
+        
 
         const
             prefix = `[${this.currentTime()}] [${type}]${tag ? ` (${tag})` : ""} `,
@@ -64,15 +72,18 @@ export default class Logger {
         fse.appendFileSync(this.errorLog, stripAnsi(logText));
     }
 
-    stdout(type: Colors = Colors.info, tag = "", message = ""): void {
-        if (tag !== "") {
+    stdout(type: Colors = Colors.info, tag = "", message = ""): void 
+    {
+        if (tag !== "") 
+        
             tag = ` ${tag}:`;
-        }
+        
 
         let typeSymbol: string;
         let titleText: string;
 
-        switch (type) {
+        switch (type) 
+        {
             case Colors.info:
                 typeSymbol = chalk.magentaBright(figures.pointer);
                 titleText = chalk.underline.blueBright("info") + "   ";
@@ -106,8 +117,10 @@ export default class Logger {
             time
         } = this.generateLog(typeSymbol, titleText, message, tag);
 
-        if (-(stringWidth(splitMiddleLogMessage) - process.stdout.columns) - stringWidth(` ${tag} ${time} `) < 0) {
-            if (manager.prompting) {
+        if (-(stringWidth(splitMiddleLogMessage) - process.stdout.columns) - stringWidth(` ${tag} ${time} `) < 0) 
+        {
+            if (manager.prompting) 
+            {
                 terminal.saveCursor();
                 terminal.move(0, -(manager.promptCount + 3));
                 console.log();
@@ -115,13 +128,16 @@ export default class Logger {
 
             console.log(supportsColor.stdout ? leftLogMessage + middleLogMessage : stripAnsi(leftLogMessage + middleLogMessage));
 
-            if (manager.prompting) {
+            if (manager.prompting) 
+            
                 terminal.restoreCursor();
-            }
-        } else {
+        }
+        else 
+        {
             const mergedMessage = leftLogMessage + middleLogMessage + repeat(" ", -((middleLogMessage === splitMiddleLogMessage ? stringWidth(splitMiddleLogMessage) + leftLogWidth : stringWidth(splitMiddleLogMessage)) - process.stdout.columns) - stringWidth(` ${tag} ${time} `)) + chalk`{dim  ${tag} ${time}}`;
 
-            if (manager.prompting) {
+            if (manager.prompting) 
+            {
                 terminal.saveCursor();
                 terminal.move(0, -(manager.promptCount + 3));
                 console.log();
@@ -129,13 +145,14 @@ export default class Logger {
 
             console.log(supportsColor.stdout ? mergedMessage : stripAnsi(mergedMessage));
 
-            if (manager.prompting) {
+            if (manager.prompting) 
+            
                 terminal.restoreCursor();
-            }
         }
     }
 
-    private generateLog(typeSymbol: string, titleText: string, message: string, tag: string): {time: string, leftLogMessage: string, leftLogWidth: number, middleLogMessage: string, splitMiddleLogMessage: string} {
+    private generateLog(typeSymbol: string, titleText: string, message: string, tag: string): {time: string, leftLogMessage: string, leftLogWidth: number, middleLogMessage: string, splitMiddleLogMessage: string} 
+    {
         const
             time = this.currentTime(),
             leftLogMessage = chalk`${typeSymbol} ${titleText} `,
@@ -149,15 +166,18 @@ export default class Logger {
         return { leftLogMessage, leftLogWidth, middleLogMessage, splitMiddleLogMessage, time };
     }
 
-    stderr(type: Colors = Colors.error, tag = "", message = ""): void {
-        if (tag !== "") {
+    stderr(type: Colors = Colors.error, tag = "", message = ""): void 
+    {
+        if (tag !== "") 
+        
             tag = ` ${tag}:`;
-        }
+        
 
         let typeSymbol: string;
         let titleText: string;
 
-        switch (type) {
+        switch (type) 
+        {
             case Colors.info:
                 typeSymbol = chalk.magentaBright(figures.pointer);
                 titleText = chalk.underline.blueBright("info") + "   ";
@@ -191,8 +211,10 @@ export default class Logger {
             time
         } = this.generateLog(typeSymbol, titleText, message, tag);
 
-        if (-(stringWidth(splitMiddleLogMessage) - process.stdout.columns) - stringWidth(` ${tag} ${time} `) < 0) {
-            if (manager.prompting) {
+        if (-(stringWidth(splitMiddleLogMessage) - process.stdout.columns) - stringWidth(` ${tag} ${time} `) < 0) 
+        {
+            if (manager.prompting) 
+            {
                 terminal.saveCursor();
                 terminal.move(0, -(manager.promptCount + 3));
                 console.log();
@@ -200,13 +222,16 @@ export default class Logger {
 
             console.error(supportsColor.stdout ? leftLogMessage + middleLogMessage : stripAnsi(leftLogMessage + middleLogMessage));
 
-            if (manager.prompting) {
+            if (manager.prompting) 
+            
                 terminal.restoreCursor();
-            }
-        } else {
+        }
+        else 
+        {
             const mergedMessage = leftLogMessage + middleLogMessage + repeat(" ", -((middleLogMessage === splitMiddleLogMessage ? stringWidth(splitMiddleLogMessage) + leftLogWidth : stringWidth(splitMiddleLogMessage)) - process.stdout.columns) - stringWidth(` ${tag} ${time} `)) + chalk`{dim  ${tag} ${time}}`;
 
-            if (manager.prompting) {
+            if (manager.prompting) 
+            {
                 terminal.saveCursor();
                 terminal.move(0, -(manager.promptCount + 3));
                 console.log();
@@ -214,40 +239,48 @@ export default class Logger {
 
             console.error(supportsColor.stdout ? mergedMessage : stripAnsi(mergedMessage));
 
-            if (manager.prompting) {
+            if (manager.prompting) 
+            
                 terminal.restoreCursor();
-            }
         }
     }
 
-    info(message = "", verbose = true, tag = ""): void {
-        if (verbose) {
+    info(message = "", verbose = true, tag = ""): void 
+    {
+        if (verbose) 
+        
             this.stdout(Colors.info, tag, `${message}`);
-        }
+        
 
         this.appendFile(Colors.info, tag, message);
     }
 
-    warn(message = "", verbose = true, tag = ""): void {
-        if (verbose) {
+    warn(message = "", verbose = true, tag = ""): void 
+    {
+        if (verbose) 
+        
             this.stdout(Colors.warning, tag, `${message}`);
-        }
+        
 
         this.appendFile(Colors.warning, tag, message);
     }
 
-    error(message = "", verbose = true, tag = ""): void {
-        if (verbose) {
+    error(message = "", verbose = true, tag = ""): void 
+    {
+        if (verbose) 
+        
             this.stderr(Colors.error, tag, `${message}`);
-        }
+        
 
         this.appendErrorFile(Colors.error, tag, message);
     }
 
-    success(message = "", verbose = true, tag = ""): void {
-        if (verbose) {
+    success(message = "", verbose = true, tag = ""): void 
+    {
+        if (verbose) 
+        
             this.stdout(Colors.success, tag, `${message}`);
-        }
+        
 
         this.appendFile(Colors.success, tag, message);
     }
