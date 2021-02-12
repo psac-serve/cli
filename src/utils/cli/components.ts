@@ -7,11 +7,14 @@ import CliTable3 from "cli-table3";
 
 import manager from "../../manager-instance";
 
-export default class CliComponents {
-    public static heading(text: string, wrapIn?: number, indent = 0): string {
-        if (wrapIn) {
+export default class CliComponents 
+{
+    public static heading(text: string, wrapIn?: number, indent = 0): string 
+    {
+        if (wrapIn) 
+        
             text = wrapAnsi(text, wrapIn);
-        }
+        
 
         return indent <= 0
             ? chalk`{whiteBright ${text.split("\n").map(line => `  ${line.trim()}  `).join("\n")}}\n` +
@@ -19,14 +22,17 @@ export default class CliComponents {
             : chalk`{bold.whiteBright ${text.split("\n").map(line => repeat("  ", indent) + line).join("\n")}`;
     }
 
-    public static content(text: string, indent = 0): string {
+    public static content(text: string, indent = 0): string 
+    {
         return indent <= 0 ? "" : repeat("  ", indent) + text;
     }
 
-    public static keyValueContent(contents: { [key: string]: string }[], indent = 0, truncate = false): string {
+    public static keyValueContent(contents: { [key: string]: string }[], indent = 0, truncate = false): string 
+    {
         const max = Math.max(...contents.map(content => stringWidth(Object.keys(content)[0])));
 
-        return contents.map((content) => {
+        return contents.map((content) => 
+        {
             const
                 titleText = chalk`{blueBright ${Object.keys(content)[0].trim()}}${repeat(" ", max - stringWidth(Object.keys(content)[0].trim()))} `,
                 merged    = titleText + Object.values(content)[0].split("\n").map((line, index) => (repeat("  ", indent) + (index === 0 ? line.trim() : repeat(" ", stringWidth(titleText)) + line.trim()))).join("\n");
@@ -35,15 +41,18 @@ export default class CliComponents {
         }).join("\n");
     }
 
-    public static blankLine(): string {
+    public static blankLine(): string 
+    {
         return "\n";
     }
 
-    public static table(options?: CliTable3.TableInstanceOptions): CliTable3.Table {
+    public static table(options?: CliTable3.TableInstanceOptions): CliTable3.Table 
+    {
         return new CliTable3(options || {});
     }
 
-    public static tableString(tableInstance: CliTable3): string {
+    public static tableString(tableInstance: CliTable3): string 
+    {
         return tableInstance.toString();
     }
 }
