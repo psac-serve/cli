@@ -5,6 +5,7 @@ import fse from "fs-extra";
 import msgpack from "msgpack";
 import { sprintf } from "sprintf-js";
 import { __ } from "i18n";
+import { terminal } from "terminal-kit";
 
 import { arguments_, flags } from "../manager-instance";
 
@@ -20,21 +21,30 @@ import Clients from "./native/clients";
  * The module manager to manage cli modules.
  */
 export default class ModuleManager {
+    /**
+     * Module Manager Native Logger System.
+     */
     public logger: Logger | Record<string, any> = {}
+    /**
+     * Module Manager Native Session Manager.
+     */
     public sessions: Clients | Record<string, any> = {}
     public prompting = false
     public promptCount = 0
+    public columns = process.stdout.columns
 
     /**
      * Constructor.
      *
      * @param _modules The modules to use. All modules is disabled first.
      *
-     * @param logger Module Manager native logger.
-     * @param sessions Module Manager native session manager / clients.
      * @returns The instance of this class.
      */
-    constructor(private _modules: Module[] = []) {}
+    constructor(private _modules: Module[] = []) {
+        terminal.on("resize", (width: number) => {
+            this.columns = width;
+        });
+    }
 
     /**
      * Encapsulated _modules value.

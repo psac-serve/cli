@@ -5,6 +5,8 @@ import stringWidth from "string-width";
 import wrapAnsi from "wrap-ansi";
 import CliTable3 from "cli-table3";
 
+import manager from "../../manager-instance";
+
 export default class CliComponents {
     public static heading(text: string, wrapIn?: number, indent = 0): string {
         if (wrapIn) {
@@ -29,7 +31,7 @@ export default class CliComponents {
                 titleText = chalk`{blueBright ${Object.keys(content)[0].trim()}}${repeat(" ", max - stringWidth(Object.keys(content)[0].trim()))} `,
                 merged    = titleText + Object.values(content)[0].split("\n").map((line, index) => (repeat("  ", indent) + (index === 0 ? line.trim() : repeat(" ", stringWidth(titleText)) + line.trim()))).join("\n");
 
-            return truncate ? cliTruncate((indent <= 0 ? "" : repeat("  ", indent)) + merged, process.stdout.columns, { space: true }) : (indent <= 0 ? "" : repeat("  ", indent)) + merged;
+            return truncate ? cliTruncate((indent <= 0 ? "" : repeat("  ", indent)) + merged, manager.columns, { space: true }) : (indent <= 0 ? "" : repeat("  ", indent)) + merged;
         }).join("\n");
     }
 
