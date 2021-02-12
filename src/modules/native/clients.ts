@@ -5,10 +5,10 @@ import axios, { AxiosInstance } from "axios";
 import chalk from "chalk";
 import figures from "figures";
 import msgpack from "msgpack";
-import { prompt } from "enquirer";
 import { sprintf } from "sprintf-js";
 import { v4 } from "uuid";
 import { __ } from "i18n";
+import { terminal } from "terminal-kit";
 
 import Timer from "../../utils/timer";
 
@@ -71,11 +71,9 @@ export default class Clients {
                 try {
                     logger.info(__("No token found, asking to user."), verbose, name);
 
-                    token = (await prompt({
-                        message: __("Enter token to connect"),
-                        name: "token",
-                        type: "password"
-                    }) as { token: string }).token;
+                    token = await terminal(chalk.bold(__("Enter token to connect")) + chalk` {dim >>>} `).inputField({
+                        echoChar: true
+                    }).promise;
                 } catch {
                     throw new KeyboardInterruptError();
                 }
