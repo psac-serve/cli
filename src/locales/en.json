@@ -77,5 +77,6 @@
     "Name of the session.": "Name of the session.",
     "Do not use compressed connection.": "Do not use compressed connection.",
     "Use token.": "Use token.",
-    "Successfully closed the session %s %s.": "Successfully closed the session %s %s."
+    "Successfully closed the session %s %s.": "Successfully closed the session %s %s.",
+    "Too short length of sessions.": "Too short length of sessions."
 }

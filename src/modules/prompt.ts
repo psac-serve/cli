@@ -52,7 +52,7 @@ export default class Prompt extends Module {
 
             const { sessions } = manager;
 
-            let command = await terminal(chalk`\n{bold ${chalk.blueBright.underline(hostname)} as {cyanBright ${sessions.sessions.find((session: Client) => session.id === sessions.attaching)}}${code !== 0 ? chalk.bold(" stopped with " + chalk.redBright(code)) : ""}} \n` +
+            let command = await terminal(chalk`\n{bold ${chalk.blueBright.underline(hostname)} as {cyanBright ${sessions.sessions.find((session: Client) => session.id === sessions.attaching).name}}${code !== 0 ? chalk.bold(" stopped with " + chalk.redBright(code)) : ""}} \n` +
                 chalk`{magentaBright ${figures.pointer}${code !== 0 ? chalk.redBright(figures.pointer) : chalk.blueBright(figures.pointer)}${figures.pointer}} `).inputField({
                 autoComplete,
                 autoCompleteHint: true,
