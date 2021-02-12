@@ -5,6 +5,7 @@ import fse from "fs-extra";
 import msgpack from "msgpack";
 import { sprintf } from "sprintf-js";
 import { __ } from "i18n";
+import { terminal } from "terminal-kit";
 
 import { arguments_, flags } from "../manager-instance";
 
@@ -19,30 +20,36 @@ import Clients from "./native/clients";
 /**
  * The module manager to manage cli modules.
  */
-export default class ModuleManager 
-{
+export default class ModuleManager {
+    /**
+     * Module Manager Native Logger System.
+     */
     public logger: Logger | Record<string, any> = {}
+    /**
+     * Module Manager Native Session Manager.
+     */
     public sessions: Clients | Record<string, any> = {}
     public prompting = false
     public promptCount = 0
+    public columns = process.stdout.columns
 
     /**
      * Constructor.
      *
      * @param _modules The modules to use. All modules is disabled first.
      *
-     * @param logger Module Manager native logger.
-     * @param sessions Module Manager native session manager / clients.
      * @returns The instance of this class.
      */
-    constructor(private _modules: Module[] = []) 
-    {}
+    constructor(private _modules: Module[] = []) {
+        terminal.on("resize", (width: number) => {
+            this.columns = width;
+        });
+    }
 
     /**
      * Encapsulated _modules value.
      */
-    get modules(): Module[] 
-    {
+    get modules(): Module[] {
         return this._modules;
     }
 
@@ -53,22 +60,16 @@ export default class ModuleManager
      *
      * @returns This method is able to chain.
      */
-    load(module: Module | Module[]): ModuleManager 
-    {
-        if (module instanceof Module) 
-        {
+    load(module: Module | Module[]): ModuleManager {
+        if (module instanceof Module) {
             this._modules.push(module);
-            this.initModule(module).then(value => value)["catch"]((error) => 
-            {
+            this.initModule(module).then(value => value)["catch"]((error) => {
                 throw error;
             });
-        }
-        else 
-        {
+        } else {
             this.modules.push(...module);
 
-            Promise.all(module.map(element => this.initModule(element))).then(value => value)["catch"]((error) => 
-            {
+            Promise.all(module.map(element => this.initModule(element))).then(value => value)["catch"]((error) => {
                 throw error;
             });
         }
@@ -83,26 +84,21 @@ export default class ModuleManager
      *
      * @returns Result of specified module's use().
      */
-    use(name: string | Module): any 
-    {
+    use(name: string | Module): any {
         const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name)
             : this.modules.indexOf(name);
 
-        if (index == -1) 
-        
+        if (index == -1) {
             throw new ModuleNotFoundError();
-        
+        }
 
-        while (!this.modules[index].enabled) 
-        
-            if (process.env.DEBUG === "1") 
-            
+        while (!this.modules[index].enabled) {
+            if (process.env.DEBUG === "1") {
                 console.log("Enabling " + this.modules[index].name);
-            
-        
+            }
+        }
 
-        if (flags.verbose) 
-        {
+        if (flags.verbose) {
             process.stdout.moveCursor(0, -1);
             process.stdout.cursorTo(0);
             process.stdout.clearLine(0);
@@ -116,12 +112,10 @@ export default class ModuleManager
      *
      * @returns Promise class to use await / .then().
      */
-    async initAllModules(): Promise<void> 
-    {
+    async initAllModules(): Promise<void> {
         this.logger = new Logger();
 
-        if (!fse.existsSync(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"))) 
-        {
+        if (!fse.existsSync(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"))) {
             this.logger.info(sprintf(__("Hosts configuration not found, creating new file with mode %s."), chalk.blueBright("0600")), !!flags.verbose);
             await fse.writeFile(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), zlib.brotliCompressSync(msgpack.pack([], true)));
             await fse.chmod(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), 0o600);
@@ -139,8 +133,7 @@ export default class ModuleManager
      *
      * @returns Promise class to use await / .then().
      */
-    async closeAllModules(): Promise<void> 
-    {
+    async closeAllModules(): Promise<void> {
         this.sessions.closeAllSession();
 
         await Promise.all(this.modules.map(module => module.close()));
@@ -151,15 +144,13 @@ export default class ModuleManager
      *
      * @returns Promise class to use await / .then().
      */
-    async initModule(name: string | Module): Promise<void> 
-    {
+    async initModule(name: string | Module): Promise<void> {
         const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name)
             : this.modules.indexOf(name);
 
-        if (index == -1) 
-        
+        if (index == -1) {
             throw new ModuleNotFoundError();
-        
+        }
 
         return await this.modules[index].init();
     }
@@ -169,15 +160,13 @@ export default class ModuleManager
      *
      * @returns Promise class to use await / .then().
      */
-    async closeModule(name: string | Module): Promise<void> 
-    {
+    async closeModule(name: string | Module): Promise<void> {
         const index = typeof name === "string" ? this.modules.map(module => module.name).indexOf(name)
             : this.modules.indexOf(name);
 
-        if (index == -1) 
-        
+        if (index == -1) {
             throw new ModuleNotFoundError();
-        
+        }
 
         return await this.modules[index].close();
     }
