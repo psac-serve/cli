@@ -71,6 +71,10 @@ export default class Prompt extends Module {
                         return term.brightBlue;
                     }
 
+                    if (/--?[A-Za-z-]+(?= ?)/.test(token)) {
+                        return term.cyan;
+                    }
+
                     return autoComplete.includes(token) ? term.brightGreen : term.bold.brightRed;
                 },
                 tokenRegExp: build()
