@@ -12,7 +12,6 @@ dependencies:
   cli-truncate: 2.1.0
   command-line-args: 5.1.1
   dot-object: 2.1.4
-  enquirer: 2.3.6
   figures: 3.2.0
   fs-extra: 9.1.0
   i18n: 0.13.2_supports-color@8.1.1
@@ -856,6 +855,7 @@ packages:
     resolution:
       integrity: sha512-ZpClVKqXN3RGBmKibdfWzqCY4lnjEuoNzU5T0oEFpfd/z5qJHVarukridD4juLO2FXMiwUQxr9WqQtaYa8XRYw==
   /ansi-colors/4.1.1:
+    dev: true
     engines:
       node: '>=6'
     resolution:
@@ -1846,6 +1846,7 @@ packages:
   /enquirer/2.3.6:
     dependencies:
       ansi-colors: 4.1.1
+    dev: true
     engines:
       node: '>=8.6'
     resolution:
@@ -6384,7 +6385,6 @@ specifiers:
   cli-truncate: ^2.1.0
   command-line-args: ^5.1.1
   dot-object: 2.1.4
-  enquirer: ^2.3.6
   eslint: ^7.19.0
   eslint-plugin-eslint-comments: 3.2.0
   eslint-plugin-import: ^2.22.1
