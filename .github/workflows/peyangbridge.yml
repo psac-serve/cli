@@ -77,8 +77,8 @@ jobs:
                 run: ls
             -   name: Configure
                 run: |
-                    git config --global user.email "42040068+peyang-Celeron@users.noreply.github.com"
-                    git config --global user.name "peyang-Celeron@BOT"
+                    git config --global user.email "contact@potato1682.ml"
+                    git config --global user.name "Potato1682@bot"
                     echo '[merge "ours"]' >> .git/config
                     echo '  name = "Keep ours merge"' >> .git/config
                     echo '  driver = true' >> .git/config
@@ -93,8 +93,8 @@ jobs:
             -   name: Commit changes
                 uses: EndBug/add-and-commit@v7
                 with:
-                    author_name: "peyang-Celeron@bot"
-                    author_email: "42040068+peyang-Celeron@users.noreply.github.com"
+                    author_name: "Potato1682@bot"
+                    author_email: "contact@potato1682.ml"
                     branch: peyang
                     message: "Fix code-style"
                     signoff: true
