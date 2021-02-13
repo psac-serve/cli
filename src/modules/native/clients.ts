@@ -145,14 +145,14 @@ export default class Clients
             {
                 if (!error.response)
                 {
-                    console.log("\n");
+                    terminal("\n");
                     throw new Error(__("Cannot connect to the server."));
                 }
 
                 switch (error.response.status)
                 {
                     case 403:
-                        console.log("\n");
+                        terminal("\n");
                         logger.error(__("Incorrect token."), true, name);
 
                         throw new Error("INCORRECT_TOKEN");
@@ -161,7 +161,7 @@ export default class Clients
                         break;
 
                     default:
-                        console.log("\n");
+                        terminal("\n");
                         logger.error(__("Received invalid response."), true, name);
 
                         throw new Error("INVALID_RESPONSE");
