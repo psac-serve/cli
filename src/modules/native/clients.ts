@@ -5,10 +5,10 @@ import axios, { AxiosInstance } from "axios";
 import chalk from "chalk";
 import figures from "figures";
 import msgpack from "msgpack";
-import { prompt } from "enquirer";
 import { sprintf } from "sprintf-js";
 import { v4 } from "uuid";
 import { __ } from "i18n";
+import { terminal } from "terminal-kit";
 
 import Timer from "../../utils/timer";
 
@@ -16,6 +16,8 @@ import { default as manager, flags } from "../../manager-instance";
 
 import SessionNotFoundError from "../../errors/session-not-found";
 import NoSessionsError from "../../errors/no-sessions";
+import SessionLengthTooShortError from "../../errors/session-length-too-short";
+import KeyboardInterruptError from "../../errors/keyboard-interrupt";
 
 /**
  * Client session interface.
@@ -123,15 +125,11 @@ export default class Clients {
                 try {
                     logger.info(__("No token found, asking to user."), verbose, name);
 
-                    token = (await prompt({
-                        message: __("Enter token to connect"),
-                        name: "token",
-                        type: "password"
-                    }) as { token: string }).token;
+                    token = await terminal(chalk.bold(__("Enter token to connect")) + chalk` {dim >>>} `).inputField({
+                        echoChar: true
+                    }).promise;
                 } catch {
-                    logger.error("Interrupted the question!", name);
-
-                    throw new Error("KEYBOARD_INTERRUPT");
+                    throw new KeyboardInterruptError();
                 }
 
                 this.knownHosts.push({ name: hostname, token });
@@ -217,7 +215,11 @@ export default class Clients {
             }
         }
 
-        const id = v4();
+        let id = v4();
+
+        while (this._sessions.map(session => session.id).includes(id)) {
+            id = v4();
+        }
 
         this._sessions.push({
             hostname,
@@ -237,11 +239,34 @@ export default class Clients {
      * @param uuid Session UUID.
      */
     public attachSession(uuid: string): void {
-        if (!this._sessions.some(client => client.id === uuid)) {
+        if (!this._sessions.map(session => session.id).includes(uuid)) {
             throw new SessionNotFoundError();
         }
 
         this.attaching = uuid;
+    }
+
+    /**
+     * Close specified session.
+     *
+     * @param uuid Session UUID.
+     */
+    closeSession(uuid: string): void {
+        const session = this._sessions.map(session => session.id).indexOf(uuid);
+
+        if (session === -1) {
+            throw new SessionNotFoundError();
+        }
+
+        if (this._sessions.length <= 1) {
+            throw new SessionLengthTooShortError();
+        }
+
+        if (this.attaching === this._sessions[session].id) {
+            this.attachSession(this._sessions.filter(session => session.id !== this.attaching)[Math.floor(Math.random() * this._sessions.length)].id);
+        }
+
+        this._sessions = this._sessions.filter(session => session.id !== uuid);
     }
 
     /**

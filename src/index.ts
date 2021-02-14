@@ -12,6 +12,7 @@ import { Command as OclifCommand, flags } from "@oclif/command";
 import cliCursor from "cli-cursor";
 
 import Timer from "./utils/timer";
+
 import { default as manager, ModuleManagerInstance } from "./manager-instance";
 
 import { Client } from "./modules/native/clients";

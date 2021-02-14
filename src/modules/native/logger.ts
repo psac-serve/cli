@@ -78,10 +78,6 @@ export default class Logger {
             throw new Error(__("Stream not found."));
         }
 
-        if (tag !== "") {
-            tag = `${tag}: `;
-        }
-
         const
             prefix = `[${Logger.currentTime()}] [${type}]${tag ? ` (${tag})` : ""} `,
             body = message.split("\n").map((line, index) => (index !== 0 ? repeat(" ", stringWidth(prefix)) : "") + line).join("\n"),
@@ -106,10 +102,6 @@ export default class Logger {
     private appendErrorFile(type: Colors = Colors.error, tag = "", message = ""): void {
         if (!this.errorLogStream) {
             throw new Error(__("Stream not found."));
-        }
-
-        if (tag !== "") {
-            tag = `${tag}: `;
         }
 
         const
@@ -171,7 +163,7 @@ export default class Logger {
             time
         } = this.generateLog(typeSymbol, titleText, message, tag);
 
-        if (-(stringWidth(splitMiddleLogMessage) - process.stdout.columns) - stringWidth(` ${tag} ${time} `) < 0) {
+        if (-(stringWidth(splitMiddleLogMessage) - manager.columns) - stringWidth(` ${tag} ${time} `) < 0) {
             if (manager.prompting) {
                 terminal.saveCursor();
                 terminal.move(0, -(manager.promptCount + 3));
@@ -184,7 +176,7 @@ export default class Logger {
                 terminal.restoreCursor();
             }
         } else {
-            const mergedMessage = leftLogMessage + middleLogMessage + repeat(" ", -((middleLogMessage === splitMiddleLogMessage ? stringWidth(splitMiddleLogMessage) + leftLogWidth : stringWidth(splitMiddleLogMessage)) - process.stdout.columns) - stringWidth(` ${tag} ${time} `)) + chalk`{dim  ${tag} ${time}}`;
+            const mergedMessage = leftLogMessage + middleLogMessage + repeat(" ", -((middleLogMessage === splitMiddleLogMessage ? stringWidth(splitMiddleLogMessage) + leftLogWidth : stringWidth(splitMiddleLogMessage)) - manager.columns) - stringWidth(` ${tag} ${time} `)) + chalk`{dim  ${tag} ${time}}`;
 
             if (manager.prompting) {
                 terminal.saveCursor();
@@ -215,7 +207,7 @@ export default class Logger {
             time = Logger.currentTime(),
             leftLogMessage = chalk`${typeSymbol} ${titleText} `,
             leftLogWidth = stringWidth(leftLogMessage),
-            middleLogMessage = wrapAnsi(message, process.stdout.columns - leftLogWidth - stringWidth(` ${tag} ${time} `))
+            middleLogMessage = wrapAnsi(message, manager.columns - leftLogWidth - stringWidth(` ${tag} ${time} `))
                 .split("\n")
                 .map((line, index) => (index !== 0 ? repeat(" ", leftLogWidth) + line : line))
                 .join("\n"),
@@ -275,7 +267,7 @@ export default class Logger {
             time
         } = this.generateLog(typeSymbol, titleText, message, tag);
 
-        if (-(stringWidth(splitMiddleLogMessage) - process.stdout.columns) - stringWidth(` ${tag} ${time} `) < 0) {
+        if (-(stringWidth(splitMiddleLogMessage) - manager.columns) - stringWidth(` ${tag} ${time} `) < 0) {
             if (manager.prompting) {
                 terminal.saveCursor();
                 terminal.move(0, -(manager.promptCount + 3));
@@ -288,7 +280,7 @@ export default class Logger {
                 terminal.restoreCursor();
             }
         } else {
-            const mergedMessage = leftLogMessage + middleLogMessage + repeat(" ", -((middleLogMessage === splitMiddleLogMessage ? stringWidth(splitMiddleLogMessage) + leftLogWidth : stringWidth(splitMiddleLogMessage)) - process.stdout.columns) - stringWidth(` ${tag} ${time} `)) + chalk`{dim  ${tag} ${time}}`;
+            const mergedMessage = leftLogMessage + middleLogMessage + repeat(" ", -((middleLogMessage === splitMiddleLogMessage ? stringWidth(splitMiddleLogMessage) + leftLogWidth : stringWidth(splitMiddleLogMessage)) - manager.columns) - stringWidth(` ${tag} ${time} `)) + chalk`{dim  ${tag} ${time}}`;
 
             if (manager.prompting) {
                 terminal.saveCursor();

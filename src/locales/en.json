@@ -61,5 +61,22 @@
     "Successfully attached to session %s %s": "Successfully attached to session %s %s",
     "Successfully attached to session %s %s.": "Successfully attached to session %s %s.",
     "Successfully created session %s.": "Successfully created session %s.",
-    "Specified session not found.": "Specified session not found."
+    "Specified session not found.": "Specified session not found.",
+    "Getting help for %s.": "Getting help for %s.",
+    "Show help for a command.": "Show help for a command.",
+    "Exit the session.": "Exit the session.",
+    "Manage modules.": "Manage modules.",
+    "Cannot find specified help document.": "Cannot find specified help document.",
+    "Exit code.": "Exit code.",
+    "The command to show help.": "The command to show help.",
+    "Manage / Attach the sessions.": "Manage / Attach the sessions.",
+    "Create a new session.": "Create a new session.",
+    "The host to connect to the server.": "The host to connect to the server.",
+    "Do not attach the session when created.": "Do not attach the session when created.",
+    "Ignore connection test.": "Ignore connection test.",
+    "Name of the session.": "Name of the session.",
+    "Do not use compressed connection.": "Do not use compressed connection.",
+    "Use token.": "Use token.",
+    "Successfully closed the session %s %s.": "Successfully closed the session %s %s.",
+    "Too short length of sessions.": "Too short length of sessions."
 }

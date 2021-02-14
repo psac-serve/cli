@@ -5,6 +5,7 @@ import fse from "fs-extra";
 import msgpack from "msgpack";
 import { sprintf } from "sprintf-js";
 import { __ } from "i18n";
+import { terminal } from "terminal-kit";
 
 import { arguments_, flags } from "../manager-instance";
 
@@ -36,6 +37,10 @@ export default class ModuleManager {
      * Integration from {@link Prompt}.
      */
     public promptCount = 0
+    /**
+     * Event-based dynamic columns.
+     */
+    public columns = process.stdout.columns
 
     /**
      * Constructor.
@@ -44,7 +49,11 @@ export default class ModuleManager {
      *
      * @returns The instance of this class.
      */
-    public constructor(private _modules: Module[] = []) {}
+    public constructor(private _modules: Module[] = []) {
+        terminal.on("resize", (width: number) => {
+            this.columns = width;
+        });
+    }
 
     /**
      * Encapsulated _modules value.
@@ -116,14 +125,14 @@ export default class ModuleManager {
         this.logger = new Logger();
 
         if (!fse.existsSync(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"))) {
-            this.logger.info(sprintf(__("Hosts configuration not found, creating new file with mode %s."), chalk.blueBright("0600")), flags.verbose as boolean);
+            this.logger.info(sprintf(__("Hosts configuration not found, creating new file with mode %s."), chalk.blueBright("0600")), !!flags.verbose);
             await fse.writeFile(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), zlib.brotliCompressSync(msgpack.pack([], true)));
             await fse.chmod(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), 0o600);
         }
 
         this.sessions = new Clients();
 
-        await this.sessions.createSession("main", parseHostname(arguments_.hostname as string), flags.token as boolean, flags.raw as boolean, flags["ignore-test"] as boolean, true);
+        await this.sessions.createSession("main", parseHostname(arguments_.hostname as string), !!flags.token, !!flags.raw, !!flags["ignore-test"], true);
 
         await Promise.all(this.modules.map(module => module.init()));
     }
