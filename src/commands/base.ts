@@ -22,6 +22,13 @@ export abstract class Command<C extends string | undefined> {
         }
     }
 
+    /**
+     * Execute the command.
+     *
+     * @param options Command argument options.
+     *
+     * @returns Command stop code.
+     */
     abstract execute(options: C): Promise<number>
 }
 
