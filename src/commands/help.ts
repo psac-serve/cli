@@ -12,10 +12,7 @@ import { Command } from "./base";
  * Show help for a command.
  */
 export default class Help extends Command<string> {
-    /**
-     * Constructor.
-     */
-    public constructor(public help: CommandHelp = {
+    public static help: CommandHelp = {
         description: "Show help for a command.",
         parameters: {
             command: {
@@ -24,10 +21,15 @@ export default class Help extends Command<string> {
                 type: "string"
             }
         }
-    }) {
+    }
+
+    /**
+     * Constructor.
+     */
+    public constructor() {
         super(
             "help",
-            help
+            Help.help
         );
     }
 

@@ -18,10 +18,7 @@ import { Command } from "./base";
  * Show loaded modules.
  */
 export default class Modules extends Command<string> {
-    /**
-     * Constructor.
-     */
-    public constructor(public help: CommandHelp = {
+    public static help: CommandHelp = {
         description: "Manage modules.",
         subcommands: {
             list: {
@@ -38,10 +35,15 @@ export default class Modules extends Command<string> {
                 }
             }
         }
-    }) {
+    }
+
+    /**
+     * Constructor.
+     */
+    public constructor() {
         super(
             "modules",
-            help,
+            Modules.help,
             [ "module" ]
         );
     }

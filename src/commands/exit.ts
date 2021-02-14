@@ -8,10 +8,7 @@ import { Command } from "./base";
  * Exit the session.
  */
 export default class Exit extends Command<string> {
-    /**
-     * Constructor.
-     */
-    public constructor(public help: CommandHelp = {
+    public static help: CommandHelp = {
         description: "Exit the session.",
         parameters: {
             code: {
@@ -20,10 +17,15 @@ export default class Exit extends Command<string> {
                 type: "number"
             }
         }
-    }) {
+    }
+
+    /**
+     * Constructor.
+     */
+    public constructor() {
         super(
             "exit",
-            help,
+            Exit.help,
             [ "quit", "bye" ]
         );
     }

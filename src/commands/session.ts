@@ -24,10 +24,7 @@ import { Command } from "./base";
  * Manage / Attach the sessions.
  */
 export default class Session extends Command<string> {
-    /**
-     * Constructor.
-     */
-    public constructor(public help: CommandHelp = {
+    public static help: CommandHelp = {
         description: "Manage / Attach the sessions.",
         subcommands: {
             attach: {
@@ -95,10 +92,15 @@ export default class Session extends Command<string> {
                 description: "Show created sessions."
             }
         }
-    }) {
+    }
+
+    /**
+     * Constructor.
+     */
+    public constructor() {
         super(
             "session",
-            help,
+            Session.help,
             [ "sessions" ]
         );
     }
