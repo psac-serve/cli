@@ -3,6 +3,9 @@ import fse from "fs-extra";
 
 import Module from "./base";
 
+/**
+ * Directory Manager module: Manager settings / logs dir.
+ */
 export default class Directory extends Module {
     constructor() {
         super("Directory Manager", "Manage settings / logs dir.");

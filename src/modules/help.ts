@@ -9,8 +9,16 @@ type CliContent = (text: string, indent?: number) => string;
 type CliKeyValueContent = (contents: { [key: string]: string }[], indent?: number, truncate?: boolean) => string;
 type CliBlankLine = () => string;
 
+/**
+ * Help module: Manage help documents using the database.
+ */
 export default class Help extends Module {
-    constructor(public helps: { [key: string]: string[] }[] = [{}]) {
+    /**
+     * Constructor.
+     *
+     * @param helps Help reference store.
+     */
+    public constructor(public helps: { [key: string]: string[] }[] = [{}]) {
         super("Help", "Manage help documents using the database.");
     }
 

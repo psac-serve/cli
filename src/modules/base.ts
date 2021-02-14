@@ -24,7 +24,7 @@ export default abstract class Module {
      *
      * @returns Translated description.
      */
-    get description(): string {
+    public get description(): string {
         return __(this._description);
     }
 
@@ -33,14 +33,14 @@ export default abstract class Module {
      *
      * @returns Promise class to use await or .then().
      */
-    abstract init(): Promise<void>
+    public abstract init(): Promise<void>
 
     /**
      * Close and disable this module.
      *
      * @returns Promise class to use await or .then().
      */
-    abstract close(): Promise<void>
+    public abstract close(): Promise<void>
 
     /**
      * Call the module body.
@@ -48,6 +48,6 @@ export default abstract class Module {
      *
      * @returns The module body to use functions.
      */
-    abstract use(): unknown
+    public abstract use(): unknown
 }
 

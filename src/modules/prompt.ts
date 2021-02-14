@@ -1,6 +1,5 @@
 import chalk from "chalk";
 import figures from "figures";
-//import lexing from "lexing";
 import { terminal } from "terminal-kit";
 
 import cliCursor from "cli-cursor";
@@ -19,8 +18,16 @@ import Module from "./base";
 
 import { Client } from "./native/clients";
 
+/**
+ * Prompt module: Show beauty prompts.
+ */
 export default class Prompt extends Module {
-    constructor(private history: string[] = []) {
+    /**
+     * Constructor.
+     *
+     * @param history The history field.
+     */
+    public constructor(private history: string[] = []) {
         super("Prompt", "Show beauty prompts.");
     }
 

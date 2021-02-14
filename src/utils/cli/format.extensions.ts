@@ -1,13 +1,30 @@
 import repeat from "repeat-string";
 import wrapAnsi from "wrap-ansi";
 
+/**
+ * @internal
+ */
 export {};
 
+/**
+ * Declares function prototypes.
+ */
 declare global {
-    interface Array<T> {
+    /**
+     * String alignment for {@link Array<string>} or {@link string[]}.
+     */
+    interface Array<T extends string> {
+        /**
+         * Align string array with the key string.
+         *
+         * @param key The key string.
+         */
         alignWith<T extends string>(key: string): string[]
     }
 
+    /**
+     * Command-line string management.
+     */
     interface String {
         wrapIn(columns: number): string
     }

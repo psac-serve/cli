@@ -17,8 +17,14 @@ import { Client } from "../modules/native/clients";
 
 import { Command } from "./base";
 
+/**
+ * Manage / Attach the sessions.
+ */
 export default class Session extends Command<string> {
-    constructor() {
+    /**
+     * Constructor.
+     */
+    public constructor() {
         super(
             "session",
             "Manage / Attach the sessions.",

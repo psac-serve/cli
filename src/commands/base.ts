@@ -2,7 +2,15 @@ import { __ } from "i18n";
 
 import manager from "../manager-instance";
 
+/**
+ * Command abstract class.
+ *
+ * @typedef C Command arguments type.
+ */
 export abstract class Command<C extends string | undefined> {
+    /**
+     * Constructor.
+     */
     protected constructor(public name: string, private _description: string, public help: string[], public alias: string[] = []) {
         for (const command of [ this.name, ...this.alias ]) {
             manager.use("Command").list[0][command] = this.execute;

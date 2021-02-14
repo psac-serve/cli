@@ -4,6 +4,13 @@ import chalk from "chalk";
 
 import { flags, default as manager } from "../manager-instance";
 
+/**
+ * Convert the invalid hostname to the correct hostname.
+ *
+ * @param hostname Inputted hostname.
+ *
+ * @returns Converted hostname.
+ */
 export default (hostname: string): string => {
     const verbose = !!flags.verbose;
     const { logger } = manager;

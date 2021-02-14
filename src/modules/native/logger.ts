@@ -13,28 +13,67 @@ import { terminal } from "terminal-kit";
 
 import manager from "../../manager-instance";
 
-enum Colors {
+/**
+ * Log-level.
+ */
+export enum Colors {
     info = "INFO",
     warning = "WARN",
     error = "ERROR",
     success = "SUCCESS"
 }
 
+/**
+ * Module Manager Native Logger System (MMNLS).
+ * Please use this logger for any logging.
+ */
 export default class Logger {
+    /**
+     * Generate formatted current date and time.
+     *
+     * @returns Formatted current date and time.
+     *
+     * @private
+     */
+    private static currentTime(): string {
+        return (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().slice(0, -5).replace("T", " ");
+    }
+
+    /**
+     * Normal log rotation stream.
+     *
+     * @private
+     */
     private readonly logStream: RotatingFileStream;
+    /**
+     * Error log rotation stream.
+     *
+     * @private
+     */
     private readonly errorLogStream: RotatingFileStream;
 
-    constructor(private log: string = path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "logs", "psac.log"), private errorLog: string = path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "logs", "errors.log")) {
+    /**
+     * Constructor.
+     *
+     * @param log Normal log directory. ({@link info}, {@link warn}, {@link success})
+     * @param errorLog Error log directory. ({@link error})
+     */
+    public constructor(private log: string = path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "logs", "psac.log"), private errorLog: string = path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "logs", "errors.log")) {
         this.logStream = createStream(log, { compress: true, encoding: "utf8", size: "10M" });
 
         this.errorLogStream = createStream(errorLog, { compress: true, encoding: "utf8", size: "10M" });
     }
 
-    currentTime(): string {
-        return (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().slice(0, -5).replace("T", " ");
-    }
-
-    appendFile(type: Colors = Colors.info, tag = "", message = ""): void {
+    /**
+     * Append the log to {@link log}.
+     *
+     * @param type Log-level.
+     * @param tag Set the tag to the log.
+     * @param message Log message.
+     *
+     * @private
+     */
+    private appendFile(type: Colors = Colors.info, tag = "", message = ""): void {
         if (!this.logStream) {
             throw new Error(__("Stream not found."));
         }
@@ -44,7 +83,7 @@ export default class Logger {
         }
 
         const
-            prefix = `[${this.currentTime()}] [${type}]${tag ? ` (${tag})` : ""} `,
+            prefix = `[${Logger.currentTime()}] [${type}]${tag ? ` (${tag})` : ""} `,
             body = message.split("\n").map((line, index) => (index !== 0 ? repeat(" ", stringWidth(prefix)) : "") + line).join("\n"),
             logText = prefix + body + "\n";
 
@@ -55,7 +94,16 @@ export default class Logger {
         });
     }
 
-    appendErrorFile(type: Colors = Colors.error, tag = "", message = ""): void {
+    /**
+     * Append the log to {@link errorLog}.
+     *
+     * @param type Log-level.
+     * @param tag Set the tag to the log.
+     * @param message Log message.
+     *
+     * @private
+     */
+    private appendErrorFile(type: Colors = Colors.error, tag = "", message = ""): void {
         if (!this.errorLogStream) {
             throw new Error(__("Stream not found."));
         }
@@ -65,14 +113,23 @@ export default class Logger {
         }
 
         const
-            prefix = `[${this.currentTime()}] [${type}]${tag ? ` (${tag})` : ""} `,
+            prefix = `[${Logger.currentTime()}] [${type}]${tag ? ` (${tag})` : ""} `,
             body = message.split("\n").map((line, index) => (index !== 0 ? repeat(" ", stringWidth(prefix)) : "") + line).join("\n"),
             logText = prefix + body + "\n";
 
         fse.appendFileSync(this.errorLog, stripAnsi(logText));
     }
 
-    stdout(type: Colors = Colors.info, tag = "", message = ""): void {
+    /**
+     * Output the log to process.stdout.
+     *
+     * @param type Log-level.
+     * @param tag Set the tag to the log.
+     * @param message Log message.
+     *
+     * @private
+     */
+    private stdout(type: Colors = Colors.info, tag = "", message = ""): void {
         if (tag !== "") {
             tag = ` ${tag}:`;
         }
@@ -143,9 +200,19 @@ export default class Logger {
         }
     }
 
+    /**
+     * Generate beauty log.
+     *
+     * @param typeSymbol Log-level special symbol.
+     * @param titleText Log-level title text.
+     * @param message Log message.
+     * @param tag Set the tag to the log.
+     *
+     * @private
+     */
     private generateLog(typeSymbol: string, titleText: string, message: string, tag: string): {time: string, leftLogMessage: string, leftLogWidth: number, middleLogMessage: string, splitMiddleLogMessage: string} {
         const
-            time = this.currentTime(),
+            time = Logger.currentTime(),
             leftLogMessage = chalk`${typeSymbol} ${titleText} `,
             leftLogWidth = stringWidth(leftLogMessage),
             middleLogMessage = wrapAnsi(message, process.stdout.columns - leftLogWidth - stringWidth(` ${tag} ${time} `))
@@ -157,7 +224,16 @@ export default class Logger {
         return { leftLogMessage, leftLogWidth, middleLogMessage, splitMiddleLogMessage, time };
     }
 
-    stderr(type: Colors = Colors.error, tag = "", message = ""): void {
+    /**
+     * Output the log to process.stderr.
+     *
+     * @param type Log-level.
+     * @param tag Set the tag to the log.
+     * @param message Log message.
+     *
+     * @private
+     */
+    private stderr(type: Colors = Colors.error, tag = "", message = ""): void {
         if (tag !== "") {
             tag = ` ${tag}:`;
         }
@@ -228,7 +304,14 @@ export default class Logger {
         }
     }
 
-    info(message = "", verbose = true, tag = ""): void {
+    /**
+     * Create information log.
+     *
+     * @param message Log message.
+     * @param verbose If true, log output to stdout.
+     * @param tag Set the tag to the log.
+     */
+    public info(message = "", verbose = true, tag = ""): void {
         if (verbose) {
             this.stdout(Colors.info, tag, `${message}`);
         }
@@ -236,7 +319,14 @@ export default class Logger {
         this.appendFile(Colors.info, tag, message);
     }
 
-    warn(message = "", verbose = true, tag = ""): void {
+    /**
+     * Create warning log.
+     *
+     * @param message Log message.
+     * @param verbose If true, log output to stdout.
+     * @param tag Set the tag to the log.
+     */
+    public warn(message = "", verbose = true, tag = ""): void {
         if (verbose) {
             this.stdout(Colors.warning, tag, `${message}`);
         }
@@ -244,7 +334,14 @@ export default class Logger {
         this.appendFile(Colors.warning, tag, message);
     }
 
-    error(message = "", verbose = true, tag = ""): void {
+    /**
+     * Create error log.
+     *
+     * @param message Log message.
+     * @param verbose If true, log output to stdout.
+     * @param tag Set the tag to the log.
+     */
+    public error(message = "", verbose = true, tag = ""): void {
         if (verbose) {
             this.stderr(Colors.error, tag, `${message}`);
         }
@@ -252,7 +349,14 @@ export default class Logger {
         this.appendErrorFile(Colors.error, tag, message);
     }
 
-    success(message = "", verbose = true, tag = ""): void {
+    /**
+     * Create success log.
+     *
+     * @param message Log message.
+     * @param verbose If true, log output to stdout.
+     * @param tag Set the tag to the log.
+     */
+    public success(message = "", verbose = true, tag = ""): void {
         if (verbose) {
             this.stdout(Colors.success, tag, `${message}`);
         }

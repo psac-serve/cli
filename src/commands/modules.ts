@@ -12,8 +12,14 @@ import SubCommandNotFoundError from "../errors/sub-command-not-found";
 
 import { Command } from "./base";
 
+/**
+ * Show loaded modules.
+ */
 export default class Modules extends Command<string> {
-    constructor() {
+    /**
+     * Constructor.
+     */
+    public constructor() {
         super(
             "modules",
             "Show loaded modules.",

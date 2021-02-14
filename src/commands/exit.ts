@@ -8,9 +8,14 @@ import CliComponents from "../utils/cli/components";
 
 import { Command } from "./base";
 
-
+/**
+ * Exit the session.
+ */
 export default class Exit extends Command<string> {
-    constructor() {
+    /**
+     * Constructor.
+     */
+    public constructor() {
         super(
             "exit",
             "Exit the session.",

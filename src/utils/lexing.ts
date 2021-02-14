@@ -1,3 +1,6 @@
+/**
+ * The regexes to use low-level parsing.
+ */
 export const regexes = {
     command: "(?<=^|;|\\|)[A-Za-z]+(?= ?)",
     comment: "(#|\\/\\/).*$",
@@ -6,4 +9,9 @@ export const regexes = {
     semicolon: ";"
 };
 
+/**
+ * Build lexers to one {@link RegExp}.
+ *
+ * @returns Built {@link RegExp}.
+ */
 export const build = (): RegExp => new RegExp(Object.values(regexes).join("|"), "g");

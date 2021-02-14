@@ -20,9 +20,21 @@ import Clients from "./native/clients";
  * The module manager to manage cli modules.
  */
 export default class ModuleManager {
+    /**
+     * Module Manager Native Logger System (MMNLS).
+     */
     public logger: Logger | Record<string, any> = {}
+    /**
+     * Module Manager Native Session Manager (MMNSM).
+     */
     public sessions: Clients | Record<string, any> = {}
+    /**
+     * Integration from {@link Prompt}.
+     */
     public prompting = false
+    /**
+     * Integration from {@link Prompt}.
+     */
     public promptCount = 0
 
     /**
@@ -30,16 +42,14 @@ export default class ModuleManager {
      *
      * @param _modules The modules to use. All modules is disabled first.
      *
-     * @param logger Module Manager native logger.
-     * @param sessions Module Manager native session manager / clients.
      * @returns The instance of this class.
      */
-    constructor(private _modules: Module[] = []) {}
+    public constructor(private _modules: Module[] = []) {}
 
     /**
      * Encapsulated _modules value.
      */
-    get modules(): Module[] {
+    public get modules(): Module[] {
         return this._modules;
     }
 
