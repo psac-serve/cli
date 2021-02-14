@@ -10,6 +10,8 @@ import manager from "../manager-instance";
 import ModuleNotFoundError from "../errors/module-not-found";
 import SubCommandNotFoundError from "../errors/sub-command-not-found";
 
+import { CommandHelp } from "../modules/help";
+
 import { Command } from "./base";
 
 /**
@@ -19,26 +21,27 @@ export default class Modules extends Command<string> {
     /**
      * Constructor.
      */
-    public constructor() {
-        super(
-            "modules", {
-                description: "Manage modules.",
-                subcommands: {
-                    list: {
-                        description: "Show all loaded modules."
-                    },
-                    show: {
-                        description: "View details for specified module.",
-                        parameters: {
-                            module: {
-                                description: "Module to display details.",
-                                required: true,
-                                type: "string"
-                            }
-                        }
+    public constructor(public help: CommandHelp = {
+        description: "Manage modules.",
+        subcommands: {
+            list: {
+                description: "Show all loaded modules."
+            },
+            show: {
+                description: "View details for specified module.",
+                parameters: {
+                    module: {
+                        description: "Module to display details.",
+                        required: true,
+                        type: "string"
                     }
                 }
-            },
+            }
+        }
+    }) {
+        super(
+            "modules",
+            help,
             [ "module" ]
         );
     }

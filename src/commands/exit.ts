@@ -1,5 +1,7 @@
 import InvalidArgumentsError from "../errors/invalid-arguments";
 
+import { CommandHelp } from "../modules/help";
+
 import { Command } from "./base";
 
 /**
@@ -9,17 +11,21 @@ export default class Exit extends Command<string> {
     /**
      * Constructor.
      */
-    public constructor() {
-        super("exit", {
-            description: "Exit the session.",
-            parameters: {
-                code: {
-                    description: "Exit code.",
-                    required: false,
-                    type: "number"
-                }
+    public constructor(public help: CommandHelp = {
+        description: "Exit the session.",
+        parameters: {
+            code: {
+                description: "Exit code.",
+                required: false,
+                type: "number"
             }
-        }, [ "quit", "bye" ]);
+        }
+    }) {
+        super(
+            "exit",
+            help,
+            [ "quit", "bye" ]
+        );
     }
 
     public execute(options: string): Promise<number> {
