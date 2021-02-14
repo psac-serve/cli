@@ -95,7 +95,7 @@ export default class Help extends Module {
     /**
      * Constructor.
      *
-     * @param helps Help reference store.
+     * @param helps - Help reference store.
      */
     public constructor(public helps: {[key: string]: CommandHelp }[] = [{}]) {
         super("Help", "Manage help documents using the database.");

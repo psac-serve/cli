@@ -45,7 +45,7 @@ export default class ModuleManager {
     /**
      * Constructor.
      *
-     * @param _modules The modules to use. All modules is disabled first.
+     * @param _modules - The modules to use. All modules is disabled first.
      *
      * @returns The instance of this class.
      */
@@ -65,7 +65,7 @@ export default class ModuleManager {
     /**
      * Adds new module to loaded modules.
      *
-     * @param module A module to load.
+     * @param module - A module to load.
      *
      * @returns This method is able to chain.
      */
@@ -89,7 +89,7 @@ export default class ModuleManager {
     /**
      * Call use() from specified module.
      *
-     * @param name Module name to call.
+     * @param name - Module name to call.
      *
      * @returns Result of specified module's use().
      */

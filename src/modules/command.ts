@@ -15,8 +15,8 @@ export default class Command extends Module {
     /**
      * Constructor.
      *
-     * @param _commands The instances of commands.
-     * @param execute Command reference array.
+     * @param _commands - The instances of commands.
+     * @param execute - Command reference array.
      */
     public constructor(private _commands: AnotherCommand<string | undefined>[] = [], public execute: { [command: string]: (options: string) => number }[] = [{}]) {
         super("Command", "Parse / Run the commands.");

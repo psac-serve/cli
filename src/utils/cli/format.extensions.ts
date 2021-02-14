@@ -11,13 +11,15 @@ export {};
  */
 declare global {
     /**
-     * String alignment for {@link Array<string>} or {@link string[]}.
+     * String alignment for {@link string[]}.
+     *
+     * @template T - String array.
      */
     interface Array<T extends string> {
         /**
          * Align string array with the key string.
          *
-         * @param key The key string.
+         * @param key - The key string.
          */
         alignWith<T extends string>(key: string): string[]
     }

@@ -55,8 +55,8 @@ export default class Logger {
     /**
      * Constructor.
      *
-     * @param log Normal log directory. ({@link info}, {@link warn}, {@link success})
-     * @param errorLog Error log directory. ({@link error})
+     * @param log - Normal log directory. ({@link info}, {@link warn}, {@link success})
+     * @param errorLog - Error log directory. ({@link error})
      */
     public constructor(private log: string = path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "logs", "psac.log"), private errorLog: string = path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "logs", "errors.log")) {
         this.logStream = createStream(log, { compress: true, encoding: "utf8", size: "10M" });
@@ -67,9 +67,9 @@ export default class Logger {
     /**
      * Append the log to {@link log}.
      *
-     * @param type Log-level.
-     * @param tag Set the tag to the log.
-     * @param message Log message.
+     * @param type - Log-level.
+     * @param tag - Set the tag to the log.
+     * @param message - Log message.
      *
      * @private
      */
@@ -93,9 +93,9 @@ export default class Logger {
     /**
      * Append the log to {@link errorLog}.
      *
-     * @param type Log-level.
-     * @param tag Set the tag to the log.
-     * @param message Log message.
+     * @param type - Log-level.
+     * @param tag - Set the tag to the log.
+     * @param message - Log message.
      *
      * @private
      */
@@ -115,9 +115,9 @@ export default class Logger {
     /**
      * Output the log to process.stdout.
      *
-     * @param type Log-level.
-     * @param tag Set the tag to the log.
-     * @param message Log message.
+     * @param type - Log-level.
+     * @param tag - Set the tag to the log.
+     * @param message - Log message.
      *
      * @private
      */
@@ -195,10 +195,10 @@ export default class Logger {
     /**
      * Generate beauty log.
      *
-     * @param typeSymbol Log-level special symbol.
-     * @param titleText Log-level title text.
-     * @param message Log message.
-     * @param tag Set the tag to the log.
+     * @param typeSymbol - Log-level special symbol.
+     * @param titleText - Log-level title text.
+     * @param message - Log message.
+     * @param tag - Set the tag to the log.
      *
      * @private
      */
@@ -219,9 +219,9 @@ export default class Logger {
     /**
      * Output the log to process.stderr.
      *
-     * @param type Log-level.
-     * @param tag Set the tag to the log.
-     * @param message Log message.
+     * @param type - Log-level.
+     * @param tag - Set the tag to the log.
+     * @param message - Log message.
      *
      * @private
      */
@@ -299,9 +299,9 @@ export default class Logger {
     /**
      * Create information log.
      *
-     * @param message Log message.
-     * @param verbose If true, log output to stdout.
-     * @param tag Set the tag to the log.
+     * @param message - Log message.
+     * @param verbose - If true, log output to stdout.
+     * @param tag - Set the tag to the log.
      */
     public info(message = "", verbose = true, tag = ""): void {
         if (verbose) {
@@ -314,9 +314,9 @@ export default class Logger {
     /**
      * Create warning log.
      *
-     * @param message Log message.
-     * @param verbose If true, log output to stdout.
-     * @param tag Set the tag to the log.
+     * @param message - Log message.
+     * @param verbose - If true, log output to stdout.
+     * @param tag - Set the tag to the log.
      */
     public warn(message = "", verbose = true, tag = ""): void {
         if (verbose) {
@@ -329,9 +329,9 @@ export default class Logger {
     /**
      * Create error log.
      *
-     * @param message Log message.
-     * @param verbose If true, log output to stdout.
-     * @param tag Set the tag to the log.
+     * @param message - Log message.
+     * @param verbose - If true, log output to stdout.
+     * @param tag - Set the tag to the log.
      */
     public error(message = "", verbose = true, tag = ""): void {
         if (verbose) {
@@ -344,9 +344,9 @@ export default class Logger {
     /**
      * Create success log.
      *
-     * @param message Log message.
-     * @param verbose If true, log output to stdout.
-     * @param tag Set the tag to the log.
+     * @param message - Log message.
+     * @param verbose - If true, log output to stdout.
+     * @param tag - Set the tag to the log.
      */
     public success(message = "", verbose = true, tag = ""): void {
         if (verbose) {

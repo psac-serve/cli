@@ -25,7 +25,7 @@ export default class Prompt extends Module {
     /**
      * Constructor.
      *
-     * @param history The history field.
+     * @param history - The history field.
      */
     public constructor(private history: string[] = []) {
         super("Prompt", "Show beauty prompts.");

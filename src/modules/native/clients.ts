@@ -101,12 +101,12 @@ export default class Clients {
     /**
      * Create a new session.
      *
-     * @param name The session name.
-     * @param hostname Session hostname to connect.
-     * @param hasToken If `true`, the session connects with a token.
-     * @param raw Use raw connection.
-     * @param ignoreTest Ignore connection testing.
-     * @param attach Attach to the created session.
+     * @param name - The session name.
+     * @param hostname - Session hostname to connect.
+     * @param hasToken - If `true`, the session connects with a token.
+     * @param raw - Use raw connection.
+     * @param ignoreTest - Ignore connection testing.
+     * @param attach - Attach to the created session.
      */
     public async createSession(name: string, hostname: string, hasToken?: boolean, raw = false, ignoreTest = false, attach = false): Promise<void> {
         const
@@ -236,7 +236,7 @@ export default class Clients {
     /**
      * Attach to any session.
      *
-     * @param uuid Session UUID.
+     * @param uuid - Session UUID.
      */
     public attachSession(uuid: string): void {
         if (!this._sessions.map(session => session.id).includes(uuid)) {
@@ -249,7 +249,7 @@ export default class Clients {
     /**
      * Close specified session.
      *
-     * @param uuid Session UUID.
+     * @param uuid - Session UUID.
      */
     closeSession(uuid: string): void {
         const session = this._sessions.map(session => session.id).indexOf(uuid);

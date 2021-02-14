@@ -5,15 +5,15 @@ import manager from "../manager-instance";
 /**
  * Command abstract class.
  *
- * @typedef C Command arguments type.
+ * @template C Command arguments type.
  */
 export abstract class Command<C extends string | undefined> {
     /**
      * Constructor.
      *
-     * @param name Command name.
-     * @param help Command help.
-     * @param alias Command aliases.
+     * @param name - Command name.
+     * @param help - Command help.
+     * @param alias - Command aliases.
      */
     protected constructor(public name: string, public help: CommandHelp, public alias: string[] = []) {
         for (const command of [ this.name, ...this.alias ]) {
@@ -25,7 +25,7 @@ export abstract class Command<C extends string | undefined> {
     /**
      * Execute the command.
      *
-     * @param options Command argument options.
+     * @param options - Command argument options.
      *
      * @returns Command stop code.
      */

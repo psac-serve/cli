@@ -15,9 +15,9 @@ export default class CliComponents {
     /**
      * Create heading text with aligned linebreaks, indents, dividers, and ANSI escaping.
      *
-     * @param text The heading text.
-     * @param wrapIn Wrap with this argument value. Supports ANSI escaping.
-     * @param indent The heading indents.
+     * @param text - The heading text.
+     * @param wrapIn - Wrap with this argument value. Supports ANSI escaping.
+     * @param indent - The heading indents.
      *
      * @returns Built heading.
      */
@@ -35,8 +35,8 @@ export default class CliComponents {
     /**
      * Build indented content.
      *
-     * @param text The content.
-     * @param indent Indent depth.
+     * @param text - The content.
+     * @param indent - Indent depth.
      *
      * @returns Built content.
      */
@@ -67,7 +67,7 @@ export default class CliComponents {
     /**
      * Create a table with {@link CliTable3}.
      *
-     * @param options CliTable3's options.
+     * @param options - CliTable3's options.
      *
      * @returns Build table.
      */
@@ -78,7 +78,7 @@ export default class CliComponents {
     /**
      * Build a cli table from {@link CliTable3} instances.
      *
-     * @param tableInstance The instance.
+     * @param tableInstance - The instance.
      *
      * @returns Built table.
      */

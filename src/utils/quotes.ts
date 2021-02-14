@@ -6,7 +6,7 @@ export default class Quotes {
     /**
      * Check quotes in {@link text}.
      *
-     * @param text Text to checker runs.
+     * @param text - Text to checker runs.
      *
      * @returns Correct quotes closing.
      */

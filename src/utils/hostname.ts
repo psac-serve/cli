@@ -7,7 +7,7 @@ import { flags, default as manager } from "../manager-instance";
 /**
  * Convert the invalid hostname to the correct hostname.
  *
- * @param hostname Inputted hostname.
+ * @param hostname - Inputted hostname.
  *
  * @returns Converted hostname.
  */

@@ -12,8 +12,8 @@ export default abstract class Module {
     /**
      * Constructor.
      *
-     * @param name
-     * @param _description The module description to use.
+     * @param name - The module name.
+     * @param _description - The module description to use.
      *
      * @returns The instance of this class.
      */
