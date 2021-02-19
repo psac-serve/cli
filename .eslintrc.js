@@ -29,6 +29,7 @@ module.exports = {
             "sort-class-members",
             "sort-destructure-keys",
             "sort-keys-fix",
+            "tsdoc",
             "unicorn"
         ],
         rules: {
@@ -175,6 +176,7 @@ module.exports = {
             "sort-keys-fix/sort-keys-fix": "error",
             "space-in-parens": [ "error", "never" ],
             "space-infix-ops": "error",
+            "tsdoc/syntax": "warn",
             "unicorn/no-process-exit": "off",
             "wrap-iife": [ "error", "inside" ],
             "yoda": "error"

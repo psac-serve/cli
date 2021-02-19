@@ -7,7 +7,20 @@ import CliTable3 from "cli-table3";
 
 import manager from "../../manager-instance";
 
+/**
+ * The component for the command line.
+ * If you need any other components, please create [Issue](https://github.com/psac-serve/cli/issues/new) or [Pull Request](https://github.com/psac-serve/cli/compare).
+ */
 export default class CliComponents {
+    /**
+     * Create heading text with aligned linebreaks, indents, dividers, and ANSI escaping.
+     *
+     * @param text - The heading text.
+     * @param wrapIn - Wrap with this argument value. Supports ANSI escaping.
+     * @param indent - The heading indents.
+     *
+     * @returns Built heading.
+     */
     public static heading(text: string, wrapIn?: number, indent = 0): string {
         if (wrapIn) {
             text = wrapAnsi(text, wrapIn);
@@ -19,6 +32,14 @@ export default class CliComponents {
             : chalk`{bold.whiteBright ${text.split("\n").map(line => repeat("  ", indent) + line).join("\n")}`;
     }
 
+    /**
+     * Build indented content.
+     *
+     * @param text - The content.
+     * @param indent - Indent depth.
+     *
+     * @returns Built content.
+     */
     public static content(text: string, indent = 0): string {
         return indent <= 0 ? "" : repeat("  ", indent) + text;
     }
@@ -35,14 +56,32 @@ export default class CliComponents {
         }).join("\n");
     }
 
+    /**
+     * Returns blank line.
+     * **Do not use this component with `string[].join("\n")`.**
+     */
     public static blankLine(): string {
         return "\n";
     }
 
+    /**
+     * Create a table with {@link CliTable3}.
+     *
+     * @param options - CliTable3's options.
+     *
+     * @returns Build table.
+     */
     public static table(options?: CliTable3.TableInstanceOptions): CliTable3.Table {
         return new CliTable3(options || {});
     }
 
+    /**
+     * Build a cli table from {@link CliTable3} instances.
+     *
+     * @param tableInstance - The instance.
+     *
+     * @returns Built table.
+     */
     public static tableString(tableInstance: CliTable3): string {
         return tableInstance.toString();
     }

@@ -2,18 +2,21 @@ import InvalidArgumentsError from "../errors/invalid-arguments";
 
 import { Command } from "./base";
 
+import { help } from "./helps/exit";
+
+/**
+ * Exit the session.
+ */
 export default class Exit extends Command<string> {
-    constructor() {
-        super("exit", {
-            description: "Exit the session.",
-            parameters: {
-                code: {
-                    description: "Exit code.",
-                    required: false,
-                    type: "number"
-                }
-            }
-        }, [ "quit", "bye" ]);
+    /**
+     * Constructor.
+     */
+    public constructor() {
+        super(
+            "exit",
+            help,
+            [ "quit", "bye" ]
+        );
     }
 
     public execute(options: string): Promise<number> {

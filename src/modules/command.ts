@@ -8,23 +8,37 @@ import CommandNotFoundError from "../errors/command-not-found";
 
 import Module from "./base";
 
+/**
+ * Command module: Parse / Run the commands.
+ */
 export default class Command extends Module {
-    constructor(private _commands: AnotherCommand<string | undefined>[] = [], public execute: { [command: string]: (options: string) => number }[] = [{}]) {
+    /**
+     * Constructor.
+     *
+     * @param _commands - The instances of commands.
+     * @param execute - Command reference array.
+     */
+    public constructor(private _commands: AnotherCommand<string | undefined>[] = [], public execute: { [command: string]: (options: string) => number }[] = [{}]) {
         super("Command", "Parse / Run the commands.");
     }
 
-    get commands(): string[] {
+    /**
+     * Get the instances of commands.
+     *
+     * @returns The instances of commands.
+     */
+    public get commands(): string[] {
         return this._commands.map(command => command.name);
     }
 
-    init(): Promise<void> {
+    public init(): Promise<void> {
         this.enabled = true;
         this._commands = [ new Exit(), new Modules(), new Help(), new Session() ];
 
         return Promise.resolve();
     }
 
-    use(): { commands: (command: string) => number, list: { [command: string]: (options: string) => number }[] } {
+    public use(): { commands: (command: string) => number, list: { [command: string]: (options: string) => number }[] } {
         return {
             commands: (command: string): number => (command.split(" ")[0] in this.execute[0]
                 ? this.execute[0][command.split(" ")[0]](command.split(" ").slice(1).join(" "))
@@ -35,7 +49,7 @@ export default class Command extends Module {
         };
     }
 
-    close(): Promise<void> {
+    public close(): Promise<void> {
         this._commands = [];
         this.enabled = false;
 

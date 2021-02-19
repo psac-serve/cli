@@ -19,24 +19,63 @@ import NoSessionsError from "../../errors/no-sessions";
 import SessionLengthTooShortError from "../../errors/session-length-too-short";
 import KeyboardInterruptError from "../../errors/keyboard-interrupt";
 
+/**
+ * Client session interface.
+ */
 export interface Client {
+    /**
+     * The client unique uuid.
+     */
     id: string,
+    /**
+     * The client instance.
+     */
     instance: AxiosInstance,
+    /**
+     * The client name.
+     * This is not unique.
+     */
     name: string,
+    /**
+     * The client hostname.
+     */
     hostname: string
 }
 
+/**
+ * Module Manager Native Session Manager.
+ * You can use this from {@link ModuleManager}.
+ */
 export default class Clients {
+    /**
+     * Attaching client UUID.
+     */
     public attaching = "";
 
+    /**
+     * @internal
+     * @private
+     */
     private readonly knownHosts: [ { token?: string, name: string }? ] = []
+    /**
+     * @internal
+     * @private
+     */
     private _sessions: Client[] = []
 
-    constructor() {
+    /**
+     * Constructor.
+     */
+    public constructor() {
         this.knownHosts = msgpack.unpack(zlib.brotliDecompressSync(Buffer.from(fs.readFileSync(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts")))));
     }
 
-    get instance(): AxiosInstance {
+    /**
+     * Get instance(s).
+     *
+     * @returns Found instance.
+     */
+    public get instance(): AxiosInstance {
         if (!this._sessions) {
             throw new NoSessionsError();
         }
@@ -50,11 +89,26 @@ export default class Clients {
         return found.instance;
     }
 
-    get sessions(): Client[] {
+    /**
+     * Get created session(s).
+     *
+     * @returns Created session(s).
+     */
+    public get sessions(): Client[] {
         return this._sessions;
     }
 
-    async createSession(name: string, hostname: string, hasToken?: boolean, raw = false, ignoreTest = false, attach = false): Promise<void> {
+    /**
+     * Create a new session.
+     *
+     * @param name - The session name.
+     * @param hostname - Session hostname to connect.
+     * @param hasToken - If `true`, the session connects with a token.
+     * @param raw - Use raw connection.
+     * @param ignoreTest - Ignore connection testing.
+     * @param attach - Attach to the created session.
+     */
+    public async createSession(name: string, hostname: string, hasToken?: boolean, raw = false, ignoreTest = false, attach = false): Promise<void> {
         const
             { logger } = manager,
             verbose = !!flags.verbose;
@@ -179,7 +233,12 @@ export default class Clients {
         }
     }
 
-    attachSession(uuid: string): void {
+    /**
+     * Attach to any session.
+     *
+     * @param uuid - Session UUID.
+     */
+    public attachSession(uuid: string): void {
         if (!this._sessions.map(session => session.id).includes(uuid)) {
             throw new SessionNotFoundError();
         }
@@ -187,6 +246,11 @@ export default class Clients {
         this.attaching = uuid;
     }
 
+    /**
+     * Close specified session.
+     *
+     * @param uuid - Session UUID.
+     */
     closeSession(uuid: string): void {
         const session = this._sessions.map(session => session.id).indexOf(uuid);
 
@@ -205,6 +269,9 @@ export default class Clients {
         this._sessions = this._sessions.filter(session => session.id !== uuid);
     }
 
+    /**
+     * Close all session and save known-hosts.
+     */
     closeAllSession(): void {
         fs.writeFileSync(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), zlib.brotliCompressSync(msgpack.pack(this.knownHosts, true)));
     }

@@ -6,20 +6,19 @@ import CliComponents from "../utils/cli/components";
 
 import { Command } from "./base";
 
+import { help } from "./helps/help";
+
+/**
+ * Show help for a command.
+ */
 export default class Help extends Command<string> {
-    constructor() {
+    /**
+     * Constructor.
+     */
+    public constructor() {
         super(
             "help",
-            {
-                description: "Show help for a command.",
-                parameters: {
-                    command: {
-                        description: "The command to show help.",
-                        required: false,
-                        type: "string"
-                    }
-                }
-            }
+            help
         );
     }
 
