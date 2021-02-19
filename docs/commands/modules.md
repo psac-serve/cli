@@ -12,6 +12,8 @@
 - [Parameters](#parameters)
 - [Arguments](#arguments)
 - [Subcommands](#subcommands)
+  - [`list` - Show all loaded modules.](#list---show-all-loaded-modules)
+  - [`show` - View details for specified module.](#show---view-details-for-specified-module)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -31,6 +33,6 @@ $ modules
 
 ## Subcommands
 
+### [`list`](modules-subcmd/list.md) - Show all loaded modules.
 
- - [`list`](modules-subcmd/list.md) - Show all loaded modules.
- - [`show`](modules-subcmd/show.md) - View details for specified module.
+### [`show`](modules-subcmd/show.md) - View details for specified module.

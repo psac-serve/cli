@@ -96,9 +96,7 @@ program
                 });
 
                 if ("subcommands" in help && help.subcommands) {
-                    markdownArray.push({
-                        ul: Object.entries(help.subcommands).map(([ name, { description }]) => `[\`${name}\`](${path.join(`${filename}-subcmd`, `${name}.md`)}) - ${description}`)
-                    });
+                    markdownArray.push(...(Object.entries(help.subcommands).map(([ name, { description }]) => ({ h3: `[\`${name}\`](${path.join(`${filename}-subcmd`, `${name}.md`)}) - ${description}` }))));
 
                     for (const [ name, subcommand ] of Object.entries(help.subcommands)) {
                         fse.mkdirsSync(path.join(directory, `${filename}-subcmd`));
