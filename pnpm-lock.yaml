@@ -88,7 +88,7 @@ devDependencies:
   remark-preset-lint-recommended: 5.0.0
   sort-package-json: 1.48.1
   ts-node: 9.1.1_typescript@4.1.4
-  typedoc: 0.20.23_typescript@4.1.4
+  typedoc: 0.20.25_typescript@4.1.4
   typescript: 4.1.4
 lockfileVersion: 5.2
 packages:
@@ -2917,7 +2917,7 @@ packages:
       node: '>=4.x'
     resolution:
       integrity: sha512-qBr4OuELkhPenW6goKVXiv47US3clb3/IbuWF9KNKEijAy9oeHxU9IgzjvJhHkUzhaj7rOUD7+YGWqUjLp5oSA==
-  /handlebars/4.7.6:
+  /handlebars/4.7.7:
     dependencies:
       minimist: 1.2.5
       neo-async: 2.6.2
@@ -2928,9 +2928,9 @@ packages:
       node: '>=0.4.7'
     hasBin: true
     optionalDependencies:
-      uglify-js: 3.12.4
+      uglify-js: 3.12.8
     resolution:
-      integrity: sha512-1f2BACcBfiwAfStCKZNrUCgqNZkGsAT7UM3kkYtXuLo0KnaVfjKOyf7PRzB6++aK9STyT1Pd2ZCPe3EGOXleXA==
+      integrity: sha512-aAcXm5OAfE/8IXkcZvCepKU3VzW1/39Fb5ZuqMtgI/hT8X2YgoMvBY5dLhq/cpOvw7Lk1nK/UF71aLG/ZnVYRA==
   /has-ansi/2.0.0:
     dependencies:
       ansi-regex: 2.1.1
@@ -3912,6 +3912,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-H8lIX2SvyitGX+TRdtS06m1jHMijKN/XjfH6Ooii9fvxMlh8QdqBfBDkGUpMWH2kQNrtixjzYUa3SH8ROTgRRw==
+  /marked/2.0.0:
+    dev: true
+    engines:
+      node: '>= 8.16.2'
+    hasBin: true
+    resolution:
+      integrity: sha512-NqRSh2+LlN2NInpqTQnS614Y/3NkVMFFU6sJlRFEpxJ/LHuK/qJECH7/fXZjk4VZstPW/Pevjil/VtSONsLc7Q==
   /math-interval-parser/2.0.1:
     dev: false
     engines:
@@ -5049,7 +5056,7 @@ packages:
       integrity: sha512-gNva8/6UAe8QYepIQH/jQ2qn91Qj0B9sYjMBBs3QOB8F2CXcKgLxQaJRP76sWVRQt+QU+8fAkCbCvjjMFu7Ycw==
   /rechoir/0.6.2:
     dependencies:
-      resolve: 1.19.0
+      resolve: 1.20.0
     dev: true
     engines:
       node: '>= 0.10'
@@ -5440,6 +5447,13 @@ packages:
     dev: true
     resolution:
       integrity: sha512-rArEXAgsBG4UgRGcynxWIWKFvh/XZCcS8UJdHhwy91zwAvCZIbcs+vAbflgBnNjYMs/i/i+/Ux6IZhML1yPvxg==
+  /resolve/1.20.0:
+    dependencies:
+      is-core-module: 2.2.0
+      path-parse: 1.0.6
+    dev: true
+    resolution:
+      integrity: sha512-wENBPt4ySzg4ybFQW2TT1zMQucPK95HSh/nq2CFTZVOGut2+pQvSsgtda4d26YrYcr067wjbmzOG8byDPBX63A==
   /responselike/1.0.2:
     dependencies:
       lowercase-keys: 1.0.1
@@ -6243,14 +6257,14 @@ packages:
       node: '>= 8'
     resolution:
       integrity: sha512-0XAuGEqID+gon1+fhi4LycOEFM+5Mvm2PjwaiVZNAzU7pn3G2DEpsoXnFOPlLDnHY6ZW0BY0nO7ur9fHOFkBLQ==
-  /typedoc/0.20.23_typescript@4.1.4:
+  /typedoc/0.20.25_typescript@4.1.4:
     dependencies:
       colors: 1.4.0
       fs-extra: 9.1.0
-      handlebars: 4.7.6
+      handlebars: 4.7.7
       lodash: 4.17.20
       lunr: 2.3.9
-      marked: 1.2.9
+      marked: 2.0.0
       minimatch: 3.0.4
       progress: 2.0.3
       shelljs: 0.8.4
@@ -6264,7 +6278,7 @@ packages:
     peerDependencies:
       typescript: 3.9.x || 4.0.x || 4.1.x
     resolution:
-      integrity: sha512-RBXuM0MJ2V/7eGg4YrDEmV1bn/ypa3Wx6AO1B0mUBHEQJaOIKEEnNI0Su75J6q7dkB5ksZvGNgsGjvfWL8Myjg==
+      integrity: sha512-ZQZnjJPrt0rjp216gp6FQC1QC4ojcoKikhfOJ/51CqaJunVDilRLlIO5tCGWj1tzlYYT9eOGhJv7MF3t7rxSmw==
   /typescript/4.1.4:
     dev: true
     engines:
@@ -6278,14 +6292,14 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-VAH4IvQ7BDFYglMd7BPRDfLgxZZX4O4TFcRDA6EN5X7erNJJq+McIEp8np9aVtxrCJ6qx4GTYVfOWNjcqwZgRw==
-  /uglify-js/3.12.4:
+  /uglify-js/3.12.8:
     dev: true
     engines:
       node: '>=0.8.0'
     hasBin: true
     optional: true
     resolution:
-      integrity: sha512-L5i5jg/SHkEqzN18gQMTWsZk3KelRsfD1wUVNqtq0kzqWQqcJjyL8yc1o8hJgRrWqrAl2mUFbhfznEIoi7zi2A==
+      integrity: sha512-fvBeuXOsvqjecUtF/l1dwsrrf5y2BCUk9AOJGzGcm6tE7vegku5u/YvqjyDaAGr422PLoLnrxg3EnRvTqsdC1w==
   /undefsafe/2.0.3:
     dependencies:
       debug: 2.6.9
@@ -6932,7 +6946,7 @@ specifiers:
   terminal-kit: 1.45.9
   ts-node: ^9.1.1
   tslib: ^2.1.0
-  typedoc: ^0.20.23
+  typedoc: ^0.20.25
   typescript: ^4.1.4
   uuid: 8.3.2
   wrap-ansi: ^7.0.0

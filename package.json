@@ -28,7 +28,7 @@
     ],
     "scripts": {
         "build": "tsc -p .",
-        "docs": "cd dev && pnpm run doc && git add ../docs",
+        "docs": "typedoc src --options typedoc.js && cd dev && pnpm run doc && git add ../docs",
         "fix": "eslint --fix .",
         "lint": "npm-run-all -p lint:*",
         "lint:js": "eslint .",
@@ -154,7 +154,7 @@
         "remark-preset-lint-recommended": "^5.0.0",
         "sort-package-json": "^1.48.1",
         "ts-node": "^9.1.1",
-        "typedoc": "^0.20.23",
+        "typedoc": "^0.20.25",
         "typescript": "^4.1.4"
     },
     "engines": {
