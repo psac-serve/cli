@@ -31,10 +31,20 @@ i18n.configure({
     locales: [ "en" ] // Intl.DateTimeFormat().resolvedOptions().locale === "ja-JP" ? "ja" : "en"
 });
 
+/**
+ * The main class of this command.
+ * **Do not run this file directly.**
+ */
 class BanClient extends OclifCommand {
-    static description = __("A client application of the server to manage Minecraft's ban / kick records.")
+    /**
+     * The command description.
+     */
+    public static description = __("A client application of the server to manage Minecraft's ban / kick records.")
 
-    static flags: flags.Input<{ [key: string]: unknown }> = {
+    /**
+     * The command flags.
+     */
+    public static flags: flags.Input<{ [key: string]: unknown }> = {
         compress: flags["boolean"]({ char: "c", default: true, description: __("Compress the connection data.") }),
         file: flags.string({ char: "f", description: __("Use a file to run actions.") }),
         help: flags.help({ char: "h", description: __("Show this usage guide.") }),
@@ -45,12 +55,18 @@ class BanClient extends OclifCommand {
         version: flags.version({ char: "V", description: __("Show app version.") })
     }
 
-    static args = [{
+    /**
+     * The command arguments (parameters).
+     */
+    public static args = [{
         description: __("Specify the host to connect. If you not specified the port, the client connects with port 810 (example.com:810)."),
         name: "hostname"
     }]
 
-    async run(): Promise<void> {
+    /**
+     * The command function.
+     */
+    public async run(): Promise<void> {
         const { args, flags } = this.parse(BanClient);
 
         if (!(flags.file || args.hostname)) {

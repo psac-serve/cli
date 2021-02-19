@@ -1,0 +1,53 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": "src/types",
+        "checkJs": true,
+        "declaration": true,
+        "declarationMap": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "forceConsistentCasingInFileNames": true,
+        "jsx": "react",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "newLine": "lf",
+        "noEmitOnError": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "outDir": "lib",
+        "preserveConstEnums": true,
+        "pretty": true,
+        "removeComments": false,
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "downlevelIteration": true,
+        "incremental": true,
+        "importHelpers": true,
+        "paths": {
+            "spinnies": [
+                "spinnies.d.ts"
+            ]
+        },
+        "sourceMap": true,
+        "strict": true,
+        "stripInternal": true,
+        "target": "esnext",
+        "types": [
+            "@types/node",
+            "@types/mocha",
+            "@types/chai"
+        ]
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "docs/**/*",
+        "node_modules",
+        "tests"
+    ]
+}

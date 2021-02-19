@@ -22,25 +22,34 @@ import Clients from "./native/clients";
  */
 export default class ModuleManager {
     /**
-     * Module Manager Native Logger System.
+     * Module Manager Native Logger System (MMNLS).
      */
     public logger: Logger | Record<string, any> = {}
     /**
-     * Module Manager Native Session Manager.
+     * Module Manager Native Session Manager (MMNSM).
      */
     public sessions: Clients | Record<string, any> = {}
+    /**
+     * Integration from {@link Prompt}.
+     */
     public prompting = false
+    /**
+     * Integration from {@link Prompt}.
+     */
     public promptCount = 0
+    /**
+     * Event-based dynamic columns.
+     */
     public columns = process.stdout.columns
 
     /**
      * Constructor.
      *
-     * @param _modules The modules to use. All modules is disabled first.
+     * @param _modules - The modules to use. All modules is disabled first.
      *
      * @returns The instance of this class.
      */
-    constructor(private _modules: Module[] = []) {
+    public constructor(private _modules: Module[] = []) {
         terminal.on("resize", (width: number) => {
             this.columns = width;
         });
@@ -49,14 +58,14 @@ export default class ModuleManager {
     /**
      * Encapsulated _modules value.
      */
-    get modules(): Module[] {
+    public get modules(): Module[] {
         return this._modules;
     }
 
     /**
      * Adds new module to loaded modules.
      *
-     * @param module A module to load.
+     * @param module - A module to load.
      *
      * @returns This method is able to chain.
      */
@@ -80,7 +89,7 @@ export default class ModuleManager {
     /**
      * Call use() from specified module.
      *
-     * @param name Module name to call.
+     * @param name - Module name to call.
      *
      * @returns Result of specified module's use().
      */
