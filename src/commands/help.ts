@@ -4,32 +4,21 @@ import manager from "../manager-instance";
 
 import CliComponents from "../utils/cli/components";
 
-import { CommandHelp } from "../modules/help";
-
 import { Command } from "./base";
+
+import { help } from "./helps/help";
 
 /**
  * Show help for a command.
  */
 export default class Help extends Command<string> {
-    public static help: CommandHelp = {
-        description: "Show help for a command.",
-        parameters: {
-            command: {
-                description: "The command to show help.",
-                required: false,
-                type: "string"
-            }
-        }
-    }
-
     /**
      * Constructor.
      */
     public constructor() {
         super(
             "help",
-            Help.help
+            help
         );
     }
 

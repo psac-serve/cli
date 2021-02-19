@@ -1,31 +1,20 @@
 import InvalidArgumentsError from "../errors/invalid-arguments";
 
-import { CommandHelp } from "../modules/help";
-
 import { Command } from "./base";
+
+import { help } from "./helps/exit";
 
 /**
  * Exit the session.
  */
 export default class Exit extends Command<string> {
-    public static help: CommandHelp = {
-        description: "Exit the session.",
-        parameters: {
-            code: {
-                description: "Exit code.",
-                required: false,
-                type: "number"
-            }
-        }
-    }
-
     /**
      * Constructor.
      */
     public constructor() {
         super(
             "exit",
-            Exit.help,
+            help,
             [ "quit", "bye" ]
         );
     }

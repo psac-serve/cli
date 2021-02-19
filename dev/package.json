@@ -1,0 +1,36 @@
+{
+    "name": "ban-client-dev",
+    "version": "0.0.0",
+    "description": "psac-serve/cli development manager",
+    "homepage": "https://github.com/psac-serve/cli/tree/develop/dev#readme",
+    "bugs": {
+        "url": "https://github.com/psac-serve/cli/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/psac-serve/cli.git"
+    },
+    "license": "MIT",
+    "author": "",
+    "main": "src/index.ts",
+    "scripts": {
+        "build": "tsc -p .",
+        "preinstall": "npx only-allow pnpm",
+        "doc": "ts-node src/index.ts ../docs/commands && doctoc --maxlevel 3 --notitle ../docs/commands/*.md && doctoc --maxlevel 3 --notitle ../docs/commands/**/*.md"
+    },
+    "dependencies": {
+        "commander": "7.0.0",
+        "fs-extra": "9.1.0",
+        "json2md": "1.9.2",
+        "strip-ansi": "6.0.0"
+    },
+    "devDependencies": {
+        "@types/fs-extra": "9.0.7",
+        "@types/json2md": "1.5.0",
+        "@types/node": "14.14.27",
+        "doctoc": "2.0.0",
+        "madge": "4.0.0",
+        "ts-node": "9.1.1",
+        "typescript": "4.1.5"
+    }
+}

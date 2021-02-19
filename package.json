@@ -28,15 +28,16 @@
     ],
     "scripts": {
         "build": "tsc -p .",
+        "docs": "cd dev && pnpm run doc && git add ../docs",
         "fix": "eslint --fix .",
-        "preinstall": "npx only-allow pnpm",
         "lint": "npm-run-all -p lint:*",
         "lint:js": "eslint .",
         "lint:md": "remark -r .remarkrc.js .",
+        "posttest": "eslint . --ext .ts --config .eslintrc",
+        "preinstall": "npx only-allow pnpm",
         "prepack": "rm -rf lib && tsc -b && oclif-dev readme",
         "start": "nodemon",
         "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-        "posttest": "eslint . --ext .ts --config .eslintrc",
         "typedoc": "typedoc --out typedoc src",
         "version": "oclif-dev readme && git add README.md"
     },
@@ -48,10 +49,14 @@
     "lint-staged": {
         "src/**/*.ts": [
             "eslint . --fix",
+            "pnpm run docs",
             "git add"
         ],
         "package.json": [
             "sort-package-json"
+        ],
+        "dev/package.json": [
+            "cd dev && sort-package-json"
         ],
         "docs/**": [
             "remark -r .remarkrc.js docs"
@@ -115,6 +120,7 @@
         "@typescript-eslint/eslint-plugin": "^4.15.0",
         "@typescript-eslint/parser": "^4.15.0",
         "chai": "^4.3.0",
+        "docsify-cli": "4.4.2",
         "eslint": "^7.19.0",
         "eslint-plugin-eslint-comments": "3.2.0",
         "eslint-plugin-import": "^2.22.1",
