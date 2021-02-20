@@ -8,10 +8,10 @@ import { buildArguments, buildParameters, buildUsage } from "../../src/utils/cli
 import { CommandHelp } from "../../src/modules/help";
 
 program
+    .command("psac-dev")
     .version("0.0.0")
     .description("Manage psac-serve/cli project.")
-    .command("doc")
-    .arguments("<directory>")
+    .command("doc <directory>")
     .description("Generate documents for ban-client.", {
         directory: "Specify directory to generate."
     })
@@ -26,7 +26,7 @@ program
             const { help }: { help: CommandHelp } = (await import(path.join(__dirname, "..", "..", "src", "commands", "helps", file)));
 
             // eslint-disable-next-line unicorn/consistent-function-scoping
-            const generateMarkdown = (filename: string, help: CommandHelp, filepath: string = "", prefix: string = ""): void => {
+            const generateMarkdown = (filename: string, help: CommandHelp, filepath = "", prefix = ""): void => {
                 const markdownArray: { [key: string]: any }[] = [{
                     h1: `${prefix ? "Subcommand" : "Command"} \`${prefix ? prefix + " " : prefix}${filename}\``
                 }, {
