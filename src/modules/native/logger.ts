@@ -205,7 +205,7 @@ export default class Logger {
     private generateLog(typeSymbol: string, titleText: string, message: string, tag: string): {time: string, leftLogMessage: string, leftLogWidth: number, middleLogMessage: string, splitMiddleLogMessage: string} {
         const
             time = Logger.currentTime(),
-            leftLogMessage = chalk`${typeSymbol} ${titleText} `,
+            leftLogMessage = chalk`${stringWidth(typeSymbol) > 1 ? typeSymbol : typeSymbol + " "}${titleText} `,
             leftLogWidth = stringWidth(leftLogMessage),
             middleLogMessage = wrapAnsi(message, manager.columns - leftLogWidth - stringWidth(` ${tag} ${time} `))
                 .split("\n")
@@ -269,8 +269,9 @@ export default class Logger {
 
         if (-(stringWidth(splitMiddleLogMessage) - manager.columns) - stringWidth(` ${tag} ${time} `) < 0) {
             if (manager.prompting) {
-                terminal.saveCursor();
-                terminal.move(0, -(manager.promptCount + 3));
+                terminal
+                    .saveCursor()
+                    .move(0, -(manager.promptCount + 3));
                 console.log();
             }
 
@@ -283,8 +284,9 @@ export default class Logger {
             const mergedMessage = leftLogMessage + middleLogMessage + repeat(" ", -((middleLogMessage === splitMiddleLogMessage ? stringWidth(splitMiddleLogMessage) + leftLogWidth : stringWidth(splitMiddleLogMessage)) - manager.columns) - stringWidth(` ${tag} ${time} `)) + chalk`{dim  ${tag} ${time}}`;
 
             if (manager.prompting) {
-                terminal.saveCursor();
-                terminal.move(0, -(manager.promptCount + 3));
+                terminal
+                    .saveCursor()
+                    .move(0, -(manager.promptCount + 3));
                 console.log();
             }
 
