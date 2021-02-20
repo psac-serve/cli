@@ -4,7 +4,7 @@ import zlib from "zlib";
 import axios, { AxiosInstance } from "axios";
 import chalk from "chalk";
 import figures from "figures";
-import msgpack from "msgpack";
+import msgpack from "msgpack-lite";
 import { sprintf } from "sprintf-js";
 import { v4 } from "uuid";
 import { __ } from "i18n";
@@ -67,7 +67,7 @@ export default class Clients {
      * Constructor.
      */
     public constructor() {
-        this.knownHosts = msgpack.unpack(zlib.brotliDecompressSync(Buffer.from(fs.readFileSync(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts")))));
+        this.knownHosts = msgpack.decode(zlib.brotliDecompressSync(Buffer.from(fs.readFileSync(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts")))));
     }
 
     /**
@@ -156,12 +156,12 @@ export default class Clients {
             Timer.time();
             client.interceptors.request.use((request) => {
                 logger.info(chalk`{greenBright.underline ${__("REQUEST")}} - {yellowBright ${request.method}} ${figures.arrowRight} {blueBright.underline ${request.url}}${request.data
-                    ? chalk`\n{white ${raw ? JSON.stringify(request.data) : msgpack.unpack(request.data)}}` : ""}`, true, name);
+                    ? chalk`\n{white ${raw ? JSON.stringify(request.data) : msgpack.decode(request.data)}}` : ""}`, true, name);
 
                 return request;
             }, (error) => {
                 logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}${error.data
-                    ? chalk`\n{white ${raw ? JSON.stringify(error.data) : msgpack.unpack(error.data)}}` : ""}`, true, name);
+                    ? chalk`\n{white ${raw ? JSON.stringify(error.data) : msgpack.decode(error.data)}}` : ""}`, true, name);
 
                 return Promise.reject(error);
             });
@@ -202,11 +202,11 @@ export default class Clients {
                 Timer.time();
 
                 client.interceptors.response.use((response) => {
-                    logger.info(chalk`{greenBright.underline ${__("RESPONSE")}} - {greenBright ${response.status}}: {whiteBright ${response.statusText}}\n{white ${raw ? JSON.stringify(response.data) : msgpack.unpack(response.data)}}`, true, name);
+                    logger.info(chalk`{greenBright.underline ${__("RESPONSE")}} - {greenBright ${response.status}}: {whiteBright ${response.statusText}}\n{white ${raw ? JSON.stringify(response.data) : msgpack.decode(response.data)}}`, true, name);
 
                     return response;
                 }, (error) => {
-                    logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}\n{white ${raw ? JSON.stringify(error.data) : msgpack.unpack(error.data)}}`, true, name);
+                    logger.error(chalk`{redBright.underline ${__("ERROR")}} - {redBright ${error.status}}: {whiteBright ${error.statusText}}\n{white ${raw ? JSON.stringify(error.data) : msgpack.decode(error.data)}}`, true, name);
 
                     return Promise.reject(error);
                 });
@@ -273,6 +273,6 @@ export default class Clients {
      * Close all session and save known-hosts.
      */
     closeAllSession(): void {
-        fs.writeFileSync(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), zlib.brotliCompressSync(msgpack.pack(this.knownHosts, true)));
+        fs.writeFileSync(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), zlib.brotliCompressSync(msgpack.encode(this.knownHosts)));
     }
 }
