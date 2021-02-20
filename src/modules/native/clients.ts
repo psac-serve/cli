@@ -171,7 +171,7 @@ export default class Clients {
         if (!ignoreTest) {
             Timer.time();
 
-            logger.info(__("Testing connection using /teapot."), verbose, true, name);
+            logger.info(__("Testing connection using /teapot."), verbose, name);
 
             try {
                 await client.get("/teapot");
