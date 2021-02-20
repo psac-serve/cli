@@ -2,7 +2,7 @@ import path from "path";
 import zlib from "zlib";
 import chalk from "chalk";
 import fse from "fs-extra";
-import msgpack from "msgpack";
+import msgpack from "msgpack-lite";
 import { sprintf } from "sprintf-js";
 import { __ } from "i18n";
 import { terminal } from "terminal-kit";
@@ -107,12 +107,6 @@ export default class ModuleManager {
             }
         }
 
-        if (flags.verbose) {
-            process.stdout.moveCursor(0, -1);
-            process.stdout.cursorTo(0);
-            process.stdout.clearLine(0);
-        }
-
         return this.modules[index].use();
     }
 
@@ -126,7 +120,7 @@ export default class ModuleManager {
 
         if (!fse.existsSync(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"))) {
             this.logger.info(sprintf(__("Hosts configuration not found, creating new file with mode %s."), chalk.blueBright("0600")), !!flags.verbose);
-            await fse.writeFile(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), zlib.brotliCompressSync(msgpack.pack([], true)));
+            await fse.writeFile(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), zlib.brotliCompressSync(msgpack.encode([])));
             await fse.chmod(path.join(process.env.UserProfile || process.env.HOME || "/etc", ".ban-cli", "hosts"), 0o600);
         }
 
