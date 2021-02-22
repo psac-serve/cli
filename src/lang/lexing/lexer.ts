@@ -113,15 +113,22 @@ export default class Lexer {
     }
 
     public makeOperators() {
-        if (this.madeTokens[this.madeTokens.length - 1].startsWith("OPERATOR:")) {
+        if (this.currentChar === "(") {
+            return "OPERATOR:LPAREN";
+        } else if (this.currentChar === ")") {
+            return "OPERATOR:RPAREN";
+        }
+
+        if (this.madeTokens[this.madeTokens.length - 1] !== "OPERATOR:RPAREN" && this.madeTokens[this.madeTokens.length - 1].startsWith("OPERATOR:")) {
             const errorPosition = this.position.copy().advance("");
 
             throw new InvalidOperatorError(errorPosition, errorPosition);
         }
 
         const startPosition = this.position.copy().advance("");
+        const nextChar = this.text[this.position.index + 1] || "";
 
-        this.advance();
+        console.log(this.currentChar + nextChar);
 
         const
             operators: { [operator: string]: string } = {
@@ -137,7 +144,9 @@ export default class Lexer {
                 ";": "SEMI",
                 "||": "NOT"
             },
-            reference = ((this.previousChar || "") + (/[\t %&()*+/;^|-]/.test(this.currentChar || "") ? (this.currentChar || "") : "")).trim();
+            reference = ((this.currentChar || "") + (/[\t %&()*+/;^|-]/.test(nextChar) ? (nextChar) : "")).trim();
+
+        this.advance();
 
         return reference in operators ? "OPERATOR:" + operators[reference] : (() => {
             throw new InvalidOperatorError(startPosition, this.position);
