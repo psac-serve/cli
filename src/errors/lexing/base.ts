@@ -4,28 +4,33 @@ import { __ } from "i18n";
 
 import manager from "../../manager-instance";
 
+import { Position } from "../../utils/lexing";
+
 export default class LexingError extends Error {
-    protected constructor(message: string, public line: string, public row: number, public startColumn: number, public endColumn: number) {
+    protected constructor(message: string, public startPosition: Position, public endPosition: Position) {
         super(message);
+
+        this.endPosition = endPosition.copy();
     }
 
     public toString(): string {
-        if (this.startColumn > this.endColumn) {
-            [ this.startColumn, this.endColumn ] = [ this.endColumn, this.startColumn ];
+        if (this.startPosition.column > this.endPosition.column + 1) {
+            [ this.startPosition.column, this.endPosition.column ] = [ this.endPosition.column, this.startPosition.column ];
         }
 
         const { columns } = manager;
 
         return chalk`{bold.redBright ${__("Error")}} - {whiteBright ${this.message}}
- {bold at} {cyan ${this.row}}:{magenta ${this.startColumn == this.endColumn
-    ? this.startColumn
-    : chalk`{green ${this.startColumn}}{white.bold -}{magenta ${this.endColumn}}`}}
+ {bold at} {blue.underline ${this.endPosition.filename}}:{cyan ${this.endPosition.line}}:{magenta ${this.startPosition.column == this.endPosition.column
+    ? this.startPosition.column
+    : chalk`{green ${this.startPosition.column}}{white.bold -}{magenta ${this.endPosition.column}}`}}
  {dim ${repeat("-", columns - 1)}}
- |
- | ${this.line}
- | ${repeat(" ", this.startColumn - 1)}${this.startColumn == this.endColumn
+ | ${this.endPosition.filetext.split("\n")[this.endPosition.line - 1] || ""}
+ | ${this.endPosition.filetext.split("\n")[this.endPosition.line]}
+ | ${repeat(" ", this.startPosition.column - 1)}${this.startPosition.column == this.endPosition.column
     ? "^"
-    : repeat("~", 1 + this.endColumn - this.startColumn)}
+    : repeat("~", this.endPosition.column - this.startPosition.column === 1 ? 1 + this.endPosition.column - this.startPosition.column : this.endPosition.column - this.startPosition.column)}
+ | ${this.endPosition.filetext.split("\n")[this.endPosition.line + 1] || ""}
  {dim ${repeat("-", columns - 1)}}`;
     }
 }
