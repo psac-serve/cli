@@ -7,7 +7,7 @@ import Module from "./base";
  * Directory Manager module: Manager settings / logs dir.
  */
 export default class Directory extends Module {
-    constructor() {
+    public constructor() {
         super("Directory Manager", "Manage settings / logs dir.");
     }
 

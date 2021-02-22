@@ -1,7 +1,7 @@
 import { __ } from "i18n";
 
 export default class SessionLengthTooShortError extends Error {
-    constructor() {
+    public constructor() {
         super(__("Too short length of sessions."));
     }
 }
