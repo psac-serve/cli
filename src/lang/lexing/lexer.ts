@@ -3,12 +3,12 @@ import InvalidIPv4Error from "../../errors/lexing/invalid-ipv4";
 import InvalidOperatorError from "../../errors/lexing/invalid-operator";
 import InvalidTokenError from "../../errors/lexing/invalid-token";
 
-import Position from "./position";
+import Position from "../position";
 
-import tokens from "./tokens";
+import Token, { TokenType } from "../tokens";
 
 export default class Lexer {
-    public constructor(public text: string, public filename: string, public position = new Position(-1, 0, -1, filename, text), public madeTokens: string[] = [], public currentChar?: string, public previousChar?: string) {
+    public constructor(public text: string, public filename: string, public position = new Position(-1, 0, -1, filename, text), public madeTokens: Token[] = [], public currentChar?: string, public previousChar?: string) {
         this.advance();
     }
 
@@ -50,7 +50,7 @@ export default class Lexer {
 
                 cacheValue += this.currentChar;
             } else if (this.currentChar === ".") {
-                valuePosition = this.position.copy().advance("").advance("");
+                valuePosition = this.position.copy().advance().advance();
 
                 if (!cacheValue || Number.isNaN(+cacheValue) || +cacheValue > 255) {
                     throw new InvalidIPv4Error(
@@ -69,12 +69,12 @@ export default class Lexer {
 
         if (!dotCount || !values.every(value => value)) {
             throw new InvalidIPv4Error(
-                this.position.advance(""),
-                this.position.copy().advance("").advance("")
+                this.position.advance(),
+                this.position.copy().advance().advance()
             );
         }
 
-        return `${tokens.ipv4}:${values.join(".")}`;
+        return new Token(TokenType.ipv4, values.join("."));
     }
 
     public makeNumbers() {
@@ -109,26 +109,12 @@ export default class Lexer {
             throw new NaNError(startPosition, this.position);
         }
 
-        return `${tokens.number}:${+numberString}`;
+        return new Token(TokenType.number, numberString, startPosition, this.position);
     }
 
     public makeOperators() {
-        if (this.currentChar === "(") {
-            return "OPERATOR:LPAREN";
-        } else if (this.currentChar === ")") {
-            return "OPERATOR:RPAREN";
-        }
-
-        if (this.madeTokens[this.madeTokens.length - 1] !== "OPERATOR:RPAREN" && this.madeTokens[this.madeTokens.length - 1].startsWith("OPERATOR:")) {
-            const errorPosition = this.position.copy().advance("");
-
-            throw new InvalidOperatorError(errorPosition, errorPosition);
-        }
-
-        const startPosition = this.position.copy().advance("");
+        const startPosition = this.position.copy().advance();
         const nextChar = this.text[this.position.index + 1] || "";
-
-        console.log(this.currentChar + nextChar);
 
         const
             operators: { [operator: string]: string } = {
@@ -148,7 +134,7 @@ export default class Lexer {
 
         this.advance();
 
-        return reference in operators ? "OPERATOR:" + operators[reference] : (() => {
+        return reference in operators ? new Token(TokenType.operator, operators[reference], this.position) : (() => {
             throw new InvalidOperatorError(startPosition, this.position);
         })();
     }
@@ -161,13 +147,14 @@ export default class Lexer {
                 this.madeTokens.push(this.makeNumbers());
             } else if (/[%&()*+/;^|-]/.test(this.currentChar)) {
                 this.madeTokens.push(this.makeOperators());
-                this.advance();
             } else {
                 this.advance();
 
                 throw new InvalidTokenError(this.currentChar, this.position, this.position);
             }
         }
+
+        this.madeTokens.push(new Token(TokenType.eof));
 
         return this.madeTokens;
     }

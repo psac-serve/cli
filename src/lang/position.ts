@@ -20,7 +20,7 @@ export default class Position {
      *
      * @returns This method can chain.
      */
-    public advance(currentChar: string): Position {
+    public advance(currentChar: string = ""): Position {
         this.index++;
         this.column++;
 
