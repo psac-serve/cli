@@ -9,6 +9,8 @@ import NumberNode from "./nodes/number";
 import BinaryOperationNode from "./nodes/binary-operation";
 
 import ParseResult from "./result";
+import UnaryOperationNode from "./nodes/unary-operation";
+import ExpectedRParenError from "../../errors/parsing/expected-rparen";
 
 export default class Parser {
     public constructor(public tokens: Token[], public tokenIndex = -1, public currentToken: Token = new Token(TokenType.number)) {
@@ -36,17 +38,51 @@ export default class Parser {
             result = new ParseResult(),
             token = this.currentToken;
 
-        if (token.type === TokenType.number) {
+        if (token.type === TokenType.operator && (token.value === "PLUS" || token.value === "MINUS")) {
+            result.register(this.advance());
+
+            const factor = result.register(this.factor());
+
+            if (!(factor instanceof Node)) {
+                throw new TypeError("Omg!");
+            }
+
+            if (result.error) {
+                return result;
+            }
+
+            return result.success(new UnaryOperationNode(token, factor));
+        } else if (token.type === TokenType.number) {
             result.register(this.advance());
 
             return result.success(new NumberNode(token));
+        } else if (token.type === TokenType.operator && token.value === "LPAREN") {
+            result.register(this.advance());
+
+            const expression = result.register(this.expression());
+
+            if (!(expression instanceof Node)) {
+                throw new TypeError("Omg!");
+            }
+
+            if (result.error) {
+                return result;
+            }
+
+            if (this.currentToken.type === TokenType.operator && this.currentToken.value === "RPAREN") {
+                result.register(this.advance());
+
+                return result.success(expression);
+            } else {
+                return result.failure(new ExpectedRParenError(this.currentToken.startPosition, this.currentToken.endPosition));
+            }
         }
 
         return result.failure(new ExpectedNumberError(token.startPosition, token.endPosition));
     }
 
     public term() {
-        return this.binaryOperation(this.factor, "MUL", "DIV");
+        return this.binaryOperation(this.factor, "MUL", "DIV", "MOD");
     }
 
     public expression() {

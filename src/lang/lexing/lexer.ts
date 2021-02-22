@@ -109,7 +109,7 @@ export default class Lexer {
             throw new NaNError(startPosition, this.position);
         }
 
-        return new Token(TokenType.number, numberString, startPosition, this.position);
+        return new Token(TokenType.number, `${+numberString}`, startPosition, this.position);
     }
 
     public makeOperators() {
@@ -130,7 +130,7 @@ export default class Lexer {
                 ";": "SEMI",
                 "||": "NOT"
             },
-            reference = ((this.currentChar || "") + (/[\t %&()*+/;^|-]/.test(nextChar) ? (nextChar) : "")).trim();
+            reference = ((this.currentChar || "") + (/[\t &();|]/.test(nextChar) ? nextChar : "")).trim();
 
         this.advance();
 
