@@ -3,6 +3,7 @@ import ExpectedNumberError from "../../errors/parsing/expected-number";
 import Token, { TokenType } from "../tokens";
 
 import ExpectedOperatorError from "../../errors/parsing/expected-operator";
+import ExpectedRParenError from "../../errors/parsing/expected-rparen";
 
 import Node from "./nodes/base";
 import NumberNode from "./nodes/number";
@@ -10,7 +11,6 @@ import BinaryOperationNode from "./nodes/binary-operation";
 
 import ParseResult from "./result";
 import UnaryOperationNode from "./nodes/unary-operation";
-import ExpectedRParenError from "../../errors/parsing/expected-rparen";
 
 export default class Parser {
     public constructor(public tokens: Token[], public tokenIndex = -1, public currentToken: Token = new Token(TokenType.number)) {
