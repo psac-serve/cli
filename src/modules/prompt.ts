@@ -133,16 +133,6 @@ export default class Prompt extends Module {
             terminal.eraseLine();
             terminal.restoreCursor();
 
-            //if (!Quotes.check(command)) {
-            //    logger.error(__("Quotes are not closed."), true, "Command");
-
-            //    return this.use()(1);
-            //}
-
-            //if (!command.endsWith(";")) {
-            //    logger.error(__("Commands must end with ';'."), true, "Command");
-            //}
-
             if (command.trim() === "" || [ "#", "//" ].some(value => command?.trim().startsWith(value))) {
                 terminal("\n");
                 terminal.move(0, -1);
