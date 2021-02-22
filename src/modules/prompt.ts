@@ -7,12 +7,16 @@ import cliCursor from "cli-cursor";
 import { default as manager, flags } from "../manager-instance";
 
 import Quotes from "../utils/quotes";
-import { build } from "../utils/lexing";
+
+import { build } from "../lang/lexing/legacy/regex-lexer";
+
+import runLexer from "../lang/lexing";
 
 import CommandNotFoundError from "../errors/command-not-found";
 import InvalidArgumentsError from "../errors/invalid-arguments";
 import ModuleNotFoundError from "../errors/module-not-found";
 import SubCommandNotFoundError from "../errors/sub-command-not-found";
+import LexingError from "../errors/lexing/base";
 
 import Module from "./base";
 
@@ -165,6 +169,14 @@ export default class Prompt extends Module {
                 manager.prompting = false;
                 manager.promptCount = 0;
 
+                try {
+                    console.log("%O", runLexer(command.trim() + ";", "<Prompt>"));
+                } catch (error) {
+                    if (error instanceof LexingError) {
+                        console.error(error.toString());
+                    }
+                }
+
                 stopCode = await manager.use("Command").commands(command.trim());
             } catch (error) {
                 if (error instanceof CommandNotFoundError) {
@@ -175,6 +187,10 @@ export default class Prompt extends Module {
                     stopCode = 3;
                 } else if (error instanceof SubCommandNotFoundError) {
                     stopCode = 4;
+                } else if (error instanceof LexingError) {
+                    console.error(error.toString());
+
+                    stopCode = 5;
                 } else {
                     stopCode = -1;
                 }
