@@ -25,7 +25,7 @@ export default class LexingError extends Error {
  | ${this.line}
  | ${repeat(" ", this.startColumn - 1)}${this.startColumn == this.endColumn
     ? "^"
-    : repeat("~", this.endColumn - this.startColumn)}
+    : repeat("~", 1 + this.endColumn - this.startColumn)}
  {dim ${repeat("-", columns - 1)}}`;
     }
 }
