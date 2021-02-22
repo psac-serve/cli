@@ -1,4 +1,4 @@
-import { Position } from "../../utils/lexing";
+import Position from "../../lang/lexing/position";
 
 import LexingError from "./base";
 

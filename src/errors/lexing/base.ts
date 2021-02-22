@@ -4,7 +4,7 @@ import { __ } from "i18n";
 
 import manager from "../../manager-instance";
 
-import { Position } from "../../utils/lexing";
+import Position from "../../lang/lexing/position";
 
 export default class LexingError extends Error {
     protected constructor(message: string, public startPosition: Position, public endPosition: Position) {

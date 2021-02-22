@@ -1,76 +1,13 @@
-import InvalidTokenError from "../errors/lexing/invalid-token";
-import NaNError from "../errors/lexing/not-a-number";
-import InvalidIPv4Error from "../errors/lexing/invalid-ipv4";
-import InvalidOperatorError from "../errors/lexing/invalid-operator";
+import NaNError from "../../errors/lexing/not-a-number";
+import InvalidIPv4Error from "../../errors/lexing/invalid-ipv4";
+import InvalidOperatorError from "../../errors/lexing/invalid-operator";
+import InvalidTokenError from "../../errors/lexing/invalid-token";
 
-/**
- * The regexes to use low-level parsing.
- */
-export const regexes = {
-    arguments: "--?[A-Za-z-]+(?= ?)",
-    command: "(?<=^|;|\\|)[A-Za-z]+(?= ?)",
-    comment: "(#|\\/\\/).*$",
-    digits: "(\\d+#\\d+|\\d+#(?! )|\\d+)(([Ee])[+-]?)?(\\d+#\\d+|\\d+#(?! )|\\d+)",
-    operators: "([&|]|\\|\\|)",
-    semicolon: ";"
-};
+import Position from "./position";
 
-/**
- * Build lexers to one {@link RegExp}.
- *
- * @returns Built {@link RegExp}.
- */
-export const build = (): RegExp => new RegExp(Object.values(regexes).join("|"), "g");
+import tokens from "./tokens";
 
-export class Position {
-    public constructor(public index: number, public line: number, public column: number, public filename: string, public filetext: string) {}
-
-    public advance(currentChar: string) {
-        this.index++;
-        this.column++;
-
-        if (currentChar === "\n") {
-            this.line++;
-            this.column = 0;
-        }
-
-        return this;
-    }
-
-    public copy() {
-        return new Position(this.index, this.line, this.column, this.filename, this.filetext);
-    }
-
-    public copyMinus() {
-        return new Position(
-            this.index !== -1
-                ? this.index - 1
-                : this.index,
-            this.line,
-            this.column !== -1
-                ? this.column - 1
-                : this.column,
-            this.filename,
-            this.filetext
-        );
-    }
-}
-
-export const tokens = {
-    div: "DIV",
-    ipv4: "IPV4",
-    lparen: "LPAREN",
-    minus: "MINUS",
-    mod: "MOD",
-    mul: "MUL",
-    number: "NUMBER",
-    operator: "OPERATOR",
-    plus: "PLUS",
-    pow: "POW",
-    rparen: "RPAREN"
-} as const;
-
-export class Lexer {
+export default class Lexer {
     public constructor(public text: string, public filename: string, public position = new Position(-1, 0, -1, filename, text), public madeTokens: string[] = [], public currentChar?: string, public previousChar?: string) {
         this.advance();
     }
@@ -226,9 +163,3 @@ export class Lexer {
         return this.madeTokens;
     }
 }
-
-export const run = (text: string, filename: string) => {
-    const lexer = new Lexer(text, filename);
-
-    return lexer.makeTokens();
-};

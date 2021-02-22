@@ -7,7 +7,10 @@ import cliCursor from "cli-cursor";
 import { default as manager, flags } from "../manager-instance";
 
 import Quotes from "../utils/quotes";
-import { build, run } from "../utils/lexing";
+
+import { build } from "../lang/lexing/legacy/regex-lexer";
+
+import runLexer from "../lang/lexing";
 
 import CommandNotFoundError from "../errors/command-not-found";
 import InvalidArgumentsError from "../errors/invalid-arguments";
@@ -167,7 +170,7 @@ export default class Prompt extends Module {
                 manager.promptCount = 0;
 
                 try {
-                    console.log(run(command.trim() + ";", "<Prompt>"));
+                    console.log("%O", runLexer(command.trim() + ";", "<Prompt>"));
                 } catch (error) {
                     if (error instanceof LexingError) {
                         console.error(error.toString());
