@@ -1,9 +1,8 @@
-import ExpectedNumberError from "../../errors/lang/parsing/expected-number";
-
 import Token, { TokenType } from "../tokens";
 
 import ExpectedOperatorError from "../../errors/lang/parsing/expected-operator";
 import ExpectedRParenError from "../../errors/lang/parsing/expected-rparen";
+import NodeViolationError from "../../errors/lang/parsing/node-violation";
 
 import Node from "./nodes/base";
 import NumberNode from "./nodes/number";
@@ -31,26 +30,12 @@ export default class Parser {
         return result;
     }
 
-    public factor() {
+    public atom() {
         const
             result = new ParseResult(),
             token = this.currentToken;
 
-        if (token.type === TokenType.operator && (token.value === "PLUS" || token.value === "MINUS")) {
-            result.register(this.advance());
-
-            const factor = result.register(this.factor());
-
-            if (!(factor instanceof Node)) {
-                throw new TypeError("Omg!");
-            }
-
-            if (result.error) {
-                return result;
-            }
-
-            return result.success(new UnaryOperationNode(token, factor));
-        } else if (token.type === TokenType.number) {
+        if (token.type === TokenType.number) {
             result.register(this.advance());
 
             return result.success(new NumberNode(token));
@@ -60,7 +45,7 @@ export default class Parser {
             const expression = result.register(this.expression());
 
             if (!(expression instanceof Node)) {
-                throw new TypeError("Omg!");
+                throw new NodeViolationError();
             }
 
             if (result.error) {
@@ -76,24 +61,56 @@ export default class Parser {
             }
         }
 
-        return result.failure(new ExpectedNumberError(token.startPosition, token.endPosition));
+        return result.failure(new ExpectedOperatorError(this.currentToken.startPosition, this.currentToken.endPosition));
+    }
+
+    public power() {
+        return this.binaryOperation(this.atom, [ "POW" ], this.factor);
+    }
+
+    public factor() {
+        const
+            result = new ParseResult(),
+            token = this.currentToken;
+
+        if (token.type === TokenType.operator && (token.value === "PLUS" || token.value === "MINUS")) {
+            result.register(this.advance());
+
+            const factor = result.register(this.factor());
+
+            if (!(factor instanceof Node)) {
+                throw new NodeViolationError();
+            }
+
+            if (result.error) {
+                return result;
+            }
+
+            return result.success(new UnaryOperationNode(token, factor));
+        }
+
+        return this.power();
     }
 
     public term() {
-        return this.binaryOperation(this.factor, "MUL", "DIV", "MOD");
+        return this.binaryOperation(this.factor, [ "MUL", "DIV", "MOD" ]);
     }
 
     public expression() {
-        return this.binaryOperation(this.term, "PLUS", "MINUS");
+        return this.binaryOperation(this.term, [ "PLUS", "MINUS" ]);
     }
 
-    public binaryOperation(function_: () => ParseResult, ...operators: string[]) {
+    public binaryOperation(functionA: () => ParseResult, operators: string[], functionB?: () => ParseResult) {
+        if (!functionB) {
+            functionB = functionA;
+        }
+
         const result = new ParseResult();
 
-        let left = result.register(function_.call(this));
+        let left = result.register(functionA.call(this));
 
         if (!(left instanceof Node)) {
-            throw new TypeError("Omg!");
+            throw new NodeViolationError();
         }
 
         if (result.error) {
@@ -105,10 +122,10 @@ export default class Parser {
 
             result.register(this.advance());
 
-            const right = result.register(function_.call(this));
+            const right = result.register(functionB.call(this));
 
             if (!(right instanceof Node)) {
-                throw new TypeError("Omg!");
+                throw new NodeViolationError();
             }
 
             if (result.error) {

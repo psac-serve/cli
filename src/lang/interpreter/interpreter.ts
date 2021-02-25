@@ -68,6 +68,8 @@ export default class Interpreter {
                 resultNumber = left.dividedBy(right);
             } else if (node.operatorToken.value === "MOD") {
                 resultNumber = left.moddedBy(right);
+            } else if (node.operatorToken.value === "POW") {
+                resultNumber = left.poweredBy(right);
             }
         } catch (error) {
             result.failure(error);

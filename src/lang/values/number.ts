@@ -73,6 +73,14 @@ export default class NumberValue {
         return new NumberValue(this.value % other.value).setContext(this.context);
     }
 
+    public poweredBy(other: unknown) {
+        if (!(other instanceof NumberValue)) {
+            throw new NaNError();
+        }
+
+        return new NumberValue(this.value ** other.value).setContext(this.context);
+    }
+
     public toString() {
         return this.value;
     }

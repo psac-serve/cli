@@ -25,13 +25,13 @@ export default class LangError extends Error {
                     : chalk`{green ${this.startPosition.column}}{white.bold -}{magenta ${this.endPosition.column}}`}}`
                 : ""
         }
- {dim ${repeat("-", columns - 1)}}
- | ${this.endPosition ? this.endPosition.fileText.split("\n")[this.endPosition.line - 1] || "" : ""}
- | ${this.endPosition ? this.endPosition.fileText.split("\n")[this.endPosition.line] : ""}
- | ${this.startPosition && this.endPosition ? repeat(" ", this.startPosition.column - 1) : ""}${this.startPosition && this.endPosition ? (this.startPosition.column == this.endPosition.column
+${this.endPosition && this.endPosition.fileText ? `{dim ${repeat("-", columns - 1)}}
+ | ${this.endPosition.fileText.split("\n")[this.endPosition.line - 1] || ""}
+ | ${this.endPosition.fileText.split("\n")[this.endPosition.line]}
+ | ${this.startPosition ? repeat(" ", this.startPosition.column - 1) : ""}${this.startPosition && this.endPosition ? (this.startPosition.column == this.endPosition.column
     ? "^"
     : repeat("~", this.endPosition.column - this.startPosition.column === 1 ? 1 + this.endPosition.column - this.startPosition.column : this.endPosition.column - this.startPosition.column)) : ""}
- | ${this.endPosition ? this.endPosition.fileText.split("\n")[this.endPosition.line + 1] || "" : ""}
- {dim ${repeat("-", columns - 1)}}`;
+ | ${this.endPosition.fileText.split("\n")[this.endPosition.line + 1] || ""}
+ {dim ${repeat("-", columns - 1)}}` : ""}`;
     }
 }
