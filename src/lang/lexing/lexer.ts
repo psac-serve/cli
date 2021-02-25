@@ -1,19 +1,19 @@
-import NaNError from "../../errors/lexing/not-a-number";
-import InvalidIPv4Error from "../../errors/lexing/invalid-ipv4";
-import InvalidOperatorError from "../../errors/lexing/invalid-operator";
-import InvalidTokenError from "../../errors/lexing/invalid-token";
+import NaNError from "../../errors/lang/lexing/not-a-number";
+import InvalidIPv4Error from "../../errors/lang/lexing/invalid-ipv4";
+import InvalidOperatorError from "../../errors/lang/lexing/invalid-operator";
+import InvalidTokenError from "../../errors/lang/lexing/invalid-token";
 
 import Position from "../position";
 
 import Token, { TokenType } from "../tokens";
 
 export default class Lexer {
-    public constructor(public text: string, public filename: string, public position = new Position(-1, 0, -1, filename, text), public madeTokens: Token[] = [], public currentChar?: string, public previousChar?: string) {
+    public constructor(public filename: string, public text: string, public position = new Position(-1, 0, -1, filename, text), public madeTokens: Token[] = [], public currentChar?: string, public previousChar?: string) {
         this.advance();
     }
 
     public advance() {
-        this.position.advance(this.currentChar || "");
+        this.position.advance(this.currentChar);
 
         [
             this.previousChar,
@@ -105,6 +105,10 @@ export default class Lexer {
             this.advance();
         }
 
+        if (+numberString === 0) {
+            return new Token(TokenType.number, "0", startPosition, this.position);
+        }
+
         if (!(+numberString && !Number.isNaN(+numberString))) {
             throw new NaNError(startPosition, this.position);
         }
@@ -117,24 +121,36 @@ export default class Lexer {
         const nextChar = this.text[this.position.index + 1] || "";
 
         const
+            doubleOperators: { [operator: string]: string } = {
+                "&&": "AND",
+                "**": "POW",
+                "||": "NOT"
+            },
+            doubleReference = ((this.currentChar || "") + (/[\t &*|]/.test(nextChar) ? nextChar : "")).trim();
+
+        if (doubleReference in doubleOperators) {
+            this.advance();
+            this.advance();
+
+            return new Token(TokenType.operator, doubleOperators[doubleReference], startPosition, this.position);
+        }
+
+        const
             operators: { [operator: string]: string } = {
                 "%": "MOD",
-                "&&": "AND",
                 "(": "LPAREN",
                 ")": "RPAREN",
                 "*": "MUL",
-                "**": "POW",
                 "+": "PLUS",
                 "-": "MINUS",
                 "/": "DIV",
-                ";": "SEMI",
-                "||": "NOT"
+                ";": "SEMI"
             },
-            reference = ((this.currentChar || "") + (/[\t &();|]/.test(nextChar) ? nextChar : "")).trim();
+            reference = (this.currentChar || "").trim();
 
         this.advance();
 
-        return reference in operators ? new Token(TokenType.operator, operators[reference], this.position) : (() => {
+        return reference in operators ? new Token(TokenType.operator, operators[reference], startPosition, this.position) : (() => {
             throw new InvalidOperatorError(startPosition, this.position);
         })();
     }

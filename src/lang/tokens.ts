@@ -1,5 +1,3 @@
-import Position from "./position";
-
 /**
  * Lexing tokens.
  */
@@ -26,14 +24,14 @@ export enum TokenType {
 }
 
 export default class Token {
-    public constructor(public type: TokenType, public value?: string, public startPosition?: Position, public endPosition?: Position) {
+    public constructor(public type: TokenType, public value?: string, public startPosition?: any, public endPosition?: any) {
         if (startPosition) {
             this.startPosition = startPosition.copy();
             this.endPosition = startPosition.copy().advance();
         }
 
         if (endPosition) {
-            this.endPosition = endPosition.copy();
+            this.endPosition = endPosition;
         }
     }
 

@@ -80,5 +80,7 @@
     "Successfully closed the session %s %s.": "Successfully closed the session %s %s.",
     "Too short length of sessions.": "Too short length of sessions.",
     "Manage help documents automatically.": "Manage help documents automatically.",
-    "Error": "Error"
+    "Error": "Error",
+    "Runtime Error": "Runtime Error",
+    " Error": " Error"
 }

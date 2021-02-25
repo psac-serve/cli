@@ -9,9 +9,9 @@ export default class Position {
      * @param line File line number.
      * @param column File columns.
      * @param filename Filename.
-     * @param filetext File text.
+     * @param fileText File text.
      */
-    public constructor(public index: number, public line: number, public column: number, public filename: string, public filetext: string) {}
+    public constructor(public index: number, public line: number, public column: number, public filename: string, public fileText: string) {}
 
     /**
      * Advance position.
@@ -20,7 +20,7 @@ export default class Position {
      *
      * @returns This method can chain.
      */
-    public advance(currentChar: string = ""): Position {
+    public advance(currentChar?: string): Position {
         this.index++;
         this.column++;
 
@@ -38,7 +38,7 @@ export default class Position {
      * @returns Copied position.
      */
     public copy(): Position {
-        return new Position(this.index, this.line, this.column, this.filename, this.filetext);
+        return new Position(this.index, this.line, this.column, this.filename, this.fileText);
     }
 
     /**
@@ -56,7 +56,7 @@ export default class Position {
                 ? this.column - 1
                 : this.column,
             this.filename,
-            this.filetext
+            this.fileText
         );
     }
 
@@ -71,7 +71,7 @@ export default class Position {
             this.line,
             this.column + 1,
             this.filename,
-            this.filetext
+            this.fileText
         );
     }
 }

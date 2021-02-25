@@ -2,6 +2,7 @@ import { Command as AnotherCommand } from "../commands/base";
 import Exit from "../commands/exit";
 import Modules from "../commands/modules";
 import Help from "../commands/help";
+import REPL from "../commands/repl";
 import Session from "../commands/session";
 
 import CommandNotFoundError from "../errors/command-not-found";
@@ -33,7 +34,7 @@ export default class Command extends Module {
 
     public init(): Promise<void> {
         this.enabled = true;
-        this._commands = [ new Exit(), new Modules(), new Help(), new Session() ];
+        this._commands = [ new Exit(), new Modules(), new Help(), new REPL(), new Session() ];
 
         return Promise.resolve();
     }

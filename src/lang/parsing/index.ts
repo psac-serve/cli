@@ -11,7 +11,7 @@ const runParser = (tokens: Token[]) => {
         throw result.error;
     }
 
-    return result.node.toString();
+    return result.node;
 };
 
 export default runParser;
