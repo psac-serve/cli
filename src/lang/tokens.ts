@@ -20,14 +20,24 @@ export enum TokenType {
     /**
      * Operator token.
      */
-    operator = "OPERATOR"
+    operator = "OPERATOR",
+
+    /**
+     * Language-defined keywords.
+     */
+    keyword = "KEYWORD",
+
+    /**
+     * Identifiers.
+     */
+    identifier = "IDENTIFIER"
 }
 
 export default class Token {
     public constructor(public type: TokenType, public value?: string, public startPosition?: any, public endPosition?: any) {
         if (startPosition) {
             this.startPosition = startPosition.copy();
-            this.endPosition = startPosition.copy().advance();
+            this.endPosition = startPosition.copy();
         }
 
         if (endPosition) {

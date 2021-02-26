@@ -4,18 +4,20 @@ import Node from "./nodes/base";
 import NumberNode from "./nodes/number";
 
 export default class ParseResult {
-    public constructor(public error?: Error, public node?: Node) {}
+    public constructor(public error?: Error, public node?: Node, public advanceCount = 0) {}
 
-    public register(result: ParseResult | Token) {
-        if (result instanceof ParseResult) {
-            if (result.error) {
-                this.error = result.error;
-            }
+    public registerAdvancement() {
+        this.advanceCount++;
+    }
 
-            return result.node || new NumberNode(new Token(TokenType.number));
+    public register(result: ParseResult) {
+        this.advanceCount += result.advanceCount;
+
+        if (result.error) {
+            this.error = result.error;
         }
 
-        return result;
+        return result.node || new NumberNode(new Token(TokenType.number));
     }
 
     public success(node: Node) {
@@ -25,7 +27,9 @@ export default class ParseResult {
     }
 
     public failure(error: Error) {
-        this.error = error;
+        if (!this.error || this.advanceCount === 0) {
+            this.error = error;
+        }
 
         return this;
     }

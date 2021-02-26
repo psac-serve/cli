@@ -1,9 +1,9 @@
 import Position from "../../../lang/position";
 
-import ParsingError from "./base";
+import ExpectedError from "./expected";
 
-export default class ExpectedNumberError extends ParsingError {
+export default class ExpectedNumberError extends ExpectedError {
     public constructor(public startPosition: Position, public endPosition: Position) {
-        super("Expected number.", startPosition, endPosition);
+        super([ "number" ], startPosition, endPosition);
     }
 }

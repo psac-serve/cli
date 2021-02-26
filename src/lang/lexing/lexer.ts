@@ -7,6 +7,11 @@ import Position from "../position";
 
 import Token, { TokenType } from "../tokens";
 
+export const keywords: readonly string[] = [
+    "var",
+    "const"
+] as const;
+
 export default class Lexer {
     public constructor(public filename: string, public text: string, public position = new Position(-1, 0, -1, filename, text), public madeTokens: Token[] = [], public currentChar?: string, public previousChar?: string) {
         this.advance();
@@ -116,6 +121,22 @@ export default class Lexer {
         return new Token(TokenType.number, `${+numberString}`, startPosition, this.position);
     }
 
+    public makeIdentifier() {
+        let identifier = "";
+
+        const startPosition = this.position.copy();
+
+        while (this.currentChar && /[\dA-z]/.test(this.currentChar)) {
+            identifier += this.currentChar;
+
+            this.advance();
+        }
+
+        const tokenType = keywords.includes(identifier) ? TokenType.keyword : TokenType.identifier;
+
+        return new Token(tokenType, identifier, startPosition, this.position);
+    }
+
     public makeOperators() {
         const startPosition = this.position.copy().advance();
         const nextChar = this.text[this.position.index + 1] || "";
@@ -144,7 +165,8 @@ export default class Lexer {
                 "+": "PLUS",
                 "-": "MINUS",
                 "/": "DIV",
-                ";": "SEMI"
+                ";": "SEMI",
+                "=": "EQ"
             },
             reference = (this.currentChar || "").trim();
 
@@ -161,7 +183,9 @@ export default class Lexer {
                 this.advance();
             } else if (/\d/.test(this.currentChar || "") || ("0123456789".includes(this.previousChar || "") && this.currentChar === "e") || (this.currentChar === "." && "0123456789".includes(this.previousChar || ""))) {
                 this.madeTokens.push(this.makeNumbers());
-            } else if (/[%&()*+/;^|-]/.test(this.currentChar)) {
+            } else if (/[A-Za-z]/.test(this.currentChar || "")) {
+                this.madeTokens.push(this.makeIdentifier());
+            } else if (/[%&()*+/;=^|-]/.test(this.currentChar)) {
                 this.madeTokens.push(this.makeOperators());
             } else {
                 this.advance();
