@@ -95,13 +95,14 @@ class BanClient extends OclifCommand {
             spinner.succeed(__("Started module manager. ") + Timer.prettyTime());
         }
 
-        Timer.time();
-
         await manager.initAllModules();
 
-        manager.logger.info(__("Modules loaded. ") + Timer.prettyTime(), !!flags.verbose);
+        manager.logger.info(__("Modules loaded. "));
+
         console.log();
+
         manager.logger.info(chalk`{bold ${sprintf(__("Welcome to the client operator of %s. The commands end with semicolon ';'."), chalk.greenBright(manager.sessions.sessions.find((session: Client) => session.id === manager.sessions.attaching).hostname))}}`);
+
         console.info(chalk`\n{dim.italic ${(() => {
             const items = [
                 "ほーん、で？どうしたいの？",
@@ -116,12 +117,15 @@ class BanClient extends OclifCommand {
 
             return items[Math.floor(Math.random() * items.length)];
         })()}}`);
-        console.log("\nType \"help [command];\" for help.\n");
+
+        console.log("Type \"help [command];\" for help.\n");
 
         const exitCode = await manager.use("Prompt")(0);
 
         console.log(chalk`{greenBright Good bye.}`);
+
         await manager.closeAllModules();
+
         process.exit(exitCode);
     }
 }
