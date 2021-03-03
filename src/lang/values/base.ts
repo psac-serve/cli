@@ -5,7 +5,7 @@ export default class Value {
     public endPosition?: any
     public context: Context = new Context("");
 
-    public constructor(public value: number) {
+    public constructor(public value?: any) {
         this.setPosition();
     }
 

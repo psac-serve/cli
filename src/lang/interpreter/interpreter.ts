@@ -12,6 +12,8 @@ import { default as IdentifierNotFoundError } from "../../errors/lang/runtime/re
 
 import NumberValue from "../values/number";
 
+import NaNError from "../../errors/interpreter/values/not-a-number";
+
 import Context from "./context";
 
 import RuntimeResult from "./result";
@@ -94,6 +96,10 @@ export default class Interpreter {
 
         if (result.error) {
             return result;
+        }
+
+        if (!(left instanceof NumberValue)) {
+            throw new NaNError();
         }
 
         let resultNumber: NumberValue = new NumberValue(0);

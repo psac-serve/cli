@@ -5,6 +5,7 @@ import ExpectedOperatorError from "../../errors/lang/parsing/expected-operator";
 import ExpectedRParenError from "../../errors/lang/parsing/expected-rparen";
 import ExpectedIdentifierError from "../../errors/lang/parsing/expected-identifier";
 
+import Node from "./nodes/base";
 import NumberNode from "./nodes/number";
 import BinaryOperationNode from "./nodes/binary-operation";
 import UnaryOperationNode from "./nodes/unary-operation";
@@ -14,7 +15,7 @@ import VariableAssignNode from "./nodes/variable-assign";
 import ParseResult from "./result";
 
 export default class Parser {
-    public constructor(public tokens: Token[], public tokenIndex = -1, public currentToken: Token = tokens[++tokenIndex]) {}
+    public constructor(public tokens: Token[], public tokenIndex = -1, public currentToken: Token = tokens[++tokenIndex], public patternMatching = false, public matchingNode?: Node) {}
 
     public advance() {
         this.currentToken = this.tokens[++this.tokenIndex];

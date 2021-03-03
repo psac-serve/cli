@@ -1,4 +1,4 @@
-export default class NaNError extends Error {
+export default class NaNError extends TypeError {
     constructor() {
         super("Not a number.");
     }
