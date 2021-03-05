@@ -1,7 +1,11 @@
 import Value from "./values/base";
+import BooleanValue from "./values/boolean";
 
 export default class SymbolTable {
-    public constructor(public symbols: { [symbol: string]: any } = {}, public parent?: SymbolTable) {}
+    public constructor(public symbols: { [symbol: string]: any } = {
+        false: new BooleanValue(false),
+        true: new BooleanValue(true)
+    }, public parent?: SymbolTable) {}
 
     public get(name: string): Value {
         const value = this.symbols[name];

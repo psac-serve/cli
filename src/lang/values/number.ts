@@ -3,6 +3,8 @@ import DivideByZeroError from "../../errors/lang/runtime/divide-by-zero";
 
 import Value from "./base";
 
+import BooleanValue from "./boolean";
+
 export default class NumberValue extends Value {
     public addedTo(other: unknown) {
         if (!(other instanceof NumberValue)) {
@@ -58,5 +60,57 @@ export default class NumberValue extends Value {
         }
 
         return new NumberValue(this.value ** other.value).setContext(this.context);
+    }
+
+    public getComparisonEQ(other: unknown) {
+        if (!(other instanceof NumberValue)) {
+            throw new NaNError();
+        }
+
+        return new BooleanValue(this.value === other.value).setContext(this.context);
+    }
+
+    public getComparisonNE(other: unknown) {
+        if (!(other instanceof NumberValue)) {
+            throw new NaNError();
+        }
+
+        return new BooleanValue(this.value !== other.value).setContext(this.context);
+    }
+
+    public getComparisonLT(other: unknown) {
+        if (!(other instanceof NumberValue)) {
+            throw new NaNError();
+        }
+
+        return new BooleanValue(this.value < other.value).setContext(this.context);
+    }
+
+    public getComparisonGT(other: unknown) {
+        if (!(other instanceof NumberValue)) {
+            throw new NaNError();
+        }
+
+        return new BooleanValue(this.value > other.value).setContext(this.context);
+    }
+
+    public getComparisonLTE(other: unknown) {
+        if (!(other instanceof NumberValue)) {
+            throw new NaNError();
+        }
+
+        return new BooleanValue(this.value <= other.value).setContext(this.context);
+    }
+
+    public getComparisonGTE(other: unknown) {
+        if (!(other instanceof NumberValue)) {
+            throw new NaNError();
+        }
+
+        return new BooleanValue(this.value >= other.value).setContext(this.context);
+    }
+
+    public notted() {
+        return new BooleanValue(!this.value).setContext(this.context);
     }
 }

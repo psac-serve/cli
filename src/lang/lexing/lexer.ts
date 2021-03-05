@@ -9,7 +9,13 @@ import Token, { TokenType } from "../tokens";
 
 export const keywords: readonly string[] = [
     "var",
-    "const"
+    "const",
+    "and",
+    "or",
+    "if",
+    "elif",
+    "else",
+    "then"
 ] as const;
 
 export default class Lexer {
@@ -137,6 +143,70 @@ export default class Lexer {
         return new Token(tokenType, identifier, startPosition, this.position);
     }
 
+    public makeNotEquals() {
+        const startPosition = this.position.copy();
+
+        this.advance();
+
+        if (this.currentChar === "=") {
+            this.advance();
+
+            return new Token(TokenType.operator, "NE", startPosition, this.position);
+        } else if (/[!A-Za-z]/.test(this.currentChar || "")) {
+            return new Token(TokenType.operator, "NOT", startPosition, this.position);
+        }
+
+        return new Token(TokenType.operator, "NOT", startPosition, this.position);
+    }
+
+    public makeEquals() {
+        const startPosition = this.position.copy();
+
+        let tokenType = "EQ";
+
+        this.advance();
+
+        if (this.currentChar === "=") {
+            this.advance();
+
+            tokenType = "EE";
+        }
+
+        return new Token(TokenType.operator, tokenType, startPosition, this.position);
+    }
+
+    public makeLessThan() {
+        const startPosition = this.position.copy();
+
+        let tokenType = "LT";
+
+        this.advance();
+
+        if (this.currentChar === "=") {
+            this.advance();
+
+            tokenType = "LTE";
+        }
+
+        return new Token(TokenType.operator, tokenType, startPosition, this.position);
+    }
+
+    public makeGreaterThan() {
+        const startPosition = this.position.copy();
+
+        let tokenType = "GT";
+
+        this.advance();
+
+        if (this.currentChar === "=") {
+            this.advance();
+
+            tokenType = "GTE";
+        }
+
+        return new Token(TokenType.operator, tokenType, startPosition, this.position);
+    }
+
     public makeOperators() {
         const startPosition = this.position.copy().advance();
         const nextChar = this.text[this.position.index + 1] || "";
@@ -185,7 +255,15 @@ export default class Lexer {
                 this.madeTokens.push(this.makeNumbers());
             } else if (/[A-Za-z]/.test(this.currentChar || "")) {
                 this.madeTokens.push(this.makeIdentifier());
-            } else if (/[%&()*+/;=^|-]/.test(this.currentChar)) {
+            } else if (this.currentChar === "!") {
+                this.madeTokens.push(this.makeNotEquals());
+            } else if (this.currentChar === "=") {
+                this.madeTokens.push(this.makeEquals());
+            } else if (this.currentChar === "<") {
+                this.madeTokens.push(this.makeLessThan());
+            } else if (this.currentChar === ">") {
+                this.madeTokens.push(this.makeGreaterThan());
+            } else if (/[%&()*+/;^|-]/.test(this.currentChar)) {
                 this.madeTokens.push(this.makeOperators());
             } else {
                 this.advance();

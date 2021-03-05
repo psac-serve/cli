@@ -12,11 +12,16 @@ import { default as IdentifierNotFoundError } from "../../errors/lang/runtime/re
 
 import NumberValue from "../values/number";
 
+import Value from "../values/base";
+
 import NaNError from "../../errors/interpreter/values/not-a-number";
+
+import { TokenType } from "../tokens";
 
 import Context from "./context";
 
 import RuntimeResult from "./result";
+import BooleanValue from "../values/boolean";
 
 export default class Interpreter {
     public constructor() {}
@@ -98,34 +103,54 @@ export default class Interpreter {
             return result;
         }
 
-        if (!(left instanceof NumberValue)) {
+        if (!(left instanceof Value)) {
             throw new NaNError();
         }
 
-        let resultNumber: NumberValue = new NumberValue(0);
+        let resultValue: Value = new Value();
 
         try {
-            if (node.operatorToken.value === "PLUS") {
-                resultNumber = left.addedTo(right);
-            } else if (node.operatorToken.value === "MINUS") {
-                resultNumber = left.subbedBy(right);
-            } else if (node.operatorToken.value === "MUL") {
-                resultNumber = left.multipliedBy(right);
-            } else if (node.operatorToken.value === "DIV") {
-                resultNumber = left.dividedBy(right);
-            } else if (node.operatorToken.value === "MOD") {
-                resultNumber = left.moddedBy(right);
-            } else if (node.operatorToken.value === "POW") {
-                resultNumber = left.poweredBy(right);
+            if (left instanceof NumberValue) {
+                if (node.operatorToken.value === "PLUS") {
+                    resultValue = left.addedTo(right);
+                } else if (node.operatorToken.value === "MINUS") {
+                    resultValue = left.subbedBy(right);
+                } else if (node.operatorToken.value === "MUL") {
+                    resultValue = left.multipliedBy(right);
+                } else if (node.operatorToken.value === "DIV") {
+                    resultValue = left.dividedBy(right);
+                } else if (node.operatorToken.value === "MOD") {
+                    resultValue = left.moddedBy(right);
+                } else if (node.operatorToken.value === "POW") {
+                    resultValue = left.poweredBy(right);
+                } else if (node.operatorToken.value === "EE") {
+                    resultValue = left.getComparisonEQ(right);
+                } else if (node.operatorToken.value === "NE") {
+                    resultValue = left.getComparisonNE(right);
+                } else if (node.operatorToken.value === "LT") {
+                    resultValue = left.getComparisonLT(right);
+                } else if (node.operatorToken.value === "GT") {
+                    resultValue = left.getComparisonGT(right);
+                } else if (node.operatorToken.value === "LTE") {
+                    resultValue = left.getComparisonLTE(right);
+                } else if (node.operatorToken.value === "GTE") {
+                    resultValue = left.getComparisonGTE(right);
+                }
+            } else if (left instanceof BooleanValue) {
+                if (node.operatorToken.type === TokenType.keyword && node.operatorToken.value === "or") {
+                    resultValue = left.andedBy(right);
+                } else if (node.operatorToken.type === TokenType.keyword && node.operatorToken.value === "and") {
+                    resultValue = left.oredBy(right);
+                }
             }
         } catch (error) {
             result.failure(error);
         }
 
-        resultNumber.startPosition = node.operatorToken.startPosition;
-        resultNumber.endPosition = node.operatorToken.endPosition;
+        resultValue.startPosition = node.operatorToken.startPosition;
+        resultValue.endPosition = node.operatorToken.endPosition;
 
-        return result.success(resultNumber);
+        return result.success(resultValue);
     }
 
     public visit_UnaryOperationNode(node: UnaryOperationNode, context: Context) {
@@ -140,6 +165,8 @@ export default class Interpreter {
         try {
             if (node.operatorToken.value === "MINUS") {
                 number = number.multipliedBy(new NumberValue(-1));
+            } else if (node.operatorToken.value === "NOT") {
+                number = number.notted();
             }
         } catch (error) {
             result.failure(error);

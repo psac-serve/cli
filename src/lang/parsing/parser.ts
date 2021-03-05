@@ -100,6 +100,37 @@ export default class Parser {
         return this.binaryOperation(this.factor, [ "MUL", "DIV", "MOD" ]);
     }
 
+    public arithmeticExpression() {
+        return this.binaryOperation(this.term, [ "PLUS", "MINUS" ]);
+    }
+
+    public compareExpression() {
+        const result = new ParseResult();
+
+        if (this.currentToken.type === TokenType.operator && this.currentToken.value === "NOT") {
+            const operatorToken = this.currentToken;
+
+            result.registerAdvancement();
+            this.advance();
+
+            const node = result.register(this.compareExpression());
+
+            if (result.error) {
+                return result;
+            }
+
+            return result.success(new UnaryOperationNode(operatorToken, node));
+        }
+
+        const node = result.register(this.binaryOperation(this.arithmeticExpression, [ "EE", "NE", "LT", "GT", "LTE", "GTE" ]));
+
+        if (result.error) {
+            return result.failure(new ExpectedError([ "number", "identifier", "+", "-", "(", "!" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        return result.success(node);
+    }
+
     public expression() {
         const
             result = new ParseResult(),
@@ -137,10 +168,10 @@ export default class Parser {
             return result.success(new VariableAssignNode(name, expression, isConstant));
         }
 
-        const node = result.register(this.binaryOperation(this.term, [ "PLUS", "MINUS" ]));
+        const node = result.register(this.binaryOperation(this.compareExpression, [ "and", "or" ]));
 
         if (result.error) {
-            return result.failure(new ExpectedError([ "number", "identifier", "var", "const", "+", "-", "(" ], this.currentToken.startPosition, this.currentToken.endPosition));
+            return result.failure(new ExpectedError([ "number", "identifier", "var", "const", "+", "-", "(", "!" ], this.currentToken.startPosition, this.currentToken.endPosition));
         }
 
         return result.success(node);
