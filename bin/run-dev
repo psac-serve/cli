@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+const
+    fs = require("fs"),
+    path = require("path"),
+    project = path.join(__dirname, "../dev/tsconfig.json"),
+    development = fs.existsSync(project);
+
+if (development) {
+    require("ts-node").register({ project });
+}
+
+if (!process.env.DEBUG) {
+    require(`../dev/${development ? "src" : "lib"}`);
+} else {
+    require(`../dev/${development ? "src" : "lib"}`);
+}
