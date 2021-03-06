@@ -13,6 +13,22 @@ export default class IfNode extends Node {
     }
 
     public toString(): string {
-        return "IF";
+        let result = "IF:";
+
+        if (this.cases.length === 1) {
+            const [ condition, expression ] = this.cases[0];
+
+            result += `${condition.toString()} -> ${expression.toString()}`;
+        } else {
+            result += "[\n" + this.cases.map(([ condition, expression ], index, { length }) => `    ${condition.toString()} -> ${expression.toString()}${index === length - 1 ? "" : ","}`).join("\n");
+
+            result += "\n]";
+        }
+
+        if (this.elseCase) {
+            result += `,\nELSE:${this.elseCase.toString()}`;
+        }
+
+        return result;
     }
 }
