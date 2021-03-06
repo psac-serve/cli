@@ -3,6 +3,16 @@
  */
 export enum TokenType {
     /**
+     * Arrow operand for functions.
+     */
+    arrow = "ARROW",
+
+    /**
+     * Commas.
+     */
+    comma = "COMMA",
+
+    /**
      * End of File.
      */
     eof = "EOF",

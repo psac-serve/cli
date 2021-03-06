@@ -112,15 +112,30 @@ export default class Parser {
         result.registerAdvancement();
         this.advance();
 
+        // @ts-ignore
+        if (this.currentToken.type !== TokenType.operator || this.currentToken.value !== "LPAREN") {
+            return result.failure(new ExpectedError([ "(" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
         const condition = result.register(this.expression());
 
         if (result.error) {
             return result;
         }
 
+        if (this.currentToken.type !== TokenType.operator || this.currentToken.value !== "RPAREN") {
+            return result.failure(new ExpectedRParenError(this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
         // @ts-ignore
-        if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "then") {
-            return result.failure(new ExpectedError([ "then" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        if (this.currentToken.type !== TokenType.arrow) {
+            return result.failure(new ExpectedError([ "->" ], this.currentToken.startPosition, this.currentToken.endPosition));
         }
 
         result.registerAdvancement();
@@ -144,8 +159,9 @@ export default class Parser {
                 return result;
             }
 
-            if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "then") {
-                return result.failure(new ExpectedError([ "then" ], this.currentToken.startPosition, this.currentToken.endPosition));
+            // @ts-ignore
+            if (this.currentToken.type !== TokenType.arrow) {
+                return result.failure(new ExpectedError([ "->" ], this.currentToken.startPosition, this.currentToken.endPosition));
             }
 
             result.registerAdvancement();
@@ -161,6 +177,14 @@ export default class Parser {
         }
 
         if (this.currentToken.type === TokenType.keyword && this.currentToken.value === "else") {
+            result.registerAdvancement();
+            this.advance();
+
+            // @ts-ignore
+            if (this.currentToken.type !== TokenType.arrow) {
+                return result.failure(new ExpectedError([ "->" ], this.currentToken.startPosition, this.currentToken.endPosition));
+            }
+
             result.registerAdvancement();
             this.advance();
 
@@ -181,6 +205,14 @@ export default class Parser {
 
         if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "for") {
             return result.failure(new ExpectedError([ "for" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        // @ts-ignore
+        if (this.currentToken.type !== TokenType.operator || this.currentToken.value !== "LPAREN") {
+            return result.failure(new ExpectedError([ "(" ], this.currentToken.startPosition, this.currentToken.endPosition));
         }
 
         result.registerAdvancement();
@@ -238,8 +270,16 @@ export default class Parser {
             }
         }
 
-        if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "then") {
-            return result.failure(new ExpectedError([ "then" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        // @ts-ignore
+        if (this.currentToken.type !== TokenType.operator || this.currentToken.value !== "RPAREN") {
+            return result.failure(new ExpectedError([ ")" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        if (this.currentToken.type !== TokenType.arrow) {
+            return result.failure(new ExpectedError([ "->" ], this.currentToken.startPosition, this.currentToken.endPosition));
         }
 
         result.registerAdvancement();
@@ -264,6 +304,14 @@ export default class Parser {
         result.registerAdvancement();
         this.advance();
 
+        // @ts-ignore
+        if (this.currentToken.type !== TokenType.operator || this.currentToken.value !== "LPAREN") {
+            return result.failure(new ExpectedError([ "(" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
         const condition = result.register(this.expression());
 
         if (result.error) {
@@ -271,8 +319,15 @@ export default class Parser {
         }
 
         // @ts-ignore
-        if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "then") {
-            return result.failure(new ExpectedError([ "then" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        if (this.currentToken.type !== TokenType.operator || this.currentToken.value !== "RPAREN") {
+            return result.failure(new ExpectedError([ ")" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        if (this.currentToken.type !== TokenType.arrow) {
+            return result.failure(new ExpectedError([ "->" ], this.currentToken.startPosition, this.currentToken.endPosition));
         }
 
         result.registerAdvancement();

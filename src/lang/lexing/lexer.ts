@@ -221,7 +221,14 @@ export default class Lexer {
                 "..": "DOTDOT",
                 "||": "NOT"
             },
-            doubleReference = ((this.currentChar || "") + (/[\t &*.|]/.test(nextChar) ? nextChar : "")).trim();
+            doubleReference = ((this.currentChar || "") + (/[\t &*.>|-]/.test(nextChar) ? nextChar : "")).trim();
+
+        if (doubleReference === "->") {
+            this.advance();
+            this.advance();
+
+            return new Token(TokenType.arrow, undefined, startPosition, this.position);
+        }
 
         if (doubleReference in doubleOperators) {
             this.advance();
