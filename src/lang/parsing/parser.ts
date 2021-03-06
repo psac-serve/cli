@@ -7,6 +7,7 @@ import ExpectedIdentifierError from "../../errors/lang/parsing/expected-identifi
 
 import Node from "./nodes/base";
 import NumberNode from "./nodes/number";
+import IfNode from "./nodes/if";
 import BinaryOperationNode from "./nodes/binary-operation";
 import UnaryOperationNode from "./nodes/unary-operation";
 import VariableAccessNode from "./nodes/variable-access";
@@ -66,9 +67,95 @@ export default class Parser {
             } else {
                 return result.failure(new ExpectedRParenError(this.currentToken.startPosition, this.currentToken.endPosition));
             }
+        } else if (token.type === TokenType.keyword && token.value === "if") {
+            const ifExpression = result.register(this.ifExpression());
+
+            if (result.error) {
+                return result;
+            }
+
+            return result.success(ifExpression);
         }
 
         return result.failure(new ExpectedError([ "number", "identifier", "+", "-", "(" ], token.startPosition, token.endPosition));
+    }
+
+    public ifExpression() {
+        const
+            result = new ParseResult(),
+            cases: Node[][] = [];
+
+        let elseCase: Node | undefined;
+
+        if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "if") {
+            return result.failure(new ExpectedError([ "if" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        const condition = result.register(this.expression());
+
+        if (result.error) {
+            return result;
+        }
+
+        // @ts-ignore
+        if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "then") {
+            return result.failure(new ExpectedError([ "then" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        const expression = result.register(this.expression());
+
+        if (result.error) {
+            return result;
+        }
+
+        cases.push([ condition, expression ]);
+
+        while (this.currentToken.type === TokenType.keyword && this.currentToken.value === "elif") {
+            result.registerAdvancement();
+            this.advance();
+
+            const elifCondition = result.register(this.expression());
+
+            if (result.error) {
+                return result;
+            }
+
+            if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "then") {
+                return result.failure(new ExpectedError([ "then" ], this.currentToken.startPosition, this.currentToken.endPosition));
+            }
+
+            result.registerAdvancement();
+            this.advance();
+
+            const elifExpression = result.register(this.expression());
+
+            if (result.error) {
+                return result;
+            }
+
+            cases.push([ elifCondition, elifExpression ]);
+        }
+
+        if (this.currentToken.type === TokenType.keyword && this.currentToken.value === "else") {
+            result.registerAdvancement();
+            this.advance();
+
+            const elseExpression = result.register(this.expression());
+
+            if (result.error) {
+                return result;
+            }
+
+            elseCase = elseExpression;
+        }
+
+        return result.success(new IfNode(cases, elseCase));
     }
 
     public power(): ParseResult {

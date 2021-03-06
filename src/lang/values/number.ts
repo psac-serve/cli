@@ -110,7 +110,13 @@ export default class NumberValue extends Value {
         return new BooleanValue(this.value >= other.value).setContext(this.context);
     }
 
-    public notted() {
-        return new BooleanValue(!this.value).setContext(this.context);
+    public copy() {
+        return new NumberValue(this.value)
+            .setPosition(this.startPosition, this.endPosition)
+            .setContext(this.context);
+    }
+
+    public isTrue() {
+        return this.value != 0;
     }
 }

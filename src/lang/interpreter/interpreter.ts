@@ -1,5 +1,6 @@
 import Node from "../parsing/nodes/base";
 import NumberNode from "../parsing/nodes/number";
+import IfNode from "../parsing/nodes/if";
 import BinaryOperationNode from "../parsing/nodes/binary-operation";
 import UnaryOperationNode from "../parsing/nodes/unary-operation";
 import VariableAccessNode from "../parsing/nodes/variable-access";
@@ -18,10 +19,10 @@ import NaNError from "../../errors/interpreter/values/not-a-number";
 
 import { TokenType } from "../tokens";
 
+import BooleanValue from "../values/boolean";
 import Context from "./context";
 
 import RuntimeResult from "./result";
-import BooleanValue from "../values/boolean";
 
 export default class Interpreter {
     public constructor() {}
@@ -173,5 +174,39 @@ export default class Interpreter {
         }
 
         return result.success(number);
+    }
+
+    public visit_IfNode(node: IfNode, context: Context) {
+        const result = new RuntimeResult();
+
+        for (const [ condition, expression ] of node.cases) {
+            const conditionValue = result.register(this.visit(condition, context));
+
+            if (result.error) {
+                return result;
+            }
+
+            if (("isTrue" in conditionValue && conditionValue.isTrue()) || conditionValue.value) {
+                const expressionValue = result.register(this.visit(expression, context));
+
+                if (result.error) {
+                    return result;
+                }
+
+                return result.success(expressionValue);
+            }
+
+            if (node.elseCase) {
+                const elseValue = result.register(this.visit(node.elseCase, context));
+
+                if (result.error) {
+                    return result;
+                }
+
+                return result.success(elseValue);
+            }
+        }
+
+        return result.success(new Value());
     }
 }
