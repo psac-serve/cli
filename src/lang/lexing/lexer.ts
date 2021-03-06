@@ -15,7 +15,10 @@ export const keywords: readonly string[] = [
     "if",
     "elif",
     "else",
-    "then"
+    "then",
+    "for",
+    "while",
+    "in"
 ] as const;
 
 export default class Lexer {
@@ -215,9 +218,10 @@ export default class Lexer {
             doubleOperators: { [operator: string]: string } = {
                 "&&": "AND",
                 "**": "POW",
+                "..": "DOTDOT",
                 "||": "NOT"
             },
-            doubleReference = ((this.currentChar || "") + (/[\t &*|]/.test(nextChar) ? nextChar : "")).trim();
+            doubleReference = ((this.currentChar || "") + (/[\t &*.|]/.test(nextChar) ? nextChar : "")).trim();
 
         if (doubleReference in doubleOperators) {
             this.advance();
@@ -263,7 +267,7 @@ export default class Lexer {
                 this.madeTokens.push(this.makeLessThan());
             } else if (this.currentChar === ">") {
                 this.madeTokens.push(this.makeGreaterThan());
-            } else if (/[%&()*+/;^|-]/.test(this.currentChar)) {
+            } else if (/[%&()*+./;^|-]/.test(this.currentChar)) {
                 this.madeTokens.push(this.makeOperators());
             } else {
                 this.advance();

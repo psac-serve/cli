@@ -8,6 +8,8 @@ import ExpectedIdentifierError from "../../errors/lang/parsing/expected-identifi
 import Node from "./nodes/base";
 import NumberNode from "./nodes/number";
 import IfNode from "./nodes/if";
+import ForNode from "./nodes/for";
+import WhileNode from "./nodes/while";
 import BinaryOperationNode from "./nodes/binary-operation";
 import UnaryOperationNode from "./nodes/unary-operation";
 import VariableAccessNode from "./nodes/variable-access";
@@ -75,6 +77,22 @@ export default class Parser {
             }
 
             return result.success(ifExpression);
+        } else if (token.type === TokenType.keyword && token.value === "for") {
+            const forExpression = result.register(this.forExpression());
+
+            if (result.error) {
+                return result;
+            }
+
+            return result.success(forExpression);
+        } else if (token.type === TokenType.keyword && token.value === "while") {
+            const whileExpression = result.register(this.whileExpression());
+
+            if (result.error) {
+                return result;
+            }
+
+            return result.success(whileExpression);
         }
 
         return result.failure(new ExpectedError([ "number", "identifier", "+", "-", "(" ], token.startPosition, token.endPosition));
@@ -156,6 +174,117 @@ export default class Parser {
         }
 
         return result.success(new IfNode(cases, elseCase));
+    }
+
+    public forExpression() {
+        const result = new ParseResult();
+
+        if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "for") {
+            return result.failure(new ExpectedError([ "for" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        // @ts-ignore
+        if (this.currentToken.type !== TokenType.identifier) {
+            return result.failure(new ExpectedIdentifierError(this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        const name = this.currentToken;
+
+        result.registerAdvancement();
+        this.advance();
+
+        // @ts-ignore
+        if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "in") {
+            return result.failure(new ExpectedError([ "in" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        const startValue = result.register(this.expression());
+
+        if (result.error) {
+            return result;
+        }
+
+        // @ts-ignore
+        if (this.currentToken.type !== TokenType.operator || this.currentToken.value !== "DOTDOT") {
+            return result.failure(new ExpectedError([ ".." ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        const endValue = result.register(this.expression());
+
+        if (result.error) {
+            return result;
+        }
+
+        let stepValue: Node | undefined;
+
+        // @ts-ignore
+        if (this.currentToken.type === TokenType.operator && this.currentToken.value === "DOTDOT") {
+            result.registerAdvancement();
+            this.advance();
+
+            stepValue = result.register(this.expression());
+
+            if (result.error) {
+                return result;
+            }
+        }
+
+        if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "then") {
+            return result.failure(new ExpectedError([ "then" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        const body = result.register(this.expression());
+
+        if (result.error) {
+            return result;
+        }
+
+        return result.success(new ForNode(name, startValue, endValue, body, stepValue));
+    }
+
+    public whileExpression() {
+        const result = new ParseResult();
+
+        if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "while") {
+            return result.failure(new ExpectedError([ "while" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        const condition = result.register(this.expression());
+
+        if (result.error) {
+            return result;
+        }
+
+        // @ts-ignore
+        if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "then") {
+            return result.failure(new ExpectedError([ "then" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        const body = result.register(this.expression());
+
+        if (result.error) {
+            return result;
+        }
+
+        return result.success(new WhileNode(condition, body));
     }
 
     public power(): ParseResult {

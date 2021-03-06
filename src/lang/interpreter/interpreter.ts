@@ -1,6 +1,8 @@
 import Node from "../parsing/nodes/base";
 import NumberNode from "../parsing/nodes/number";
 import IfNode from "../parsing/nodes/if";
+import ForNode from "../parsing/nodes/for";
+import WhileNode from "../parsing/nodes/while";
 import BinaryOperationNode from "../parsing/nodes/binary-operation";
 import UnaryOperationNode from "../parsing/nodes/unary-operation";
 import VariableAccessNode from "../parsing/nodes/variable-access";
@@ -20,6 +22,7 @@ import NaNError from "../../errors/interpreter/values/not-a-number";
 import { TokenType } from "../tokens";
 
 import BooleanValue from "../values/boolean";
+import SymbolTableNotFoundError from "../../errors/lang/runtime/symbol-table-not-found";
 import Context from "./context";
 
 import RuntimeResult from "./result";
@@ -186,7 +189,7 @@ export default class Interpreter {
                 return result;
             }
 
-            if (("isTrue" in conditionValue && conditionValue.isTrue()) || conditionValue.value) {
+            if (conditionValue.isTrue()) {
                 const expressionValue = result.register(this.visit(expression, context));
 
                 if (result.error) {
@@ -208,5 +211,90 @@ export default class Interpreter {
         }
 
         return result.success(new Value());
+    }
+
+    public visit_ForNode(node: ForNode, context: Context) {
+        const result = new RuntimeResult();
+
+        if (!context.symbolTable || !node.variableNameToken.value) {
+            return result.failure(new SymbolTableNotFoundError(context, node.token.startPosition, node.token.endPosition));
+        }
+
+        const startValue = result.register(this.visit(node.startValue, context));
+
+        if (result.error) {
+            return result;
+        }
+
+        const endValue = result.register(this.visit(node.endValue, context));
+
+        if (result.error) {
+            return result;
+        }
+
+        let stepValue = new NumberValue(1);
+
+        if (node.stepValue) {
+            stepValue = result.register(this.visit(node.stepValue, context));
+
+            if (result.error) {
+                return result;
+            }
+        }
+
+        const minusStep = startValue.value > endValue.value;
+
+        let
+            index = startValue.value,
+            condition = () => index < endValue.value;
+
+        if (minusStep) {
+            condition = () => index > endValue.value;
+        }
+
+        while (condition()) {
+            console.log(index);
+
+            context.symbolTable.set(node.variableNameToken.value, new NumberValue(index));
+
+            if (startValue.value < endValue.value) {
+                index += stepValue.value;
+            } else {
+                index -= stepValue.value;
+            }
+
+            result.register(this.visit(node.body, context));
+
+            if (result.error) {
+                return result;
+            }
+        }
+
+        return result.success(new Value(undefined));
+    }
+
+    public visit_WhileNode(node: WhileNode, context: Context) {
+        const result = new RuntimeResult();
+
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            const condition = result.register(this.visit(node.condition, context));
+
+            if (result.error) {
+                return result;
+            }
+
+            if (!condition.isTrue()) {
+                break;
+            }
+
+            result.register(this.visit(node.body, context));
+
+            if (result.error) {
+                return result;
+            }
+        }
+
+        return result.success(new Value(undefined));
     }
 }

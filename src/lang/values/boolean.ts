@@ -22,4 +22,9 @@ export default class BooleanValue extends Value {
     public notted() {
         return new BooleanValue(!this.value).setContext(this.context);
     }
+
+
+    public isTrue() {
+        return !!this.value;
+    }
 }
