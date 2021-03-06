@@ -11,6 +11,6 @@ export default class VariableAssignNode extends Node {
     }
 
     public toString() {
-        return `ASSIGN-${this.isConst ? "CONST" : "VARIABLE"}:${this.name.value}:${this.valueNode.toString()}`;
+        return `ASSIGN-${this.isConst ? "CONST" : "VARIABLE"}:${this.name.value} <- ${this.valueNode.toString()}`;
     }
 }
