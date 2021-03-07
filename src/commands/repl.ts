@@ -92,7 +92,13 @@ export default class REPL extends Command<undefined> {
 
                 console.log(parsed.toString());
 
-                console.log(runInterpreter(parsed).value.toString());
+                let resultValue = runInterpreter(parsed);
+
+                while ("value" in resultValue && typeof resultValue.value === "object") {
+                    resultValue = resultValue.value;
+                }
+
+                console.log(resultValue.toString());
             } catch (error) {
                 if (error instanceof LangError) {
                     console.error(error.toString());

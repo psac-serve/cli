@@ -22,6 +22,16 @@ export default class Value {
         return this;
     }
 
+    public copy() {
+        return this.constructor(this.value)
+            .setPosition(this.startPosition, this.endPosition)
+            .setContext(this.context);
+    }
+
+    public isTrue() {
+        return !!this.value;
+    }
+
     public toString() {
         return this.value;
     }

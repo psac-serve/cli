@@ -3,19 +3,22 @@ import NumberNode from "../parsing/nodes/number";
 import IfNode from "../parsing/nodes/if";
 import ForNode from "../parsing/nodes/for";
 import WhileNode from "../parsing/nodes/while";
+import CallNode from "../parsing/nodes/call";
 import BinaryOperationNode from "../parsing/nodes/binary-operation";
 import UnaryOperationNode from "../parsing/nodes/unary-operation";
 import VariableAccessNode from "../parsing/nodes/variable-access";
 import VariableAssignNode from "../parsing/nodes/variable-assign";
+import FunctionDefineNode from "../parsing/nodes/function-define";
 
 import NoVisitMethodError from "../../errors/interpreter/no-visit-method";
 
 import NodeViolationError from "../../errors/lang/parsing/node-violation";
 import { default as IdentifierNotFoundError } from "../../errors/lang/runtime/reference";
 
-import NumberValue from "../values/number";
-
 import Value from "../values/base";
+import NumberValue from "../values/number";
+import FunctionValue from "../values/function";
+
 
 import NaNError from "../../errors/interpreter/values/not-a-number";
 
@@ -296,5 +299,49 @@ export default class Interpreter {
         }
 
         return result.success(new Value(undefined));
+    }
+
+    public visit_FunctionDefineNode({ argumentNameTokens, body, endPosition, startPosition, variableNameToken }: FunctionDefineNode, context: Context) {
+        const
+            result = new RuntimeResult(),
+            name = variableNameToken?.value || "<anonymous>",
+            argumentNames = argumentNameTokens.map(({ value }) => value || ""),
+            functionValue = new FunctionValue(body, argumentNames, name).setContext(context).setPosition(startPosition, endPosition);
+
+        if (variableNameToken) {
+            context.symbolTable?.set(name, functionValue);
+        }
+
+        return result.success(functionValue);
+    }
+
+    public visit_CallNode(node: CallNode, context: Context) {
+        const
+            result = new RuntimeResult(),
+            arguments_: Node[] = [];
+
+        let valueToCall = result.register(this.visit(node.nodeToCall, context));
+
+        if (result.error) {
+            return result;
+        }
+
+        valueToCall = valueToCall.copy().setPosition(node.startPosition, node.endPosition);
+
+        for (const argumentNode of node.argumentNodes) {
+            arguments_.push(result.register(this.visit(argumentNode, context)));
+
+            if (result.error) {
+                return result;
+            }
+        }
+
+        const returnValue = result.register(valueToCall.execute(arguments_));
+
+        if (result.error) {
+            return result;
+        }
+
+        return result.success(returnValue);
     }
 }

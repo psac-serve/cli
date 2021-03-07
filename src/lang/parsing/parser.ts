@@ -10,10 +10,12 @@ import NumberNode from "./nodes/number";
 import IfNode from "./nodes/if";
 import ForNode from "./nodes/for";
 import WhileNode from "./nodes/while";
+import CallNode from "./nodes/call";
 import BinaryOperationNode from "./nodes/binary-operation";
 import UnaryOperationNode from "./nodes/unary-operation";
 import VariableAccessNode from "./nodes/variable-access";
 import VariableAssignNode from "./nodes/variable-assign";
+import FunctionDefineNode from "./nodes/function-define";
 
 import ParseResult from "./result";
 
@@ -93,9 +95,17 @@ export default class Parser {
             }
 
             return result.success(whileExpression);
+        } else if (token.type === TokenType.keyword && token.value === "func") {
+            const functionDefinition = result.register(this.functionDefinition());
+
+            if (result.error) {
+                return result;
+            }
+
+            return result.success(functionDefinition);
         }
 
-        return result.failure(new ExpectedError([ "number", "identifier", "+", "-", "(" ], token.startPosition, token.endPosition));
+        return result.failure(new ExpectedError([ "number", "identifier", "+", "-", "(", "if", "for", "while", "func" ], token.startPosition, token.endPosition));
     }
 
     public ifExpression() {
@@ -343,7 +353,60 @@ export default class Parser {
     }
 
     public power(): ParseResult {
-        return this.binaryOperation(this.atom, [ "POW" ], this.factor);
+        return this.binaryOperation(this.call, [ "POW" ], this.factor);
+    }
+
+    public call() {
+        const
+            result = new ParseResult(),
+            atom = result.register(this.atom());
+
+        if (result.error) {
+            return result;
+        }
+
+        if (this.currentToken.type === TokenType.operator && this.currentToken.value === "LPAREN") {
+            result.registerAdvancement();
+            this.advance();
+
+            const argumentNodes: Node[] = [];
+
+            // @ts-ignore
+            if (this.currentToken.type === TokenType.operator && this.currentToken.value === "RPAREN") {
+                result.registerAdvancement();
+                this.advance();
+            } else {
+                argumentNodes.push(result.register(this.expression()));
+
+                if (result.error) {
+                    return result.failure(new ExpectedError([ ")", "var", "if", "for", "while", "func", "number", "identifier" ], this.currentToken.startPosition, this.currentToken.endPosition));
+                }
+
+                // @ts-ignore
+                while (this.currentToken.type === TokenType.comma) {
+                    result.registerAdvancement();
+                    this.advance();
+
+                    argumentNodes.push(result.register(this.expression()));
+
+                    if (result.error) {
+                        return result;
+                    }
+                }
+
+                // @ts-ignore
+                if (this.currentToken.type !== TokenType.operator || this.currentToken.value !== "RPAREN") {
+                    return result.failure(new ExpectedError([ ",", ")" ], this.currentToken.startPosition, this.currentToken.endPosition));
+                }
+
+                result.registerAdvancement();
+                this.advance();
+            }
+
+            return result.success(new CallNode(atom, argumentNodes));
+        }
+
+        return result.success(atom);
     }
 
     public factor() {
@@ -442,11 +505,90 @@ export default class Parser {
         const node = result.register(this.binaryOperation(this.compareExpression, [ "and", "or" ]));
 
         if (result.error) {
-            return result.failure(new ExpectedError([ "number", "identifier", "var", "const", "+", "-", "(", "!" ], this.currentToken.startPosition, this.currentToken.endPosition));
+            return result.failure(new ExpectedError([ "number", "identifier", "var", "const", "if", "for", "while", "func", "+", "-", "(", "!" ], this.currentToken.startPosition, this.currentToken.endPosition));
         }
 
         return result.success(node);
     }
+
+    public functionDefinition() {
+        const result = new ParseResult();
+
+        if (this.currentToken.type !== TokenType.keyword || this.currentToken.value !== "func") {
+            return result.failure(new ExpectedError([ "func" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        let variableNameToken: Token | undefined;
+
+        // @ts-ignore
+        if (this.currentToken.type === TokenType.identifier) {
+            variableNameToken = this.currentToken;
+
+            result.registerAdvancement();
+            this.advance();
+        }
+
+        // @ts-ignore
+        if (this.currentToken.type !== TokenType.operator || this.currentToken.value !== "LPAREN") {
+            return result.failure(new ExpectedError([ "(" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        const argumentNameTokens: Token[] = [];
+
+        if (this.currentToken.type === TokenType.identifier) {
+            argumentNameTokens.push(this.currentToken);
+
+            result.registerAdvancement();
+            this.advance();
+
+            while (this.currentToken.type === TokenType.comma) {
+                result.registerAdvancement();
+                this.advance();
+
+                if (this.currentToken.type !== TokenType.identifier) {
+                    return result.failure(new ExpectedIdentifierError(this.currentToken.startPosition, this.currentToken.endPosition));
+                }
+
+                argumentNameTokens.push(this.currentToken);
+
+                result.registerAdvancement();
+                this.advance();
+            }
+
+            if (this.currentToken.type !== TokenType.operator || this.currentToken.value !== "RPAREN") {
+                return result.failure(new ExpectedError([ ")", "," ], this.currentToken.startPosition, this.currentToken.endPosition));
+            }
+        } else {
+            if (this.currentToken.type !== TokenType.operator || this.currentToken.value !== "RPAREN") {
+                return result.failure(new ExpectedError([ "identifier", ")" ], this.currentToken.startPosition, this.currentToken.endPosition));
+            }
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        if (this.currentToken.type !== TokenType.arrow) {
+            return result.failure(new ExpectedError([ "->" ], this.currentToken.startPosition, this.currentToken.endPosition));
+        }
+
+        result.registerAdvancement();
+        this.advance();
+
+        const nodeToReturn = result.register(this.expression());
+
+        if (result.error) {
+            return result;
+        }
+
+        return result.success(new FunctionDefineNode(variableNameToken, argumentNameTokens, nodeToReturn));
+    }
+
 
     public binaryOperation(functionA: () => ParseResult, operators: string[], functionB?: () => ParseResult) {
         if (!functionB) {

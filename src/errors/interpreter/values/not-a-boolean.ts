@@ -1,5 +1,5 @@
 export default class NaBError extends TypeError {
-    constructor() {
+    public constructor() {
         super("Not a boolean.");
     }
 }

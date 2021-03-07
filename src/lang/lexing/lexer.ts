@@ -18,7 +18,8 @@ export const keywords: readonly string[] = [
     "then",
     "for",
     "while",
-    "in"
+    "in",
+    "func"
 ] as const;
 
 export default class Lexer {
@@ -274,6 +275,10 @@ export default class Lexer {
                 this.madeTokens.push(this.makeLessThan());
             } else if (this.currentChar === ">") {
                 this.madeTokens.push(this.makeGreaterThan());
+            } else if (this.currentChar === ",") {
+                this.madeTokens.push(new Token(TokenType.comma, undefined, this.position, this.position));
+
+                this.advance();
             } else if (/[%&()*+./;^|-]/.test(this.currentChar)) {
                 this.madeTokens.push(this.makeOperators());
             } else {
