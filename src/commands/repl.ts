@@ -84,13 +84,13 @@ export default class REPL extends Command<undefined> {
                     .replace(/\\`/g, "`")
                     .replace(/(["'`])/g, "");
 
-                const lexer = runLexer(command.trim(), "REPL");
+                const
+                    lexer = runLexer(command.trim(), "REPL"),
+                    parsed = runParser(lexer);
 
-                console.log("%O", lexer.map(item => item.toString()));
+                //console.log("%O", lexer.map(item => item.toString()));
 
-                const parsed = runParser(lexer);
-
-                console.log(parsed.toString());
+                //console.log(parsed.toString());
 
                 let resultValue = runInterpreter(parsed);
 
