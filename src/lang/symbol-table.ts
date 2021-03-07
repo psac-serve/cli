@@ -1,9 +1,11 @@
 import Value from "./values/base";
 import BooleanValue from "./values/boolean";
+import NullValue from "./values/null";
 
 export default class SymbolTable {
     public constantSymbols: { [symbol: string]: any } = {
         false: new BooleanValue(false),
+        null: new NullValue(),
         true: new BooleanValue(true)
     }
 
