@@ -14,6 +14,8 @@ import NoVisitMethodError from "../../errors/interpreter/no-visit-method";
 
 import NodeViolationError from "../../errors/lang/parsing/node-violation";
 import { default as IdentifierNotFoundError } from "../../errors/lang/runtime/reference";
+import NotInitializedError from "../../errors/lang/runtime/not-initialized";
+import ConstantAssignmentError from "../../errors/lang/runtime/constant-assignment";
 
 import Value from "../values/base";
 import NumberValue from "../values/number";
@@ -68,11 +70,17 @@ export default class Interpreter {
             name = node.name.value,
             value = context.symbolTable.get(name);
 
-        if (!value) {
-            return result.failure(new IdentifierNotFoundError(node.name.value, context, node.startPosition, node.endPosition));
+        if (typeof value.value === "undefined") {
+            return result.failure(new NotInitializedError(name, context, node.startPosition, node.endPosition));
         }
 
-        return result.success(value);
+        if (value.value === null) {
+            console.log(value);
+
+            return result.failure(new IdentifierNotFoundError(name, context, node.startPosition, node.endPosition));
+        }
+
+        return result.success(value.value);
     }
 
     public visit_VariableAssignNode(node: VariableAssignNode, context: Context) {
@@ -84,15 +92,21 @@ export default class Interpreter {
 
         const
             name = node.name.value,
-            value = result.register(this.visit(node.valueNode, context));
+            value = node.valueNode ? result.register(this.visit(node.valueNode, context)) : undefined;
 
         if (result.error) {
             return result;
         }
 
-        context.symbolTable.set(name, value);
+        const symbol = context.symbolTable.get(name);
 
-        return result.success(value);
+        if (symbol !== null && symbol.isConst) {
+            return result.failure(new ConstantAssignmentError(context, node.startPosition, node.endPosition));
+        }
+
+        context.symbolTable.set(name, value, node.isConst);
+
+        return value ? result.success(value) : undefined;
     }
 
     public visit_BinaryOperationNode(node: BinaryOperationNode, context: Context) {
@@ -258,7 +272,7 @@ export default class Interpreter {
         while (condition()) {
             console.log(index);
 
-            context.symbolTable.set(node.variableNameToken.value, new NumberValue(index));
+            context.symbolTable.set(node.variableNameToken.value, new NumberValue(index), false);
 
             if (startValue.value < endValue.value) {
                 index += stepValue.value;
@@ -309,7 +323,7 @@ export default class Interpreter {
             functionValue = new FunctionValue(body, argumentNames, name).setContext(context).setPosition(startPosition, endPosition);
 
         if (variableNameToken) {
-            context.symbolTable?.set(name, functionValue);
+            context.symbolTable?.set(name, functionValue, true);
         }
 
         return result.success(functionValue);

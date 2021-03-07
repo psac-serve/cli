@@ -22,7 +22,7 @@ export default class FunctionValue extends Value {
             interpreter = new Interpreter(),
             newContext = new Context(this.name, this.context, this.startPosition);
 
-        newContext.symbolTable = new SymbolTable(undefined, (newContext.parent || this.context).symbolTable);
+        newContext.symbolTable = new SymbolTable((newContext.parent || this.context).symbolTable);
 
         if (arguments_.length > this.argumentNames.length) {
             return result.failure(new TooManyArgumentsError(this.name, arguments_.length, this.argumentNames.length, this.context, this.startPosition, this.endPosition));
@@ -37,7 +37,7 @@ export default class FunctionValue extends Value {
                 argumentName = this.argumentNames[index],
                 argumentValue = arguments_[index].setContext(newContext);
 
-            newContext.symbolTable.set(argumentName, argumentValue);
+            newContext.symbolTable.set(argumentName, argumentValue, false);
         }
 
         const value = interpreter.visit(this.body, newContext);

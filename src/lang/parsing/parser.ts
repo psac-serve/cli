@@ -52,6 +52,19 @@ export default class Parser {
             result.registerAdvancement();
             this.advance();
 
+            if (this.currentToken.type === TokenType.operator && this.currentToken.value === "EQ") {
+                result.registerAdvancement();
+                this.advance();
+
+                const expression = result.register(this.expression());
+
+                if (result.error) {
+                    return result;
+                }
+
+                return result.success(new VariableAssignNode(token, expression, false));
+            }
+
             return result.success(new VariableAccessNode(token));
         } else if (token.type === TokenType.operator && token.value === "LPAREN") {
             result.registerAdvancement();
@@ -487,7 +500,11 @@ export default class Parser {
 
             // @ts-ignore
             if (this.currentToken.type !== TokenType.operator || this.currentToken.value !== "EQ") {
-                return result.failure(new Error("Sorry, this is working in progress"));
+                if (isConstant) {
+                    return result.failure(new ExpectedError([ "=" ], this.currentToken.startPosition, this.currentToken.endPosition));
+                }
+
+                return result.success(new VariableAssignNode(name, undefined, false));
             }
 
             result.registerAdvancement();

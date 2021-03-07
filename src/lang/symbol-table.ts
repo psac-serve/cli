@@ -2,23 +2,35 @@ import Value from "./values/base";
 import BooleanValue from "./values/boolean";
 
 export default class SymbolTable {
-    public constructor(public symbols: { [symbol: string]: any } = {
+    public constantSymbols: { [symbol: string]: any } = {
         false: new BooleanValue(false),
         true: new BooleanValue(true)
-    }, public parent?: SymbolTable) {}
+    }
 
-    public get(name: string): Value {
-        const value = this.symbols[name];
+    public symbols: { [symbol: string]: any } = {}
+
+    public constructor(public parent?: SymbolTable) {}
+
+    public get(name: string): { isConst: boolean, value: Value } {
+        // eslint-disable-next-line unicorn/no-null
+        const value = name in this.symbols ? this.symbols[name] : (name in this.constantSymbols ? this.constantSymbols[name] : null);
 
         if (!value && this.parent) {
             return this.parent.get(name);
         }
 
-        return value;
+        return {
+            isConst: name in this.constantSymbols,
+            value
+        };
     }
 
-    public set(name: string, value: Value) {
-        this.symbols[name] = value;
+    public set(name: string, value: Value, isConst: boolean) {
+        if (isConst) {
+            this.constantSymbols[name] = value;
+        } else {
+            this.symbols[name] = value;
+        }
     }
 
     public remove(name: string) {
