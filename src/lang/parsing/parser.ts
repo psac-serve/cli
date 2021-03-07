@@ -4,6 +4,7 @@ import ExpectedError from "../../errors/lang/parsing/expected";
 import ExpectedOperatorError from "../../errors/lang/parsing/expected-operator";
 import ExpectedRParenError from "../../errors/lang/parsing/expected-rparen";
 import ExpectedIdentifierError from "../../errors/lang/parsing/expected-identifier";
+import NotNullableError from "../../errors/lang/parsing/not-nullable";
 
 import Node from "./nodes/base";
 import NumberNode from "./nodes/number";
@@ -11,6 +12,7 @@ import IfNode from "./nodes/if";
 import ForNode from "./nodes/for";
 import WhileNode from "./nodes/while";
 import CallNode from "./nodes/call";
+import NullNode from "./nodes/null";
 import BinaryOperationNode from "./nodes/binary-operation";
 import UnaryOperationNode from "./nodes/unary-operation";
 import VariableAccessNode from "./nodes/variable-access";
@@ -489,6 +491,19 @@ export default class Parser {
             result.registerAdvancement();
             this.advance();
 
+            if (isConstant && (this.currentToken.type !== TokenType.operator || this.currentToken.value !== "NULLABLE")) {
+                return result.failure(new NotNullableError(this.currentToken.startPosition, this.currentToken.endPosition));
+            }
+
+            let expression: Node | undefined;
+
+            if (!isConstant && this.currentToken.type === TokenType.operator && this.currentToken.value === "NULLABLE") {
+                expression = new NullNode(this.currentToken.startPosition, this.currentToken.endPosition);
+
+                result.registerAdvancement();
+                this.advance();
+            }
+
             if (this.currentToken.type !== TokenType.identifier) {
                 return result.failure(new ExpectedIdentifierError(this.currentToken.startPosition, this.currentToken.endPosition));
             }
@@ -504,13 +519,13 @@ export default class Parser {
                     return result.failure(new ExpectedError([ "=" ], this.currentToken.startPosition, this.currentToken.endPosition));
                 }
 
-                return result.success(new VariableAssignNode(name, undefined, false));
+                return result.success(new VariableAssignNode(name, expression, false));
             }
 
             result.registerAdvancement();
             this.advance();
 
-            const expression = result.register(this.expression());
+            expression = result.register(this.expression());
 
             if (result.error) {
                 return result;

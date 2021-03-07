@@ -4,6 +4,7 @@ import IfNode from "../parsing/nodes/if";
 import ForNode from "../parsing/nodes/for";
 import WhileNode from "../parsing/nodes/while";
 import CallNode from "../parsing/nodes/call";
+import NullNode from "../parsing/nodes/null";
 import BinaryOperationNode from "../parsing/nodes/binary-operation";
 import UnaryOperationNode from "../parsing/nodes/unary-operation";
 import VariableAccessNode from "../parsing/nodes/variable-access";
@@ -16,18 +17,18 @@ import NodeViolationError from "../../errors/lang/parsing/node-violation";
 import { default as IdentifierNotFoundError } from "../../errors/lang/runtime/reference";
 import NotInitializedError from "../../errors/lang/runtime/not-initialized";
 import ConstantAssignmentError from "../../errors/lang/runtime/constant-assignment";
+import SymbolTableNotFoundError from "../../errors/lang/runtime/symbol-table-not-found";
 
 import Value from "../values/base";
 import NumberValue from "../values/number";
 import FunctionValue from "../values/function";
-
+import BooleanValue from "../values/boolean";
+import NullValue from "../values/null";
 
 import NaNError from "../../errors/interpreter/values/not-a-number";
 
 import { TokenType } from "../tokens";
 
-import BooleanValue from "../values/boolean";
-import SymbolTableNotFoundError from "../../errors/lang/runtime/symbol-table-not-found";
 import Context from "./context";
 
 import RuntimeResult from "./result";
@@ -57,6 +58,10 @@ export default class Interpreter {
 
     public visit_NumberNode(node: NumberNode, context: Context) {
         return new RuntimeResult().success(new NumberValue(+(node.token.value || "0")).setPosition(node.startPosition, node.endPosition).setContext(context));
+    }
+
+    public visit_NullNode(node: NullNode, context: Context) {
+        return new RuntimeResult().success(new NullValue().setPosition(node.startPosition, node.endPosition).setContext(context));
     }
 
     public visit_VariableAccessNode(node: VariableAccessNode, context: Context) {

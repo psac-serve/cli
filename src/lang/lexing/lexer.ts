@@ -248,7 +248,8 @@ export default class Lexer {
                 "-": "MINUS",
                 "/": "DIV",
                 ";": "SEMI",
-                "=": "EQ"
+                "=": "EQ",
+                "?": "NULLABLE"
             },
             reference = (this.currentChar || "").trim();
 
@@ -279,7 +280,7 @@ export default class Lexer {
                 this.madeTokens.push(new Token(TokenType.comma, undefined, this.position, this.position));
 
                 this.advance();
-            } else if (/[%&()*+./;^|-]/.test(this.currentChar)) {
+            } else if (/[%&()*+./;?^|-]/.test(this.currentChar)) {
                 this.madeTokens.push(this.makeOperators());
             } else {
                 this.advance();
