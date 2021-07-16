@@ -9,7 +9,7 @@ import LanguageDetector from "./language-detector.ts";
 
 import { isURL } from "https://deno.land/x/deno_validator@v0.0.5/mod.ts";
 
-import { argparse } from "./logger/mod.ts";
+import { validator } from "./logger/mod.ts";
 
 await i18next
     .use(resourcesToBackend(async (
@@ -99,14 +99,14 @@ ${t("usage.project")}`
     Deno.exit();
 }
 
-if ([ 0, 1, 2 ].some(fd => !Deno.isatty(fd))) {
+if ([ 0, 1 ].some(fd => !Deno.isatty(fd))) {
     console.error("Error - " + t("startup.isatty"));
 
     Deno.exit(1);
 }
 
 if (flags._.length <= 0) {
-    argparse.error(t("startup.hostname"));
+    validator.error(t("startup.hostname"));
 
     Deno.exit(1);
 }
@@ -114,17 +114,17 @@ if (flags._.length <= 0) {
 let hostname = flags._[0];
 
 if (typeof hostname === "number") {
-    argparse.error(t("startup.parse-url"));
+    validator.error(t("startup.parse-url"));
 
     Deno.exit(1);
 }
 
-if (!isURL(hostname, { protocols: [ "https", "http" ], require_tld: false })) {
-    argparse.error(t("startup.parse-url"));
+if (!isURL(hostname, { protocols: [ "https", "http" ], require_tld: true })) {
+    validator.error(t("startup.parse-url"));
 
     Deno.exit(1);
 }
 
 if (!flags["use-token"]) {
-    argparse.warn(sprintf(t("security"), colors.bold("--use-token")));
+    validator.warn(sprintf(t("security"), colors.bold("--use-token")));
 }

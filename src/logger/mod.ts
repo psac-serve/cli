@@ -4,7 +4,7 @@ await Deno.mkdir("./logs", {
     recursive: true
 });
 
-export const argparse = {
+export const validator = {
     warn: (msg: string): void => {
         console.warn(`${colors.yellow("Warning")} - ${msg}`);
     },
