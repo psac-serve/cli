@@ -1,0 +1,16 @@
+{
+    "description": "a interactive ban record manager.",
+    "usage": {
+        "usage": "Usage",
+        "hostname": "hostname",
+        "options": "Options",
+        "compress": "Compress connection (default)",
+        "no-compress": "Do not compress connection",
+        "ignore-test": "Ignore connection testing",
+        "use-token": "Use a token for connection (default)",
+        "help": "display help message and exit",
+        "verbose": "be verbose",
+        "version": "display the version of PSAC Client and exit",
+        "project": "Project home: https://github.com/psac-serve/cli"
+    }
+}

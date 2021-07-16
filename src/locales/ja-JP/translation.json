@@ -1,0 +1,16 @@
+{
+    "description": "対話的BANレコードマネージャー",
+    "usage": {
+        "usage": "使用法",
+        "hostname": "ホスト名",
+        "options": "オプション",
+        "compress": "通信を圧縮する (デフォルト)",
+        "no-compress": "通信を圧縮しない",
+        "ignore-test": "通信テストを無視する",
+        "use-token": "トークンを使用して通信する (デフォルト)",
+        "help": "ヘルプメッセージを表示して終了する",
+        "verbose": "冗長な表示をする",
+        "version": "バージョン情報を表示して終了する",
+        "project": "プロジェクト: https://github.com/psac-serve/cli"
+    }
+}

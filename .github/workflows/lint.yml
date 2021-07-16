@@ -1,0 +1,54 @@
+name: Lint
+
+on:
+    push:
+        branches: [ develop, feature/** ]
+    pull_request:
+        branches: [ main, develop ]
+
+jobs:
+    lint:
+        name: "Lint code with ESLint and Remark"
+
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v2
+
+            -   name: Setup Node.js environment
+                uses: actions/setup-node@v2
+
+            -   name: Setup pnpm
+                uses: pnpm/action-setup@v1
+                with:
+                    version: 5.16.0
+                env:
+                    ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+            -   name: Get pnpm cache directory
+                id: npm-cache
+                run: |
+                    echo "::set-output name=dir::$(pnpm config get cache)"
+            -   name: Cache
+                uses: actions/cache@v2
+                with:
+                    path: ${{ steps.npm-cache.outputs.dir }}
+                    key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+                    restore-keys: |
+                        ${{ runner.os }}-node-
+            -   name: Install dependencies
+                run: pnpm i
+
+            -   name: ESLint review
+                uses: reviewdog/action-eslint@v1
+                with:
+                    github_token: ${{ secrets.GITHUB_TOKEN }}
+                    reporter: github-pr-review
+
+            -   name: Remark Lint review
+                uses: reviewdog/action-remark-lint@v1
+                with:
+                    github_token: ${{ secrets.GITHUB_TOKEN }}
+                    reporter: github-pr-review
+                    remark_args: "-r .remarkrc.js ."
