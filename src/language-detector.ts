@@ -1,4 +1,4 @@
-export class LanguageDetector {
+export default class LanguageDetector {
     static type = "languageDetector" as const;
 
     private services!: any;

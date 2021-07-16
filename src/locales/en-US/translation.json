@@ -1,5 +1,6 @@
 {
     "description": "a interactive ban record manager.",
+    "security": "You disabled %s. This may reduce the security.",
     "usage": {
         "usage": "Usage",
         "hostname": "hostname",
@@ -8,9 +9,15 @@
         "no-compress": "Do not compress connection",
         "ignore-test": "Ignore connection testing",
         "use-token": "Use a token for connection (default)",
+        "no-use-token": "Do not use a token for connection (not recommended)",
         "help": "display help message and exit",
         "verbose": "be verbose",
         "version": "display the version of PSAC Client and exit",
         "project": "Project home: https://github.com/psac-serve/cli"
+    },
+    "startup": {
+        "isatty": "psac-client can't run inside pipelines.",
+        "hostname": "You must specify hostname.",
+        "parse-url": "Unable to parse hostname."
     }
 }

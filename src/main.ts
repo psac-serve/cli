@@ -1,7 +1,15 @@
 import { parse } from "https://deno.land/std@0.101.0/flags/mod.ts";
+
+import { sprintf } from "https://deno.land/std@0.101.0/fmt/printf.ts";
+import * as colors from "https://deno.land/std@0.101.0/fmt/colors.ts";
+
 import i18next from "https://deno.land/x/i18next/index.js";
 import resourcesToBackend from "https://deno.land/x/i18next_resources_to_backend@v1.0.0/index.js";
-import { LanguageDetector } from "./language-detector.ts";
+import LanguageDetector from "./language-detector.ts";
+
+import { isURL } from "https://deno.land/x/deno_validator@v0.0.5/mod.ts";
+
+import { argparse } from "./logger/mod.ts";
 
 await i18next
     .use(resourcesToBackend(async (
@@ -76,16 +84,47 @@ Compiled by TypeScript ${Deno.version.typescript}`);
         `${t("usage.usage")}: psac [${t("usage.options").toLowerCase()}] <${t("usage.hostname")}>
 
 ${t("usage.options")}:
-    -c, --compress    ${t("usage.compress")}
-        --no-compress ${t("usage.no-compress")}
-    -i, --ignore-test ${t("usage.ignore-test")}
-    -t, --use-token   ${t("usage.use-token")}
-    -h, --help        ${t("usage.help")}
-    -v, --verbose     ${t("usage.verbose")}
-    -V, --version     ${t("usage.version")}
+    -c, --compress     ${t("usage.compress")}
+        --no-compress  ${t("usage.no-compress")}
+    -i, --ignore-test  ${t("usage.ignore-test")}
+    -t, --use-token    ${t("usage.use-token")}
+        --no-use-token ${t("usage.no-use-token")}
+    -h, --help         ${t("usage.help")}
+    -v, --verbose      ${t("usage.verbose")}
+    -V, --version      ${t("usage.version")}
 
 ${t("usage.project")}`
     );
 
     Deno.exit();
+}
+
+if ([ 0, 1, 2 ].some(fd => !Deno.isatty(fd))) {
+    console.error("Error - " + t("startup.isatty"));
+
+    Deno.exit(1);
+}
+
+if (flags._.length <= 0) {
+    argparse.error(t("startup.hostname"));
+
+    Deno.exit(1);
+}
+
+let hostname = flags._[0];
+
+if (typeof hostname === "number") {
+    argparse.error(t("startup.parse-url"));
+
+    Deno.exit(1);
+}
+
+if (!isURL(hostname, { protocols: [ "https", "http" ], require_tld: false })) {
+    argparse.error(t("startup.parse-url"));
+
+    Deno.exit(1);
+}
+
+if (!flags["use-token"]) {
+    argparse.warn(sprintf(t("security"), colors.bold("--use-token")));
 }
