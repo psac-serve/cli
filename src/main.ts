@@ -111,7 +111,7 @@ if (flags._.length <= 0) {
     Deno.exit(1);
 }
 
-let hostname = flags._[0];
+const hostname = flags._[0];
 
 if (typeof hostname === "number") {
     validator.error(t("startup.parse-url"));

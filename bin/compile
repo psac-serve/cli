@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+mkdir -pv out/bin/
+
+deno compile --allow-read --allow-write --allow-env --unstable --output=./out/bin/psac src/main.ts

@@ -1,12 +1,20 @@
 export default class LanguageDetector {
     static type = "languageDetector" as const;
 
-    private services!: any;
-    private i18nextOptions!: any;
+    private services!: {
+        languageUtils: {
+            isWhiteListed: (language: string) => boolean,
+            formatLanguageCode: (language: string) => string
+        }
+    };
 
-    public init(services: any, i18nextOptions: any) {
+    public init(services: {
+        languageUtils: {
+            isWhiteListed: (language: string) => boolean,
+            formatLanguageCode: (language: string) => string
+        }
+    }) {
         this.services = services;
-        this.i18nextOptions = i18nextOptions;
     }
 
     public detect() {
