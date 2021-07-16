@@ -20,7 +20,7 @@ export default class LanguageDetector {
         const formattedLanguage = this.formatShellLocale(shellLocale);
 
         if (!formattedLanguage) {
-            return this.getFallbackLng();
+            return "en-US";
         }
 
         return formattedLanguage;
@@ -47,21 +47,5 @@ export default class LanguageDetector {
 
     private checkIfWhiteListed(language: string) {
         return this.services.languageUtils.isWhiteListed(language);
-    }
-
-    private getFallbackLng() {
-        if (Array.isArray(this.i18nextOptions.fallbackLng)) {
-            return this.i18nextOptions.fallbackLng[0];
-        }
-
-        if (typeof this.i18nextOptions.fallbackLng === "string") {
-            return this.i18nextOptions.fallbackLng;
-        }
-
-        return (
-            typeof this.i18nextOptions.fallbackLng === "object" &&
-            this.i18nextOptions.fallbackLng.default &&
-            this.i18nextOptions.fallbackLng.default[0]
-        );
     }
 }
