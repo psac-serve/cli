@@ -109,3 +109,5 @@ dist/
 lib/
 tmp/
 /out/
+covs/
+/tests/logs/

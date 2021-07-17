@@ -3,7 +3,8 @@
         "allowJs": true,
         "lib": [
             "deno.window",
-            "deno.unstable"
+            "deno.unstable",
+            "esnext"
         ]
     }
 }
