@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "module": "esnext",
+        "target": "esnext",
+        "allowJs": true,
+        "lib": [
+            "deno.ns",
+            "deno.unstable"
+        ]
+    }
+}
