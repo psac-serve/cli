@@ -13,7 +13,7 @@
         "help": "display help message and exit",
         "verbose": "be verbose",
         "version": "display the version of PSAC Client and exit",
-        "project": "Project home: https://github.com/psac-serve/cli"
+        "project": "Project home"
     },
     "startup": {
         "isatty": "psac-client can't run inside pipelines.",

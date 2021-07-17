@@ -11,6 +11,6 @@
         "help": "ヘルプメッセージを表示して終了する",
         "verbose": "冗長な表示をする",
         "version": "バージョン情報を表示して終了する",
-        "project": "プロジェクト: https://github.com/psac-serve/cli"
+        "project": "プロジェクト"
     }
 }
