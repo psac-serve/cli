@@ -10,18 +10,18 @@ import { t } from "./translate.ts";
 
 import { validator } from "./logger/mod.ts";
 
-interface Flags {
-    hostname: string,
+interface Options {
+    hostname?: string,
 
-    version: boolean,
-    help: boolean,
     verbose: boolean,
     compress: boolean,
-    ignoreTest: boolean,
+    ignoreTest?: boolean,
     useToken: boolean
 }
 
-export let flags: Flags;
+type Arguments = [ string ]
+
+export let flags: Options;
 
 export const main = async (...args: string[]): Promise<number> => {
     await i18next
@@ -51,28 +51,47 @@ export const main = async (...args: string[]): Promise<number> => {
         .use(LanguageDetector)
         .init({
             fallbackLng: "en-US"
-        });
+        }, () => {});
 
-    const command = await new Command()
+    const command = new Command<Options, Arguments, {}>()
+        .throwErrors()
         .name("psac")
-        .description(t("description"))
+        .description(t("description")
+            .split("")
+            .map((char: string, index: number) => index == 0 ? char.toUpperCase() : char)
+            .join(""))
         .arguments("<hostname:string>")
         .option("-c, --compress", t("usage.compress"), { default: true })
-        .option("-I, --ignore-test", t("usage.ignore-test"), { default: true })
+        .option("-C, --no-compress", t("usage.no-compress"))
+        .option("-I, --ignore-test", t("usage.ignore-test"))
         .option("-t, --use-token", t("usage.use-token"), { default: true })
+        .option("--no-use-token", t("usage.no-use-token"))
         .option("-v, --verbose", t("usage.verbose"), { default: true })
-        .option("-V, --version", t("usage.version"), { standalone: true })
-        .parse([ ...Deno.args, ...args ]);
-
-    flags = { ...command.options, ...{ hostname: command.args[0] } } as unknown as Flags;
-
-    if (flags.version) {
-        console.log(`PSAC Client dev, ${t("description")}
+        .option("-V, --version", t("usage.version"), {
+            standalone: true, action() {
+                console.log(`PSAC Client dev, ${t("description")}
 Deno ${Deno.version.deno}
 Compiled by TypeScript ${Deno.version.typescript}`);
 
-        return 0;
+                Deno.exit(0);
+            }
+        });
+
+    let parsedCommand;
+
+    try {
+        parsedCommand = await command.parse([ ...Deno.args, ...args ]);
+    } catch (error) {
+        validator.error(error.message);
+
+        return 1;
     }
+
+    flags = {
+        ...(
+            parsedCommand.options as object as Options
+        ), ...{ hostname: parsedCommand.args[0] }
+    };
 
     if (!Deno.isatty(Deno.stdin.rid)) {
         console.error("Error - " + t("startup.isatty"));
@@ -83,7 +102,7 @@ Compiled by TypeScript ${Deno.version.typescript}`);
     let hostname;
 
     try {
-        const hostnameFlag = flags.hostname;
+        const hostnameFlag = flags.hostname || "127.0.0.1";
         let protocol = "";
 
         if (!/https?:\/\//.test(hostnameFlag)) {
