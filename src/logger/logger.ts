@@ -1,5 +1,5 @@
 import { getLevelByName, getLevelName, LevelName, LogLevels } from "./levels.ts";
-import { BaseHandler, ConsoleHandler } from "./handlers.ts";
+import { BaseHandler, ConsoleHandler, RotatingFileHandler } from "./handlers.ts";
 
 // deno-lint-ignore no-explicit-any
 export type GenericFunction = (...args: any[]) => any;
@@ -77,7 +77,13 @@ export function getLogger(name?: string): Logger {
     const result = state.loggers.get(name);
 
     if (!result) {
-        const logger = new Logger(name, "Debug", { handlers: [] })
+        const logger = new Logger(name, "Debug", {
+            handlers: [
+                new ConsoleHandler("Debug"),
+
+                new RotatingFileHandler("Info")
+            ]
+        });
 
         state.loggers.set(name, logger);
 

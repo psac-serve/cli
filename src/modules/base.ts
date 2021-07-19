@@ -1,0 +1,52 @@
+import { t } from "../translate.ts";
+
+/**
+ * The abstract base class to implement module operations and necessary information.
+ */
+export default abstract class Module {
+    /**
+     * The boolean value whether this module is running / enabled.
+     */
+    public enabled = false;
+
+    /**
+     * Constructor.
+     *
+     * @param name - The module name.
+     * @param _description - The module description to use.
+     *
+     * @returns The instance of this class.
+     */
+    protected constructor(public name: string, private _description: string) {}
+
+    /**
+     * Encapsulated _description value.
+     *
+     * @returns Translated description.
+     */
+    public get description(): string {
+        return t(`module.${this.name}.${this._description}`);
+    }
+
+    /**
+     * Initialize and enable this module.
+     *
+     * @returns Promise class to use await or .then().
+     */
+    public abstract init(): Promise<void>
+
+    /**
+     * Close and disable this module.
+     *
+     * @returns Promise class to use await or .then().
+     */
+    public abstract close(): Promise<void>
+
+    /**
+     * Call the module body.
+     * Each module body is different.
+     *
+     * @returns The module body to use functions.
+     */
+    public abstract use(): unknown
+}

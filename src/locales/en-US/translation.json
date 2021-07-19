@@ -5,10 +5,10 @@
         "usage": "Usage",
         "hostname": "hostname",
         "options": "Options",
-        "compress": "Compress connection (default)",
+        "compress": "Compress connection",
         "no-compress": "Do not compress connection",
         "ignore-test": "Ignore connection testing",
-        "use-token": "Use a token for connection (default)",
+        "use-token": "Use a token for connection",
         "no-use-token": "Do not use a token for connection (not recommended)",
         "help": "display help message and exit",
         "verbose": "be verbose",
@@ -19,5 +19,36 @@
         "isatty": "psac-client can't run inside pipelines.",
         "hostname": "You must specify hostname.",
         "parse-url": "Unable to parse hostname."
+    },
+    "errors": {
+        "connection": "Connection failed.",
+        "token": {
+            "incorrect": "Incorrect token."
+        },
+        "response": {
+            "invalid": "Received invalid response."
+        },
+        "interrupt": "Interrupt signal received."
+    },
+    "manager": {
+        "hosts": {
+            "not-found": "Token store file not found, creating new file with mode %s."
+        }
+    },
+    "client": {
+        "token": {
+            "found": "Found token for connecting host.",
+            "ask": "Enter token for connecting host",
+            "saved": "Saved token to temp store."
+        },
+        "connected": "Created new client %s.",
+        "logger": {
+            "request": "Request Logger created.",
+            "response": "Response Logger created."
+        },
+        "test": {
+            "started": "Testing connection using `/teapot`.",
+            "finished": "Connection test completed."
+        }
     }
 }

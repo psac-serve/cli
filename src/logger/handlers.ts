@@ -1,8 +1,8 @@
-import { existsSync } from "https://deno.land/std@0.101.0/fs/exists.ts";
-import { BufWriterSync } from "https://deno.land/std@0.101.0/io/bufio.ts";
+import { existsSync } from "https://x.nest.land/std@0.101.0/fs/exists.ts";
+import { BufWriterSync } from "https://x.nest.land/std@0.101.0/io/bufio.ts";
 import { gzipEncode as compress } from "https://github.com/manyuanrong/wasm_gzip/raw/master/mod.ts";
 
-import * as colors from "https://deno.land/std@0.101.0/fmt/colors.ts";
+import * as colors from "https://x.nest.land/std@0.101.0/fmt/colors.ts";
 import { wcswidth } from "https://deno.land/x/tty@0.1.2/wcwidth.ts";
 import { stripAnsi } from "https://deno.land/x/tty@0.1.2/strip_ansi.ts";
 import wrap from "https://deno.land/x/word_wrap@v0.1.1/mod.ts";
@@ -119,12 +119,6 @@ export class ConsoleHandler extends BaseHandler {
             //     terminal.restoreCursor();
             // }
         } else {
-            const mergedMessage = leftLog + message + " ".repeat(-(
-                (
-                    message === lastLineMessage ? lastLineMessageWidth + leftLogWidth : lastLineMessageWidth
-                ) - columns
-            ) - leftLogWidth) + colors.gray(rightLog);
-
             // if (manager.prompting) {
             //     terminal.saveCursor();
             //     terminal.move(
@@ -136,7 +130,11 @@ export class ConsoleHandler extends BaseHandler {
             //     console.log();
             // }
 
-            return mergedMessage;
+            return leftLog + message + " ".repeat(-(
+                (
+                    message === lastLineMessage ? lastLineMessageWidth + leftLogWidth : lastLineMessageWidth
+                ) - columns
+            ) - leftLogWidth) + colors.gray(rightLog);
 
             // if (manager.prompting) {
             //     terminal.restoreCursor();

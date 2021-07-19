@@ -1,5 +1,5 @@
-import * as colors from "https://deno.land/std@0.101.0/fmt/colors.ts";
-import { getLogger as get, Logger, setup } from "./logger.ts";
+import * as colors from "https://x.nest.land/std@0.101.0/fmt/colors.ts";
+import { setup } from "./logger.ts";
 import { ConsoleHandler, RotatingFileHandler } from "./handlers.ts";
 
 await Deno.mkdir("./logs", {
@@ -29,10 +29,10 @@ await setup({
         dbg: {
             level: "Debug",
             handlers: [ "console" ]
+        },
+        modules: {
+            level: "Debug",
+            handlers: [ "console", "file" ]
         }
     }
 });
-
-export const getLogger = (name?: string): Logger => {
-    return get(name);
-};
