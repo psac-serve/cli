@@ -1,7 +1,7 @@
-import { Command } from "https://deno.land/x/cliffy@v0.19.3/command/mod.ts";
+import { Command } from "https://x.nest.land/cliffy@0.19.2/command/mod.ts";
+import { colors } from "https://x.nest.land/cliffy@0.19.2/ansi/mod.ts";
 
-import { sprintf } from "https://deno.land/std@0.101.0/fmt/printf.ts";
-import * as colors from "https://deno.land/std@0.101.0/fmt/colors.ts";
+import { sprintf } from "https://x.nest.land/std@0.101.0/fmt/printf.ts";
 
 import i18next from "https://deno.land/x/i18next/index.js";
 import resourcesToBackend from "https://deno.land/x/i18next_resources_to_backend@v1.0.0/index.js";
@@ -9,6 +9,8 @@ import LanguageDetector from "./language-detector.ts";
 import { t } from "./translate.ts";
 
 import { validator } from "./logger/mod.ts";
+import { manager } from "./modules/manager.ts";
+import ConnectionError from "./errors/conn/failed.ts";
 
 interface Options {
     hostname?: string,
@@ -53,7 +55,7 @@ export const main = async (...args: string[]): Promise<number> => {
             fallbackLng: "en-US"
         }, () => {});
 
-    const command = new Command<Options, Arguments, {}>()
+    const command = new Command<Options, Arguments>()
         .throwErrors()
         .name("psac")
         .description(t("description")
@@ -89,7 +91,7 @@ Compiled by TypeScript ${Deno.version.typescript}`);
 
     flags = {
         ...(
-            parsedCommand.options as object as Options
+            parsedCommand.options as Options
         ), ...{ hostname: parsedCommand.args[0] }
     };
 
@@ -109,7 +111,8 @@ Compiled by TypeScript ${Deno.version.typescript}`);
             protocol = "http://";
         }
 
-        hostname = Deno.env.get("DEBUG") ? "127.0.0.1" : new URL(protocol + hostnameFlag).hostname;
+        hostname = Deno.env.get("DEBUG") ? "127.0.0.1:810" : new URL(protocol + hostnameFlag).hostname +
+            ":" + new URL(protocol + hostnameFlag).port;
     } catch {
         validator.error(t("startup.parse-url"));
 
@@ -120,7 +123,23 @@ Compiled by TypeScript ${Deno.version.typescript}`);
         validator.warn(sprintf(t("security"), colors.bold("--use-token")));
     }
 
-    console.log("Not implemented");
+    const { logger } = manager;
+
+    try {
+        await manager.initAllModules(hostname);
+    } catch (error) {
+        if (error instanceof ConnectionError) {
+            logger.fatal(error.message);
+        } else if (error.message === "INVALID_RESPONSE") {
+            logger.fatal(error.message);
+        }
+
+        return 1;
+    }
+
+    console.log("init finished");
+
+    await manager.closeAllModules();
 
     return 0;
 };
