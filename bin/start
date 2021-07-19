@@ -1,3 +1,4 @@
 #!/usr/bin/bash
 
-deno run --allow-read --allow-write --allow-env --unstable --config=./tsconfig.json src/main.ts "$@"
+deno run --allow-read --allow-write --allow-env --allow-net --unstable --config=./tsconfig.json src/main.ts "$@"
+
